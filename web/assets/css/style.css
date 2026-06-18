@@ -7,3 +7,109 @@ Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/CascadeStyleSheet.css
     Author     : ADMIN
 */
 
+:root {
+    /* --- 1. CẤU HÌNH MÀU HEADER (XANH LÁ NHẠT) --- */
+    --header-bg: #d6edd8;             /* Màu nền chính của Header */
+    --header-title-color: #1b5e20;    /* Màu chữ tiêu đề "PartTimeJobs" */
+    --header-subtitle-color: #43a047; /* Màu chữ phụ đề bên dưới */
+    --logo-bg-color: #2e7d32;         /* Màu nền vòng tròn chữ P */
+
+    /* --- 2. CẤU HÌNH MÀU FOOTER (XANH DƯƠNG ĐẬM) --- */
+    --footer-bg: #0f172a;             /* Màu nền chính của Footer (Xanh Slate/Dương đậm) */
+    --footer-title-color: #ffffff;    /* Màu chữ tiêu đề các cột trong Footer */
+    --footer-text-color: #cbd5e1;     /* Màu chữ nội dung/thông tin trong Footer */
+    --footer-link-hover: #38bdf8;     /* Màu sắc khi di chuột vào link ở Footer */
+
+    /* --- 3. CÁC MÀU SẮC CHUNG KHÁC CỦA HỆ THỐNG --- */
+    --primary-color: #2563eb; 
+    --primary-hover: #1d4ed8;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --bg-light: #f8fafc;
+    --border-color: #e2e8f0;
+}
+
+body {
+    font-family: 'Urbanist', sans-serif; 
+    color: var(--text-main);
+    background-color: var(--bg-light);
+}
+
+/* --- CSS CHO HEADER --- */
+.custom-header {
+    background-color: var(--header-bg) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.logo-box {
+    width: 50px; 
+    height: 50px; 
+    font-weight: bold; 
+    font-size: 18px;
+    background-color: var(--logo-bg-color);
+    color: #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s;
+}
+
+.logo-box:hover {
+    transform: scale(1.05);
+}
+
+.brand-text-custom {
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--header-title-color);
+    display: block;
+    line-height: 1.2;
+}
+
+.brand-subtitle {
+    font-size: 0.85rem;
+    color: var(--header-subtitle-color);
+    font-weight: 500;
+}
+
+/* --- CSS CHO FOOTER --- */
+.custom-footer {
+    background-color: var(--footer-bg) !important;
+    color: var(--footer-text-color);
+}
+
+.footer-title-custom {
+    color: var(--footer-title-color);
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.footer-text-custom {
+    color: var(--footer-text-color);
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.footer-link-custom {
+    color: var(--footer-text-color);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.footer-link-custom:hover {
+    color: var(--footer-link-hover);
+    text-decoration: underline;
+}
+
+.contact-icon-custom {
+    color: var(--footer-link-hover);
+    margin-right: 6px;
+    width: 14px;
+    text-align: center;
+}
