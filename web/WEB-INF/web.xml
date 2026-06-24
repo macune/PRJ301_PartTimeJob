@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
-    
     <servlet>
         <servlet-name>UserHomeController</servlet-name>
         <servlet-class>controllers.user.UserHomeController</servlet-class>
@@ -9,7 +8,22 @@
         <servlet-name>UserJobDetailController</servlet-name>
         <servlet-class>controllers.user.UserJobDetailController</servlet-class>
     </servlet>
-    
+    <servlet>
+        <servlet-name>UserLoginController</servlet-name>
+        <servlet-class>controllers.user.UserLoginController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UserRegisterController</servlet-name>
+        <servlet-class>controllers.user.UserRegisterController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AdminDashboardController</servlet-name>
+        <servlet-class>controllers.admin.AdminDashboardController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>StudentDashboardController</servlet-name>
+        <servlet-class>StudentDashboardController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>UserHomeController</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -18,9 +32,23 @@
         <servlet-name>UserJobDetailController</servlet-name>
         <url-pattern>/job-detail</url-pattern>
     </servlet-mapping>
-
+    <servlet-mapping>
+        <servlet-name>UserLoginController</servlet-name>
+        <url-pattern>/userLogin</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UserRegisterController</servlet-name>
+        <url-pattern>/userRegister</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminDashboardController</servlet-name>
+        <url-pattern>/adminDashboard</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StudentDashboardController</servlet-name>
+        <url-pattern>/studentDashboard</url-pattern>
+    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
-    
 </web-app>

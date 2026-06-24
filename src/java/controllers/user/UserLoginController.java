@@ -3,22 +3,24 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 
-package controllers.employer;
+package controllers.user;
 
+import dal.AccountDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import java.io.PrintWriter;
+import models.Account;
 
 /**
  *
  * @author ADMIN
  */
-@WebServlet(name="keep", urlPatterns={"/keep"})
-public class keep extends HttpServlet {
+public class UserLoginController extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -35,10 +37,10 @@ public class keep extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet keep</title>");  
+            out.println("<title>Servlet UserLoginController</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet keep at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet UserLoginController at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -55,7 +57,13 @@ public class keep extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        //processRequest(request, response);
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("account") != null) {
+            response.sendRedirect(request.getContextPath() + "/home");
+            return;
+        }
+        request.getRequestDispatcher("/views/user/user_login.jsp").forward(request, response);
     } 
 
     /** 
@@ -68,7 +76,45 @@ public class keep extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        //processRequest(request, response);
+        request.setCharacterEncoding("UTF-8");
+
+        String username = request.getParameter("username"); 
+        String password = request.getParameter("password");
+
+        if (username == null || username.trim().isEmpty() || password == null || password.trim().isEmpty()) {
+            request.setAttribute("errorMsg", "Vui lòng nhập đầy đủ thông tin.");
+            request.getRequestDispatcher("/views/user/user_login.jsp").forward(request, response);
+            return;
+        }
+
+        AccountDAO dao = new AccountDAO();
+        Account account = dao.login(username.trim(), password.trim());
+
+        if (account == null) {
+            request.setAttribute("errorMsg", "Tên đăng nhập hoặc mật khẩu không đúng.");
+            request.setAttribute("filledValue", username); 
+            request.getRequestDispatcher("/views/user/user_login.jsp").forward(request, response);
+            return;
+        }
+
+        HttpSession session = request.getSession();
+        session.setAttribute("account", account);
+        
+        // Điều hướng thông minh dựa vào Actor (Role)
+        switch (account.getRole()) {
+            case 1: // Admin
+                response.sendRedirect(request.getContextPath() + "/adminDashboard");
+                break;
+            case 2: // Sinh viên
+                response.sendRedirect(request.getContextPath() + "/studentDashboard");
+                break;
+            case 3: // Nhà tuyển dụng
+                response.sendRedirect(request.getContextPath() + "/employerDashboard");
+                break;
+            default:
+                response.sendRedirect(request.getContextPath() + "/home");
+        }
     }
 
     /** 
