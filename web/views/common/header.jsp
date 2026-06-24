@@ -17,9 +17,16 @@
         </a>
 
         <nav class="d-flex align-items-center gap-4">
-            <a class="nav-link fw-semibold text-dark hover-blue" href="${pageContext.request.contextPath}/home">Trang chủ</a>
-            <a class="nav-link fw-semibold text-dark hover-blue" href="${pageContext.request.contextPath}/home">Việc làm</a>
-
+            <a class="nav-link fw-semibold text-dark hover-blue"
+               href="<c:choose>
+                    <c:when test="${empty sessionScope.account}">${pageContext.request.contextPath}/home</c:when>
+                    <c:when test="${sessionScope.account.role == 1}">${pageContext.request.contextPath}/adminDashboard</c:when>
+                    <c:when test="${sessionScope.account.role == 2}">${pageContext.request.contextPath}/studentDashboard</c:when>
+                    <c:when test="${sessionScope.account.role == 3}">${pageContext.request.contextPath}/employerDashboard</c:when>
+                    <c:otherwise>${pageContext.request.contextPath}/home</c:otherwise>
+                 </c:choose>">Trang chủ
+            </a>
+               
             <c:choose>
                 <c:when test="${empty sessionScope.account}">
                     <a class="btn btn-outline-primary fw-semibold rounded-pill px-4" href="${pageContext.request.contextPath}/userLogin">Đăng nhập</a>
@@ -48,8 +55,8 @@
                                     </c:choose>
                                 </div>
                             </li>
-                            <li><a class="dropdown-item py-2 mt-1" href="#"><i class="fas fa-user-edit me-2 text-secondary"></i> Hồ sơ cá nhân</a></li>
-                            <li><a class="dropdown-item py-2" href="#"><i class="fas fa-clipboard-list me-2 text-secondary"></i> Quản lý việc làm</a></li>
+                            <li><a class="dropdown-item py-2 mt-1" href="#"><i class="fas fa-user-edit me-2 text-secondary"></i> Thông tin tài khoản</a></li>
+                            <li><a class="dropdown-item py-2" href="#"><i class="fas fa-key me-2 text-secondary"></i> Thay đổi mật khẩu</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item py-2 text-danger" href="${pageContext.request.contextPath}/userLogout"><i class="fas fa-sign-out-alt me-2"></i> Đăng xuất</a></li>
                         </ul>
