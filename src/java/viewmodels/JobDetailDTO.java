@@ -4,12 +4,12 @@ import models.Category;
 import models.Employer_Profile;
 import models.Job_Post;
 
-public class JobDetailViewModel {
+public class JobDetailDTO {
     private Job_Post job;
     private Category category;
     private Employer_Profile employer;
 
-    public JobDetailViewModel(Job_Post job, Category category, Employer_Profile employer) {
+    public JobDetailDTO(Job_Post job, Category category, Employer_Profile employer) {
         this.job = job;
         this.category = category;
         this.employer = employer;

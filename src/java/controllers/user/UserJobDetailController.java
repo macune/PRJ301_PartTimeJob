@@ -12,13 +12,13 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import viewmodels.JobDetailViewModel;
+import viewmodels.JobDetailDTO;
 
 /**
  *
  * @author acer
  */
-public class JobDetailController extends HttpServlet {
+public class UserJobDetailController extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -65,7 +65,7 @@ public class JobDetailController extends HttpServlet {
         try {
             int jobId = Integer.parseInt(idParam);
             JobDAO dao = new JobDAO();
-            JobDetailViewModel jobDetail = dao.getJobById(jobId);
+            JobDetailDTO jobDetail = dao.getJobById(jobId);
             
             if (jobDetail != null) {
                 request.setAttribute("jobDetail", jobDetail);

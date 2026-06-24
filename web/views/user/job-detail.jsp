@@ -33,7 +33,7 @@
                             </ul>
                             
                             <div class="mt-4 text-center">
-                                <button class="btn btn-success btn-lg px-5">Ứng Tuyển Ngay</button>
+                                <a href="${pageContext.request.contextPath}/apply-job?id=${jobDetail.job.jobId}" class="btn btn-success btn-lg px-5">Ứng Tuyển Ngay</a>
                             </div>
                         </div>
                     </div>
