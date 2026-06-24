@@ -6,16 +6,17 @@ import models.Account;
 
 public class AccountDAO extends DBContext {
 
-    public Account login(String username, String password) {
+    public Account login(String usernameOrEmail, String password) {
         try {
             String sql = """
                          SELECT AccountID, Username, Email, Password, Role, Status, CreatedAt 
                          FROM Account 
-                         WHERE Username = ? AND Password = ? AND Status = 1
+                         WHERE (Username = ? OR Email = ?) AND Password = ? AND Status = 1
                          """;
             PreparedStatement ps = connection.prepareStatement(sql);
-            ps.setString(1, username);
-            ps.setString(2, password);
+            ps.setString(1, usernameOrEmail);
+            ps.setString(2, usernameOrEmail); 
+            ps.setString(3, password);
             ResultSet rs = ps.executeQuery();
             
             if (rs.next()) {

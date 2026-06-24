@@ -15,11 +15,11 @@
         
         <div class="container mt-5 flex-grow-1">
             
-            <div class="filter-wrapper">
-                <form action="${pageContext.request.contextPath}/home" method="GET" class="row filter-form">
+            <div class="filter-wrapper shadow-sm bg-white p-3 rounded mb-4">
+                <form action="${pageContext.request.contextPath}/home" method="GET" class="row filter-form g-2 align-items-end">
                     
                     <div class="col-md-2">
-                        <label class="filter-label">Ngành nghề</label>
+                        <label class="filter-label fw-semibold small mb-1 text-muted">Ngành nghề</label>
                         <select name="categoryId" class="form-select filter-input">
                             <option value="">Tất cả ngành nghề</option>
                             <c:forEach items="${categories}" var="cat">
@@ -31,33 +31,38 @@
                     </div>
 
                     <div class="col-md-2">
-                        <label class="filter-label">Tỉnh / Thành</label>
+                        <label class="filter-label fw-semibold small mb-1 text-muted">Tỉnh / Thành</label>
                         <select name="city" id="city" class="form-select filter-input" data-selected="${param.city}">
                             <option value="">Chọn Tỉnh/Thành</option>
                         </select>
                     </div>
 
                     <div class="col-md-2">
-                        <label class="filter-label">Xã / Phường</label>
+                        <label class="filter-label fw-semibold small mb-1 text-muted">Xã / Phường</label>
                         <select name="ward" id="ward" class="form-select filter-input" data-selected="${param.ward}">
                             <option value="">Chọn Xã/Phường</option>
                         </select>
                     </div>
 
                     <div class="col-md-2">
-                        <label class="filter-label">Từ giờ (Bắt đầu)</label>
+                        <label class="filter-label fw-semibold small mb-1 text-muted">Từ giờ</label>
                         <input type="time" name="startTime" class="form-control filter-input" value="${param.startTime}">
                     </div>
 
                     <div class="col-md-2">
-                        <label class="filter-label">Đến giờ (Kết thúc)</label>
+                        <label class="filter-label fw-semibold small mb-1 text-muted">Đến giờ</label>
                         <input type="time" name="endTime" class="form-control filter-input" value="${param.endTime}">
                     </div>
 
                     <div class="col-md-2">
-                        <button type="submit" class="filter-btn">
-                            <i class="fas fa-filter"></i> Lọc Việc Làm
-                        </button>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary w-100 fw-semibold filter-btn" title="Áp dụng bộ lọc">
+                                <i class="fas fa-filter"></i> Lọc bài
+                            </button>
+                            <a href="${pageContext.request.contextPath}/home" class="btn btn-outline-secondary w-100 fw-semibold" title="Xóa tất cả bộ lọc">
+                                <i class="fas fa-sync-alt"></i> Xóa
+                            </a>
+                        </div>
                     </div>
                     
                 </form>
