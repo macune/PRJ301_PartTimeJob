@@ -3,22 +3,22 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 
-package viewmodels;
+package controllers.user;
 
+import dal.JobDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import viewmodels.JobDetailDTO;
 
 /**
  *
- * @author ADMIN
+ * @author acer
  */
-@WebServlet(name="keep", urlPatterns={"/keep"})
-public class keep extends HttpServlet {
+public class UserJobDetailController extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -35,10 +35,10 @@ public class keep extends HttpServlet {
             out.println("<!DOCTYPE html>");
             out.println("<html>");
             out.println("<head>");
-            out.println("<title>Servlet keep</title>");  
+            out.println("<title>Servlet JobDetailController</title>");  
             out.println("</head>");
             out.println("<body>");
-            out.println("<h1>Servlet keep at " + request.getContextPath () + "</h1>");
+            out.println("<h1>Servlet JobDetailController at " + request.getContextPath () + "</h1>");
             out.println("</body>");
             out.println("</html>");
         }
@@ -54,9 +54,29 @@ public class keep extends HttpServlet {
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        processRequest(request, response);
-    } 
+            throws ServletException, IOException {
+        
+        String idParam = request.getParameter("id");
+        if (idParam == null || idParam.isEmpty()) {
+            response.sendRedirect("home");
+            return;
+        }
+        
+        try {
+            int jobId = Integer.parseInt(idParam);
+            JobDAO dao = new JobDAO();
+            JobDetailDTO jobDetail = dao.getJobById(jobId);
+            
+            if (jobDetail != null) {
+                request.setAttribute("jobDetail", jobDetail);
+                request.getRequestDispatcher("views/user/job-detail.jsp").forward(request, response);
+            } else {
+                response.sendRedirect("home");
+            }
+        } catch (NumberFormatException e) {
+            response.sendRedirect("home");
+        }
+    }
 
     /** 
      * Handles the HTTP <code>POST</code> method.
