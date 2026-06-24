@@ -260,7 +260,10 @@ public class JobDAO extends DBContext {
 
     public JobDetailDTO getJobById(int id) {
         String sql = """
-                     SELECT j.*, c.CategoryName, e.* FROM Job_Post j 
+                     SELECT j.*, c.CategoryName, 
+                            e.EmployerID, e.BusinessName, e.Phone, e.ContactEmail, 
+                            e.Address AS EmployerAddress, e.Description AS EmployerDescription, e.AverageRating 
+                     FROM Job_Post j 
                      JOIN Category c ON j.CategoryID = c.CategoryID 
                      JOIN Employer_Profile e ON j.EmployerID = e.EmployerID 
                      WHERE j.JobID = ?
@@ -273,7 +276,7 @@ public class JobDAO extends DBContext {
                 Job_Post job = new Job_Post();
                 job.setJobId(rs.getInt("JobID"));
                 job.setTitle(rs.getString("Title"));
-                job.setDescription(rs.getString("Description"));
+                job.setDescription(rs.getString("Description")); // Lấy mô tả của Job
                 job.setSalary(rs.getInt("Salary"));
                 job.setStartTime(rs.getTime("StartTime"));
                 job.setEndTime(rs.getTime("EndTime"));
@@ -291,8 +294,10 @@ public class JobDAO extends DBContext {
                 emp.setBusinessName(rs.getString("BusinessName"));
                 emp.setPhone(rs.getString("Phone"));
                 emp.setContactEmail(rs.getString("ContactEmail"));
-                emp.setAddress(rs.getString("Address"));
-                emp.setDescription(rs.getString("Description"));
+                
+                // Đã sửa lại việc lấy giá trị thông qua Alias mới
+                emp.setAddress(rs.getString("EmployerAddress"));
+                emp.setDescription(rs.getString("EmployerDescription")); 
                 emp.setAverageRating(rs.getDouble("AverageRating"));
 
                 return new JobDetailDTO(job, cat, emp);

@@ -79,21 +79,21 @@ public class UserLoginController extends HttpServlet {
         //processRequest(request, response);
         request.setCharacterEncoding("UTF-8");
 
-        String username = request.getParameter("username"); 
+        String usernameOrEmail = request.getParameter("usernameOrEmail"); 
         String password = request.getParameter("password");
 
-        if (username == null || username.trim().isEmpty() || password == null || password.trim().isEmpty()) {
+        if (usernameOrEmail == null || usernameOrEmail.trim().isEmpty() || password == null || password.trim().isEmpty()) {
             request.setAttribute("errorMsg", "Vui lòng nhập đầy đủ thông tin.");
             request.getRequestDispatcher("/views/user/user_login.jsp").forward(request, response);
             return;
         }
 
         AccountDAO dao = new AccountDAO();
-        Account account = dao.login(username.trim(), password.trim());
+        Account account = dao.login(usernameOrEmail.trim(), password.trim());
 
         if (account == null) {
-            request.setAttribute("errorMsg", "Tên đăng nhập hoặc mật khẩu không đúng.");
-            request.setAttribute("filledValue", username); 
+            request.setAttribute("errorMsg", "Tên đăng nhập / Email hoặc mật khẩu không đúng.");
+            request.setAttribute("filledValue", usernameOrEmail); // Giữ lại email/username người dùng vừa nhập
             request.getRequestDispatcher("/views/user/user_login.jsp").forward(request, response);
             return;
         }
@@ -101,22 +101,21 @@ public class UserLoginController extends HttpServlet {
         HttpSession session = request.getSession();
         session.setAttribute("account", account);
         
-        // Điều hướng thông minh dựa vào Actor (Role)
         switch (account.getRole()) {
-            case 1: // Admin
+            case 1: 
                 response.sendRedirect(request.getContextPath() + "/adminDashboard");
                 break;
-            case 2: // Sinh viên
+            case 2: 
                 response.sendRedirect(request.getContextPath() + "/studentDashboard");
                 break;
-            case 3: // Nhà tuyển dụng
+            case 3: 
                 response.sendRedirect(request.getContextPath() + "/employerDashboard");
                 break;
             default:
                 response.sendRedirect(request.getContextPath() + "/home");
         }
     }
-
+    
     /** 
      * Returns a short description of the servlet.
      * @return a String containing servlet description

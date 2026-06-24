@@ -32,8 +32,14 @@
                                 <li class="list-group-item"><i class="fas fa-calendar-alt text-secondary"></i> <strong> Ngày đăng:</strong> <fmt:formatDate value="${jobDetail.job.createdAt}" pattern="dd/MM/yyyy"/></li>
                             </ul>
                             
-                            <div class="mt-4 text-center">
-                                <a href="${pageContext.request.contextPath}/apply-job?id=${jobDetail.job.jobId}" class="btn btn-success btn-lg px-5">Ứng Tuyển Ngay</a>
+                            <div class="d-flex justify-content-between align-items-center mt-5 pt-3 border-top">
+                                <a href="${pageContext.request.contextPath}/home" class="btn btn-outline-secondary px-4 fw-semibold">
+                                    <i class="fas fa-arrow-left me-2"></i>Quay lại
+                                </a>
+                                
+                                <a href="${pageContext.request.contextPath}/apply-job?id=${jobDetail.job.jobId}" class="btn btn-success btn-lg px-5 fw-semibold shadow-sm">
+                                    Ứng Tuyển Ngay <i class="fas fa-paper-plane ms-2"></i>
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -50,9 +56,9 @@
                                 <i class="fas fa-star"></i> ${jobDetail.employer.averageRating}/5
                             </p>
                             <hr>
-                            <p class="text-start mb-2"><i class="fas fa-phone-alt"></i> <strong> Liên hệ:</strong> ${jobDetail.employer.phone}</p>
-                            <p class="text-start mb-2"><i class="fas fa-envelope"></i> <strong> Email:</strong> ${jobDetail.employer.contactEmail}</p>
-                            <p class="text-start"><i class="fas fa-info-circle"></i> <strong> Giới thiệu:</strong> ${jobDetail.employer.description}</p>
+                            <p class="text-start mb-2"><i class="fas fa-phone-alt text-secondary"></i> <strong> Liên hệ:</strong> ${jobDetail.employer.phone}</p>
+                            <p class="text-start mb-2"><i class="fas fa-envelope text-secondary"></i> <strong> Email:</strong> ${jobDetail.employer.contactEmail}</p>
+                            <p class="text-start"><i class="fas fa-info-circle text-secondary"></i> <strong> Giới thiệu:</strong> ${jobDetail.employer.description}</p>
                         </div>
                     </div>
                 </div>

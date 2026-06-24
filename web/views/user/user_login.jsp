@@ -43,11 +43,11 @@
                 <form action="${pageContext.request.contextPath}/userLogin" method="post" novalidate>
 
                     <div class="mb-3">
-                        <label for="username" class="form-label fw-semibold">
-                            <i class="fas fa-user me-1 text-primary"></i>Tên đăng nhập
+                        <label for="usernameOrEmail" class="form-label fw-semibold">
+                            <i class="fas fa-user me-1 text-primary"></i>Tên đăng nhập/Email
                         </label>
-                        <input type="text" class="form-control" id="username"
-                               name="username" placeholder="Nhập tên đăng nhập"
+                        <input type="text" class="form-control" id="usernameOrEmail"
+                               name="usernameOrEmail" placeholder="Nhập username hoặc email"
                                value="${filledValue}" required autofocus>
                     </div>
 
