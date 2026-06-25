@@ -17,7 +17,6 @@
     <div class="container flex-grow-1">
         <div class="card auth-card auth-card-register">
             <div class="card-header text-center py-4">
-                <div class="logo-box mx-auto mb-2" style="width:48px;height:48px;font-size:1.2rem;">PTJ</div>
                 <h4 class="text-white mb-0 fw-bold">Tạo tài khoản</h4>
                 <p class="text-white-50 small mb-0">Đăng ký để tìm việc làm bán thời gian</p>
             </div>

@@ -23,8 +23,8 @@
                 <h5 class="footer-title-custom">Thông tin liên hệ</h5>
                 <ul class="list-unstyled d-flex flex-column gap-2 footer-text-custom">
                     <li><i class="fas fa-map-marker-alt contact-icon-custom"></i> Đại học FPT, Khu công nghệ cao Hoà Lạc, Hà Nội, Việt Nam</li>
-                    <li><i class="fas fa-envelope contact-icon-custom"></i> help@parttimejob-prj.com</li>
-                    <li><i class="fas fa-phone-alt contact-icon-custom"></i> +84 (024) 123 4567</li>
+                    <li><i class="fas fa-envelope contact-icon-custom"></i> hoangpn10@fe.edu.vn</li>
+                    <li><i class="fas fa-phone-alt contact-icon-custom"></i> (024)7308.13.13</li>
                 </ul>
             </div>
         </div>
@@ -33,7 +33,7 @@
         <div class="row">
             <div class="col-md-12 text-center">
                 <p class="footer-text-custom mb-0 opacity-75">
-                    &copy; 2026 <span class="fw-bold">PartTimeJob Project</span>. Toàn bộ bản quyền thuộc về nhóm phát triển PRJ301.
+                    &copy; 2026 <span class="fw-bold">PartTimeJob Project</span>. Toàn bộ bản quyền thuộc về nhóm 5-SE2046-SU26-PRJ301.
                 </p>
             </div>
         </div>

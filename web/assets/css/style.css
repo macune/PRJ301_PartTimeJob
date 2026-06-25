@@ -252,3 +252,50 @@ body {
     border-radius: 2px;
     transition: width 0.3s, background-color 0.3s;
 }
+
+/* =========================================
+   ACTOR NAVBAR (THANH ĐIỀU HƯỚNG DASHBOARD)
+   ========================================= */
+.actor-navbar {
+    background-color: #ffffff;
+    border-bottom: 1px solid #dee2e6;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+/* Ẩn thanh cuộn trên mobile nhưng vẫn cho phép vuốt ngang */
+.actor-navbar-scroll {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+    overflow-x: auto;
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE/Edge */
+}
+.actor-navbar-scroll::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+/* Nút bấm trên Navbar */
+.actor-nav-item {
+    white-space: nowrap;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.5rem 1.25rem;
+    transition: all 0.2s ease-in-out;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+/* Style riêng biệt cho từng Actor */
+/* 1. Admin (Xanh dương) */
+.nav-admin { color: #495057; }
+.nav-admin:hover, .nav-admin.active { background-color: #e9f1ff; color: #0d6efd; }
+
+/* 2. Employer (Xanh lơ) */
+.nav-employer { color: #495057; }
+.nav-employer:hover, .nav-employer.active { background-color: #e0f8fd; color: #087990; }
+
+/* 3. Student (Xanh lá) */
+.nav-student { color: #495057; }
+.nav-student:hover, .nav-student.active { background-color: #e8f5e9; color: #198754; }
