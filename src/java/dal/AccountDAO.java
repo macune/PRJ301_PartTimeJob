@@ -80,4 +80,42 @@ public class AccountDAO extends DBContext {
         }
         return false;
     }
+    
+    public boolean updateAccountInfo(int accountId, String email) {
+        try {
+            String sql = "UPDATE Account SET Email = ? WHERE AccountID = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, email);
+            ps.setInt(2, accountId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            System.out.println("Error updateAccountInfo: " + e.getMessage());
+        }
+        return false;
+    }
+    
+    public boolean changePassword(int accountId, String newPassword) {
+        try {
+            String sql = "UPDATE Account SET Password = ? WHERE AccountID = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, newPassword);
+            ps.setInt(2, accountId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            System.out.println("Error changePassword: " + e.getMessage());
+        }
+        return false;
+    }
+
+    public boolean deleteAccount(int accountId) {
+        try {
+            String sql = "UPDATE Account SET Status = 0 WHERE AccountID = ?";
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, accountId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            System.out.println("Error deleteAccount: " + e.getMessage());
+        }
+        return false;
+    }
 }
