@@ -55,8 +55,8 @@
                                     </c:choose>
                                 </div>
                             </li>
-                            <li><a class="dropdown-item py-2 mt-1" href="#"><i class="fas fa-user-edit me-2 text-secondary"></i> Thông tin tài khoản</a></li>
-                            <li><a class="dropdown-item py-2" href="#"><i class="fas fa-key me-2 text-secondary"></i> Thay đổi mật khẩu</a></li>
+                            <li><a class="dropdown-item py-2 mt-1" href="${pageContext.request.contextPath}/userAccount"><i class="fas fa-user-edit me-2 text-secondary"></i> Thông tin tài khoản</a></li>
+                            <li><a class="dropdown-item py-2" href="${pageContext.request.contextPath}/userAccount?action=change_password"><i class="fas fa-key me-2 text-secondary"></i> Thay đổi mật khẩu</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item py-2 text-danger" href="${pageContext.request.contextPath}/userLogout"><i class="fas fa-sign-out-alt me-2"></i> Đăng xuất</a></li>
                         </ul>
