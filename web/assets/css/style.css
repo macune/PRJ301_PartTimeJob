@@ -299,3 +299,43 @@ body {
 /* 3. Student (Xanh lá) */
 .nav-student { color: #495057; }
 .nav-student:hover, .nav-student.active { background-color: #e8f5e9; color: #198754; }
+
+/* =========================================
+   ACCOUNT SETTINGS & PROFILE UI
+   ========================================= */
+
+/* Viền rõ nét cho bảng thông tin */
+.settings-card {
+    border: 1px solid #ced4da !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03) !important;
+}
+
+/* Khu vực cảnh báo nguy hiểm (Vô hiệu hóa tài khoản) */
+.danger-zone {
+    border: 1px solid #f8d7da !important;
+    background-color: #fdf3f4 !important;
+}
+
+/* Nút quay về trang trước (Tròn, có hiệu ứng lùi nhẹ khi hover) */
+.btn-back-circle {
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    border: 1px solid #dee2e6;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn-back-circle:hover {
+    background-color: #f8f9fa;
+    transform: translateX(-4px); 
+    color: #0d6efd !important;
+}
+
+.input-readonly {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    cursor: not-allowed;
+}

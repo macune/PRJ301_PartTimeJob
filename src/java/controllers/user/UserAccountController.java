@@ -68,7 +68,8 @@ public class UserAccountController extends HttpServlet {
         } else {
             request.getRequestDispatcher("/views/user/account_detail.jsp").forward(request, response);
         }
-    } 
+    }
+     
 
     /** 
      * Handles the HTTP <code>POST</code> method.
@@ -92,13 +93,17 @@ public class UserAccountController extends HttpServlet {
         AccountDAO dao = new AccountDAO();
         String action = request.getParameter("action");
 
+        // 1. XỬ LÝ CẬP NHẬT THÔNG TIN
         if ("update_info".equals(action)) {
             String newEmail = request.getParameter("email");
+            
             if (newEmail == null || newEmail.trim().isEmpty()) {
                 request.setAttribute("errorMsg", "Email không được để trống.");
                 request.getRequestDispatcher("/views/user/account_detail.jsp").forward(request, response);
                 return;
             }
+            
+            // Check trùng email (chỉ check nếu email mới khác email cũ)
             if (!currentAccount.getEmail().equals(newEmail) && dao.isEmailExist(newEmail)) {
                 request.setAttribute("errorMsg", "Email đã tồn tại trong hệ thống. Vui lòng chọn email khác.");
                 request.getRequestDispatcher("/views/user/account_detail.jsp").forward(request, response);
@@ -107,14 +112,15 @@ public class UserAccountController extends HttpServlet {
             
             if (dao.updateAccountInfo(currentAccount.getAccountId(), newEmail)) {
                 currentAccount.setEmail(newEmail); 
-                session.setAttribute("account", currentAccount); // Cập nhật lại session
-                request.setAttribute("successMsg", "Cập nhật thông tin thành công!");
+                session.setAttribute("account", currentAccount); // Ép Session cập nhật lại
+                request.setAttribute("successMsg", "Cập nhật thông tin tài khoản thành công!");
             } else {
-                request.setAttribute("errorMsg", "Có lỗi xảy ra, vui lòng thử lại sau.");
+                request.setAttribute("errorMsg", "Có lỗi hệ thống, vui lòng thử lại sau.");
             }
             request.getRequestDispatcher("/views/user/account_detail.jsp").forward(request, response);
         }
         
+        // 2. XỬ LÝ ĐỔI MẬT KHẨU
         else if ("change_password".equals(action)) {
             String oldPassword = request.getParameter("oldPassword");
             String newPassword = request.getParameter("newPassword");
@@ -136,14 +142,15 @@ public class UserAccountController extends HttpServlet {
                 session.setAttribute("account", currentAccount);
                 request.setAttribute("successMsg", "Đổi mật khẩu thành công!");
             } else {
-                request.setAttribute("errorMsg", "Có lỗi xảy ra, vui lòng thử lại sau.");
+                request.setAttribute("errorMsg", "Có lỗi hệ thống, vui lòng thử lại sau.");
             }
             request.getRequestDispatcher("/views/user/change_password.jsp").forward(request, response);
         }
         
+        // 3. XỬ LÝ XÓA TÀI KHOẢN (VÔ HIỆU HÓA)
         else if ("delete_account".equals(action)) {
             if (dao.deleteAccount(currentAccount.getAccountId())) {
-                session.invalidate(); // Xóa phiên đăng nhập
+                session.invalidate(); // Hủy session ngay lập tức
                 response.sendRedirect(request.getContextPath() + "/home");
             } else {
                 request.setAttribute("errorMsg", "Không thể vô hiệu hóa tài khoản lúc này.");
