@@ -93,7 +93,7 @@
                                     </p>
                                 </div>
                                 <div class="card-footer job-card-footer">
-                                    <a href="${pageContext.request.contextPath}/job-detail?id=${item.job.jobId}" class="btn btn-outline-primary w-100">Xem Chi Tiết</a>
+                                    <a href="${pageContext.request.contextPath}/jobDetail?id=${item.job.jobId}" class="btn btn-outline-primary w-100">Xem Chi Tiết</a>
                                 </div>
                             </div>
                         </div>

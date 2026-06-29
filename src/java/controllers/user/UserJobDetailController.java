@@ -69,7 +69,7 @@ public class UserJobDetailController extends HttpServlet {
             
             if (jobDetail != null) {
                 request.setAttribute("jobDetail", jobDetail);
-                request.getRequestDispatcher("views/user/job-detail.jsp").forward(request, response);
+                request.getRequestDispatcher("views/user/job_detail.jsp").forward(request, response);
             } else {
                 response.sendRedirect("home");
             }

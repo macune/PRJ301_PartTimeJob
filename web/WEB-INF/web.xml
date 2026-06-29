@@ -22,11 +22,15 @@
     </servlet>
     <servlet>
         <servlet-name>StudentDashboardController</servlet-name>
-        <servlet-class>StudentDashboardController</servlet-class>
+        <servlet-class>controllers.student.StudentDashboardController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>EmployerDashboardController</servlet-name>
+        <servlet-class>controllers.employer.EmployerDashboardController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>UserAccountController</servlet-name>
-        <servlet-class>UserAccountController</servlet-class>
+        <servlet-class>controllers.user.UserAccountController</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>UserHomeController</servlet-name>
@@ -34,7 +38,7 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UserJobDetailController</servlet-name>
-        <url-pattern>/job-detail</url-pattern>
+        <url-pattern>/jobDetail</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UserLoginController</servlet-name>
@@ -51,6 +55,10 @@
     <servlet-mapping>
         <servlet-name>StudentDashboardController</servlet-name>
         <url-pattern>/studentDashboard</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>EmployerDashboardController</servlet-name>
+        <url-pattern>/employerDashboard</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UserAccountController</servlet-name>

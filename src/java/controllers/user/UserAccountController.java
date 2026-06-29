@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/JSP_Servlet/Servlet.java to edit this template
  */
 
+package controllers.user;
 
 import dal.AccountDAO;
 import java.io.IOException;
