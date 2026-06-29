@@ -7,9 +7,9 @@
         <a class="navbar-brand fw-bold text-primary d-flex align-items-center gap-2" 
            href="<c:choose>
                     <c:when test="${empty sessionScope.account}">${pageContext.request.contextPath}/home</c:when>
-                    <c:when test="${sessionScope.account.role == 1}">${pageContext.request.contextPath}/adminDashboard</c:when>
-                    <c:when test="${sessionScope.account.role == 2}">${pageContext.request.contextPath}/studentDashboard</c:when>
-                    <c:when test="${sessionScope.account.role == 3}">${pageContext.request.contextPath}/employerDashboard</c:when>
+                    <c:when test="${sessionScope.account.role == 1}">${pageContext.request.contextPath}/admin/dashboard</c:when>
+                    <c:when test="${sessionScope.account.role == 2}">${pageContext.request.contextPath}/student/dashboard</c:when>
+                    <c:when test="${sessionScope.account.role == 3}">${pageContext.request.contextPath}/employer/dashboard</c:when>
                     <c:otherwise>${pageContext.request.contextPath}/home</c:otherwise>
                  </c:choose>">
             <i class="fas fa-briefcase fs-3"></i>
@@ -20,9 +20,9 @@
             <a class="nav-link fw-semibold text-dark hover-blue"
                href="<c:choose>
                     <c:when test="${empty sessionScope.account}">${pageContext.request.contextPath}/home</c:when>
-                    <c:when test="${sessionScope.account.role == 1}">${pageContext.request.contextPath}/adminDashboard</c:when>
-                    <c:when test="${sessionScope.account.role == 2}">${pageContext.request.contextPath}/studentDashboard</c:when>
-                    <c:when test="${sessionScope.account.role == 3}">${pageContext.request.contextPath}/employerDashboard</c:when>
+                    <c:when test="${sessionScope.account.role == 1}">${pageContext.request.contextPath}/admin/dashboard</c:when>
+                    <c:when test="${sessionScope.account.role == 2}">${pageContext.request.contextPath}/student/dashboard</c:when>
+                    <c:when test="${sessionScope.account.role == 3}">${pageContext.request.contextPath}/employer/dashboard</c:when>
                     <c:otherwise>${pageContext.request.contextPath}/home</c:otherwise>
                  </c:choose>">Trang chủ
             </a>

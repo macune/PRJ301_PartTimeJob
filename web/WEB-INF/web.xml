@@ -32,6 +32,14 @@
         <servlet-name>UserAccountController</servlet-name>
         <servlet-class>controllers.user.UserAccountController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>StudentProfileController</servlet-name>
+        <servlet-class>controllers.student.StudentProfileController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>EmployerProfileController</servlet-name>
+        <servlet-class>controllers.employer.EmployerProfileController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>UserHomeController</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -50,19 +58,27 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AdminDashboardController</servlet-name>
-        <url-pattern>/adminDashboard</url-pattern>
+        <url-pattern>/admin/dashboard</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>StudentDashboardController</servlet-name>
-        <url-pattern>/studentDashboard</url-pattern>
+        <url-pattern>/student/dashboard</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>EmployerDashboardController</servlet-name>
-        <url-pattern>/employerDashboard</url-pattern>
+        <url-pattern>/employer/dashboard</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UserAccountController</servlet-name>
         <url-pattern>/userAccount</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StudentProfileController</servlet-name>
+        <url-pattern>/student/profile</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>EmployerProfileController</servlet-name>
+        <url-pattern>/employer/profile</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>

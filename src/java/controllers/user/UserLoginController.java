@@ -103,13 +103,13 @@ public class UserLoginController extends HttpServlet {
         
         switch (account.getRole()) {
             case 1: 
-                response.sendRedirect(request.getContextPath() + "/adminDashboard");
+                response.sendRedirect(request.getContextPath() + "/admin/dashboard");
                 break;
             case 2: 
-                response.sendRedirect(request.getContextPath() + "/studentDashboard");
+                response.sendRedirect(request.getContextPath() + "/student/dashboard");
                 break;
             case 3: 
-                response.sendRedirect(request.getContextPath() + "/employerDashboard");
+                response.sendRedirect(request.getContextPath() + "/employer/dashboard");
                 break;
             default:
                 response.sendRedirect(request.getContextPath() + "/home");
