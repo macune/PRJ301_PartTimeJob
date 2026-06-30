@@ -40,6 +40,10 @@
         <servlet-name>EmployerProfileController</servlet-name>
         <servlet-class>controllers.employer.EmployerProfileController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>AdminManageUserController</servlet-name>
+        <servlet-class>controllers.admin.AdminManageUserController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>UserHomeController</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -79,6 +83,10 @@
     <servlet-mapping>
         <servlet-name>EmployerProfileController</servlet-name>
         <url-pattern>/employer/profile</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminManageUserController</servlet-name>
+        <url-pattern>/admin/users</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>

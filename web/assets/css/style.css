@@ -383,3 +383,52 @@ body {
 .review-scroll-container::-webkit-scrollbar-thumb:hover { background: #adb5bd; }
 .review-card {border-left: 4px solid #f59e0b !important;}
 .review-comment-text {font-size: 0.95rem;}
+
+/* =========================================
+   ADMIN MANAGE USERS UI
+   ========================================= */
+.admin-card {
+    border: none;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.custom-admin-table th {
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid #dee2e6;
+    background-color: #f8f9fa;
+    color: #6c757d;
+}
+
+.custom-admin-table td {
+    vertical-align: middle;
+}
+
+.form-inline-action {
+    margin: 0;
+    padding: 0;
+    display: inline-block;
+}
+
+/* Các huy hiệu vai trò */
+.badge-role-admin { background-color: #dc3545; color: white; }
+.badge-role-student { background-color: #198754; color: white; }
+.badge-role-employer { background-color: #0dcaf0; color: white; }
+.badge-role-unknown { background-color: #6c757d; color: white; }
+
+/* Các huy hiệu trạng thái */
+.badge-status-active { 
+    background-color: #d1e7dd; 
+    color: #0f5132; 
+    border: 1px solid #badbcc; 
+}
+.badge-status-locked { 
+    background-color: #f8d7da; 
+    color: #842029; 
+    border: 1px solid #f5c2c7; 
+}

@@ -97,6 +97,12 @@ public class UserLoginController extends HttpServlet {
             request.getRequestDispatcher("/views/user/user_login.jsp").forward(request, response);
             return;
         }
+        
+        if (account.getStatus() == 0) {
+            request.setAttribute("errorMsg", "Tài khoản của bạn đã bị khóa bởi Quản trị viên. Vui lòng liên hệ Admin để biết thêm chi tiết.");
+            request.getRequestDispatcher("/views/user/user_login.jsp").forward(request, response);
+            return;
+        }
 
         HttpSession session = request.getSession();
         session.setAttribute("account", account);
