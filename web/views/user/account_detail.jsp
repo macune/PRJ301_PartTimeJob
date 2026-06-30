@@ -99,13 +99,13 @@
                 <div class="card danger-zone rounded-4">
                     <div class="card-body p-4 d-flex justify-content-between align-items-center rounded-4">
                         <div>
-                            <h6 class="fw-bold text-danger mb-1">Vô hiệu hóa tài khoản</h6>
-                            <p class="text-danger opacity-75 small mb-0">Hành động này sẽ tạm khóa tài khoản và đăng xuất bạn ngay lập tức.</p>
+                            <h6 class="fw-bold text-danger mb-1">Xóa tài khoản</h6>
+                            <p class="text-danger opacity-75 small mb-0">Hành động này sẽ xóa tài khoản của bạn khỏi hệ thống. Dữ liệu sẽ không thể phục hồi.</p>
                         </div>
                         <form action="${pageContext.request.contextPath}/userAccount" method="post" 
-                              onsubmit="return confirm('Bạn có chắc chắn muốn vô hiệu hóa tài khoản?');">
+                              onsubmit="return confirm('Bạn có chắc chắn muốn xóa tài khoản không? Hành động này không thể hoàn tác.');">
                             <input type="hidden" name="action" value="delete_account">
-                            <button type="submit" class="btn btn-outline-danger fw-semibold px-4">Vô hiệu hóa</button>
+                            <button type="submit" class="btn btn-outline-danger fw-semibold px-4">Xóa tài khoản</button>
                         </form>
                     </div>
                 </div>

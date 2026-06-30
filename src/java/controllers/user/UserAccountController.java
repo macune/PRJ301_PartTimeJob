@@ -149,12 +149,13 @@ public class UserAccountController extends HttpServlet {
         }
         
         // 3. XỬ LÝ XÓA TÀI KHOẢN (VÔ HIỆU HÓA)
+        // 3. XỬ LÝ XÓA TÀI KHOẢN (XÓA MỀM)
         else if ("delete_account".equals(action)) {
-            if (dao.deleteAccount(currentAccount.getAccountId())) {
-                session.invalidate(); // Hủy session ngay lập tức
+            if (dao.softDeleteAccount(currentAccount.getAccountId())) {
+                session.invalidate(); // Hủy session ngay lập tức, đuổi ra khỏi hệ thống
                 response.sendRedirect(request.getContextPath() + "/home");
             } else {
-                request.setAttribute("errorMsg", "Không thể vô hiệu hóa tài khoản lúc này.");
+                request.setAttribute("errorMsg", "Không thể xóa tài khoản lúc này. Vui lòng thử lại sau.");
                 request.getRequestDispatcher("/views/user/account_detail.jsp").forward(request, response);
             }
         }

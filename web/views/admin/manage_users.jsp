@@ -8,7 +8,7 @@
     <title>Quản lý người dùng - Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css?v=8.0">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css?v=8.1">
 </head>
 <body class="d-flex flex-column min-vh-100 bg-light">
 
@@ -71,16 +71,23 @@
                                         
                                         <td>
                                             <c:choose>
-                                                <c:when test="${u.status == 1}"><span class="badge badge-status-active">Hoạt động</span></c:when>
-                                                <c:otherwise><span class="badge badge-status-locked">Đã khóa</span></c:otherwise>
+                                                <c:when test="${u.isDeleted == 1}">
+                                                    <span class="badge badge-status-deleted">Đã xóa</span>
+                                                </c:when>
+                                                <c:when test="${u.status == 1}">
+                                                    <span class="badge badge-status-active">Hoạt động</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="badge badge-status-locked">Đã khóa</span>
+                                                </c:otherwise>
                                             </c:choose>
                                         </td>
                                         
                                         <td>${u.createdAt}</td>
                                         
                                         <td class="text-center">
-                                            <%-- Tránh Admin khóa chính mình hoặc admin khác --%>
-                                            <c:if test="${u.role != 1}">
+                                            <%-- Chỉ hiện nút nếu KHÔNG phải admin VÀ tài khoản CHƯA bị xóa --%>
+                                            <c:if test="${u.role != 1 && u.isDeleted == 0}">
                                                 <form action="${pageContext.request.contextPath}/admin/users" method="post" class="form-inline-action">
                                                     <input type="hidden" name="accountId" value="${u.accountId}">
                                                     <input type="hidden" name="searchKeyword" value="${searchKeyword}">
