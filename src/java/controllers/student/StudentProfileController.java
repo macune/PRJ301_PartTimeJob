@@ -6,6 +6,7 @@
 package controllers.student;
 
 import dal.StudentProfileDAO;
+import dal.StudentReviewDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,8 +14,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
 import models.Account;
 import models.Student_Profile;
+import viewmodels.ReviewDTO;
 
 /**
  *
@@ -67,8 +70,12 @@ public class StudentProfileController extends HttpServlet {
             dao.createDefault(account.getAccountId(), account.getUsername());
             profile = dao.getByID(account.getAccountId());
         }
-
         request.setAttribute("profile", profile);
+        
+        StudentReviewDAO reviewDao = new StudentReviewDAO();
+        List<ReviewDTO> reviewList = reviewDao.getReviewsForStudent(account.getAccountId());
+        request.setAttribute("reviewList", reviewList);
+        
         request.getRequestDispatcher("/views/student/student_profile.jsp").forward(request, response);
     }
     /** 
@@ -98,6 +105,7 @@ public class StudentProfileController extends HttpServlet {
             request.setAttribute("errorMsg", "Họ tên không được để trống.");
             Student_Profile profile = buildProfile(account.getAccountId(), fullName, avatarUrl, contactEmail, phone, address, university, introduction, experience, 0);
             request.setAttribute("profile", profile);
+            fetchAndSetReviews(request, account.getAccountId());
             request.getRequestDispatcher("/views/student/student_profile.jsp").forward(request, response);
             return;
         }
@@ -121,6 +129,7 @@ public class StudentProfileController extends HttpServlet {
         } else {
             request.setAttribute("errorMsg", "Cập nhật thất bại. Vui lòng thử lại.");
             request.setAttribute("profile", profile);
+            fetchAndSetReviews(request, account.getAccountId());
             request.getRequestDispatcher("/views/student/student_profile.jsp").forward(request, response);
         }
     }
@@ -134,6 +143,12 @@ public class StudentProfileController extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
+    private void fetchAndSetReviews(HttpServletRequest request, int studentId) {
+        StudentReviewDAO reviewDao = new StudentReviewDAO();
+        List<ReviewDTO> reviewList = reviewDao.getReviewsForStudent(studentId);
+        request.setAttribute("reviewList", reviewList);
+    }
+    
     private Account getAccountFromSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("account") == null) {

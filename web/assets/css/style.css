@@ -367,3 +367,19 @@ body {
     border: 1px solid #ced4da !important;
     box-shadow: 0 4px 15px rgba(0,0,0,0.03) !important;
 }
+
+
+/* =========================================
+   REVIEW LIST UI 
+   ========================================= */
+.review-scroll-container {
+    max-height: 350px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+.review-scroll-container::-webkit-scrollbar { width: 5px; }
+.review-scroll-container::-webkit-scrollbar-track { background: #f8f9fa; }
+.review-scroll-container::-webkit-scrollbar-thumb { background: #ced4da; border-radius: 10px; }
+.review-scroll-container::-webkit-scrollbar-thumb:hover { background: #adb5bd; }
+.review-card {border-left: 4px solid #f59e0b !important;}
+.review-comment-text {font-size: 0.95rem;}

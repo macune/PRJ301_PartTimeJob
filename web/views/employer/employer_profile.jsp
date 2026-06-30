@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="models.Account, models.Employer_Profile" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%
     Account account = (Account) session.getAttribute("account");
     Employer_Profile profile = (Employer_Profile) request.getAttribute("profile");
@@ -119,6 +120,46 @@
                 </div>
             </div>
         </form>
+                                        <%-- KHU VỰC HIỂN THỊ ĐÁNH GIÁ (READ-ONLY) --%>
+        <div class="card settings-card rounded-4 p-4 mt-4 mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="fw-bold text-dark mb-0">
+                    <i class="fas fa-comments text-warning me-2"></i>Nhận xét từ người dùng
+                </h5>
+                <span class="text-muted small">
+                    Tổng: <strong class="text-dark">${empty reviewList ? 0 : reviewList.size()}</strong> đánh giá
+                </span>
+            </div>
+            
+            <div class="review-scroll-container">
+                <c:choose>
+                    <c:when test="${empty reviewList}">
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-comment-slash fa-2x mb-2 opacity-50"></i>
+                            <p class="mb-0 small">Chưa có đánh giá nào.</p>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <c:forEach var="r" items="${reviewList}">
+                            <div class="card mb-3 p-3 border-0 bg-light shadow-sm review-card">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="fw-bold text-dark">${r.reviewerName}</span>
+                                    <span class="text-warning fw-bold">
+                                        ${r.rating} <i class="fas fa-star"></i>
+                                    </span>
+                                </div>
+                                
+                                <p class="mb-2 text-secondary review-comment-text">${r.comment}</p>
+                                
+                                <small class="text-muted fst-italic">
+                                    <i class="fas fa-clock me-1"></i>${r.createdAt}
+                                </small>
+                            </div>
+                        </c:forEach>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </div>
     </div>
 
     <jsp:include page="/views/common/footer.jsp" />

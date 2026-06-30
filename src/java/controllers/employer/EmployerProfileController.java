@@ -6,6 +6,7 @@
 package controllers.employer;
 
 import dal.EmployerProfileDAO;
+import dal.EmployerReviewDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
@@ -13,8 +14,10 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.List;
 import models.Account;
 import models.Employer_Profile;
+import viewmodels.ReviewDTO;
 
 /**
  *
@@ -67,11 +70,14 @@ public class EmployerProfileController extends HttpServlet {
             dao.createDefault(account.getAccountId(), account.getUsername());
             profile = dao.getByID(account.getAccountId());
         }
-
         request.setAttribute("profile", profile);
+        
+        EmployerReviewDAO reviewDao = new EmployerReviewDAO();
+        List<ReviewDTO> reviewList = reviewDao.getReviewsForEmployer(account.getAccountId());
+        request.setAttribute("reviewList", reviewList);
+        
         request.getRequestDispatcher("/views/employer/employer_profile.jsp").forward(request, response);
     }
-
     /** 
      * Handles the HTTP <code>POST</code> method.
      * @param request servlet request
@@ -98,6 +104,7 @@ public class EmployerProfileController extends HttpServlet {
             request.setAttribute("errorMsg", "Tên doanh nghiệp không được để trống.");
             Employer_Profile profile = buildProfile(account.getAccountId(), businessName, logoUrl, website, phone, contactEmail, address, description, 0);
             request.setAttribute("profile", profile);
+            fetchAndSetReviews(request, account.getAccountId());
             request.getRequestDispatcher("/views/employer/employer_profile.jsp").forward(request, response);
             return;
         }
@@ -120,6 +127,7 @@ public class EmployerProfileController extends HttpServlet {
         } else {
             request.setAttribute("errorMsg", "Cập nhật thất bại. Vui lòng thử lại.");
             request.setAttribute("profile", profile);
+            fetchAndSetReviews(request, account.getAccountId());
             request.getRequestDispatcher("/views/employer/employer_profile.jsp").forward(request, response);
         }
     }
@@ -132,7 +140,12 @@ public class EmployerProfileController extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
+    
+    private void fetchAndSetReviews(HttpServletRequest request, int employerId) {
+        EmployerReviewDAO reviewDao = new EmployerReviewDAO();
+        List<ReviewDTO> reviewList = reviewDao.getReviewsForEmployer(employerId);
+        request.setAttribute("reviewList", reviewList);
+    }
     private Account getAccountFromSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
         HttpSession session = request.getSession(false);
         if (session == null || session.getAttribute("account") == null) {
