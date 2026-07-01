@@ -432,3 +432,8 @@ body {
     color: #842029; 
     border: 1px solid #f5c2c7; 
 }
+.badge-status-deleted { 
+    background-color: #e2e3e5; 
+    color: #41464b; 
+    border: 1px solid #d3d6d8; 
+}
