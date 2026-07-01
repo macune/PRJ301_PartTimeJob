@@ -7,12 +7,12 @@ package controllers.user;
 
 import dal.AccountDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.io.PrintWriter;
 import models.Account;
 
 /**
@@ -83,14 +83,11 @@ public class UserAccountController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-        HttpSession session = request.getSession(false);
         
-        if (session == null || session.getAttribute("account") == null) {
-            response.sendRedirect(request.getContextPath() + "/userLogin");
-            return;
-        }
-
+        // Trực tiếp lấy Account ra xài, không cần check null nữa
+        HttpSession session = request.getSession();
         Account currentAccount = (Account) session.getAttribute("account");
+        
         AccountDAO dao = new AccountDAO();
         String action = request.getParameter("action");
 
@@ -148,7 +145,6 @@ public class UserAccountController extends HttpServlet {
             request.getRequestDispatcher("/views/user/change_password.jsp").forward(request, response);
         }
         
-        // 3. XỬ LÝ XÓA TÀI KHOẢN (VÔ HIỆU HÓA)
         // 3. XỬ LÝ XÓA TÀI KHOẢN (XÓA MỀM)
         else if ("delete_account".equals(action)) {
             if (dao.softDeleteAccount(currentAccount.getAccountId())) {

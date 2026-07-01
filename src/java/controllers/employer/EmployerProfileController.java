@@ -8,12 +8,12 @@ package controllers.employer;
 import dal.EmployerProfileDAO;
 import dal.EmployerReviewDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.io.PrintWriter;
 import java.util.List;
 import models.Account;
 import models.Employer_Profile;
@@ -60,8 +60,8 @@ public class EmployerProfileController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        Account account = getAccountFromSession(request, response);
-        if (account == null) return;
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
 
         EmployerProfileDAO dao = new EmployerProfileDAO();
         Employer_Profile profile = dao.getByID(account.getAccountId());
@@ -89,8 +89,8 @@ public class EmployerProfileController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-        Account account = getAccountFromSession(request, response);
-        if (account == null) return;
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
 
         String businessName = request.getParameter("businessName");
         String logoUrl = request.getParameter("logoUrl");
@@ -146,20 +146,7 @@ public class EmployerProfileController extends HttpServlet {
         List<ReviewDTO> reviewList = reviewDao.getReviewsForEmployer(employerId);
         request.setAttribute("reviewList", reviewList);
     }
-    private Account getAccountFromSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("account") == null) {
-            response.sendRedirect(request.getContextPath() + "/userLogin");
-            return null;
-        }
-        Account account = (Account) session.getAttribute("account");
-        if (account.getRole() != 3) { 
-            response.sendRedirect(request.getContextPath() + "/home");
-            return null;
-        }
-        return account;
-    }
-
+    
     private Employer_Profile buildProfile(int id, String businessName, String logoUrl,
             String website, String phone, String contactEmail, 
             String address, String description, double rating) {

@@ -7,12 +7,11 @@ package controllers.admin;
 
 import dal.AccountDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import java.io.PrintWriter;
 import java.util.List;
 import models.Account;
 
@@ -57,8 +56,6 @@ public class AdminManageUserController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        if (!isAdmin(request, response)) return;
-
         String keyword = request.getParameter("search");
         AccountDAO dao = new AccountDAO();
         List<Account> userList;
@@ -72,7 +69,7 @@ public class AdminManageUserController extends HttpServlet {
 
         request.setAttribute("userList", userList);
         request.getRequestDispatcher("/views/admin/manage_users.jsp").forward(request, response);
-    } 
+    }
 
     /** 
      * Handles the HTTP <code>POST</code> method.
@@ -84,8 +81,6 @@ public class AdminManageUserController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        if (!isAdmin(request, response)) return;
-
         String accountIdStr = request.getParameter("accountId");
         String newStatusStr = request.getParameter("newStatus");
 
@@ -101,7 +96,6 @@ public class AdminManageUserController extends HttpServlet {
             }
         }
         
-        // Trả về trang cũ, giữ nguyên từ khóa tìm kiếm (nếu có)
         String keyword = request.getParameter("searchKeyword");
         if (keyword != null && !keyword.trim().isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/admin/users?search=" + keyword);
@@ -118,17 +112,4 @@ public class AdminManageUserController extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-    private boolean isAdmin(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("account") == null) {
-            response.sendRedirect(request.getContextPath() + "/userLogin");
-            return false;
-        }
-        Account account = (Account) session.getAttribute("account");
-        if (account.getRole() != 1) { 
-            response.sendRedirect(request.getContextPath() + "/home");
-            return false;
-        }
-        return true;
-    }
 }

@@ -23,11 +23,11 @@
         <div class="card admin-card">
             <form action="${pageContext.request.contextPath}/admin/users" method="get" class="d-flex gap-2">
                 <input type="text" class="form-control" name="search" value="${searchKeyword}" placeholder="Nhập Username hoặc Email để tìm kiếm...">
-                <button type="submit" class="btn btn-primary px-4">
+                <button type="submit" class="btn btn-primary px-4 text-nowrap">
                     <i class="fas fa-search me-2"></i>Tìm kiếm
                 </button>
                 <c:if test="${not empty searchKeyword}">
-                    <a href="${pageContext.request.contextPath}/admin/users" class="btn btn-outline-secondary">Xóa lọc</a>
+                    <a href="${pageContext.request.contextPath}/admin/users" class="btn btn-outline-secondary text-nowrap">Xóa lọc</a>
                 </c:if>
             </form>
         </div>

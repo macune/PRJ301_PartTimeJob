@@ -1,5 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="6.0" xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd">
+    <filter>
+        <filter-name>AuthFilter</filter-name>
+        <filter-class>filters.AuthFilter</filter-class>
+    </filter>
+        <filter>
+        <filter-name>AdminFilter</filter-name>
+        <filter-class>filters.AdminFilter</filter-class>
+    </filter>
+        <filter>
+        <filter-name>StudentFilter</filter-name>
+        <filter-class>filters.StudentFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>EmployerFilter</filter-name>
+        <filter-class>filters.EmployerFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AuthFilter</filter-name>
+        <url-pattern>/userAccount</url-pattern>
+        <url-pattern>/userLogout</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>AdminFilter</filter-name>
+        <url-pattern>/admin/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>StudentFilter</filter-name>
+        <url-pattern>/student/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>EmployerFilter</filter-name>
+        <url-pattern>/employer/*</url-pattern>
+    </filter-mapping>
     <servlet>
         <servlet-name>UserHomeController</servlet-name>
         <servlet-class>controllers.user.UserHomeController</servlet-class>
@@ -15,6 +48,10 @@
     <servlet>
         <servlet-name>UserRegisterController</servlet-name>
         <servlet-class>controllers.user.UserRegisterController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>UserLogoutController</servlet-name>
+        <servlet-class>controllers.user.UserLogoutController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AdminDashboardController</servlet-name>
@@ -59,6 +96,10 @@
     <servlet-mapping>
         <servlet-name>UserRegisterController</servlet-name>
         <url-pattern>/userRegister</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UserLogoutController</servlet-name>
+        <url-pattern>/userLogout</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AdminDashboardController</servlet-name>

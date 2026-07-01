@@ -8,12 +8,12 @@ package controllers.student;
 import dal.StudentProfileDAO;
 import dal.StudentReviewDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.io.PrintWriter;
 import java.util.List;
 import models.Account;
 import models.Student_Profile;
@@ -60,8 +60,8 @@ public class StudentProfileController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        Account account = getAccountFromSession(request, response);
-        if (account == null) return;
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
 
         StudentProfileDAO dao = new StudentProfileDAO();
         Student_Profile profile = dao.getByID(account.getAccountId());
@@ -89,8 +89,8 @@ public class StudentProfileController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-        Account account = getAccountFromSession(request, response);
-        if (account == null) return;
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
 
         String fullName = request.getParameter("fullName");
         String contactEmail = request.getParameter("contactEmail");
@@ -149,20 +149,6 @@ public class StudentProfileController extends HttpServlet {
         request.setAttribute("reviewList", reviewList);
     }
     
-    private Account getAccountFromSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("account") == null) {
-            response.sendRedirect(request.getContextPath() + "/userLogin");
-            return null;
-        }
-        Account account = (Account) session.getAttribute("account");
-        if (account.getRole() != 2) { 
-            response.sendRedirect(request.getContextPath() + "/home");
-            return null;
-        }
-        return account;
-    }
-
     private Student_Profile buildProfile(int id, String fullName, String avatarUrl, 
             String contactEmail, String phone, String address, String university, 
             String introduction, String experience, double rating) {
