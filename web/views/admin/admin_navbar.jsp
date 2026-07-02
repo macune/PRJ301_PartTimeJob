@@ -10,7 +10,7 @@
         <a href="${pageContext.request.contextPath}/admin/users" class="actor-nav-item nav-admin">
             <i class="fas fa-users-cog me-2"></i>Quản lý người dùng
         </a>
-        <a href="#" class="actor-nav-item nav-admin">
+        <a href="${pageContext.request.contextPath}/admin/categories" class="actor-nav-item nav-admin">
             <i class="fas fa-list me-2"></i>Quản lý danh mục
         </a>
     </div>

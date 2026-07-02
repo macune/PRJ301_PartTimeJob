@@ -65,12 +65,18 @@
                                    oninput="previewAvatar(this.value)">
                         </div>
                         
-                        <div class="star-rating fs-4 mt-2">
-                            <% double rating = profile != null ? profile.getAverageRating() : 0;
-                               for (int i = 1; i <= 5; i++) { %>
-                                <i class="fas fa-star<%= i <= rating ? "" : "-o" %> text-warning"></i>
-                            <% } %>
+                        <div class="mb-3 d-flex justify-content-center align-items-center gap-2">
+                            <div class="d-inline-block position-relative fs-4" style="color: #f59e0b;">
+                                <div class="text-muted opacity-25" style="white-space: nowrap;">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                </div>
+                                <div class="position-absolute top-0 start-0 overflow-hidden" style="white-space: nowrap; width: ${(profile.averageRating / 5.0) * 100}%;">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                </div>
+                            </div>
+                            <span class="fs-6 text-muted fw-bold">(${profile.averageRating})</span>
                         </div>
+
                     </div>
                 </div>
 
@@ -117,7 +123,8 @@
                 </div>
             </div>
         </form>
-                        <%-- KHU VỰC HIỂN THỊ ĐÁNH GIÁ (READ-ONLY) --%>
+
+        <%-- KHU VỰC HIỂN THỊ ĐÁNH GIÁ (READ-ONLY) --%>
         <div class="card settings-card rounded-4 p-4 mt-4 mb-5">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h5 class="fw-bold text-dark mb-0">
@@ -159,7 +166,6 @@
         </div>
     </div>
     
-                        
     <jsp:include page="/views/common/footer.jsp" />
     <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
     <script src="${pageContext.request.contextPath}/assets/js/profile.js"></script>

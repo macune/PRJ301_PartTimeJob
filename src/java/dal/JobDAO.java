@@ -31,9 +31,10 @@ public class JobDAO extends DBContext {
 
     public int getTotalJobs() {
         String sql = """
-                     SELECT COUNT(*) 
-                     FROM Job_Post 
-                     WHERE Status = 1
+                     SELECT COUNT(j.JobID) 
+                     FROM Job_Post j
+                     JOIN Category c ON j.CategoryID = c.CategoryID
+                     WHERE j.Status = 1 AND c.Status = 1
                      """;
         try {
             PreparedStatement st = connection.prepareStatement(sql);
@@ -42,7 +43,7 @@ public class JobDAO extends DBContext {
                 return rs.getInt(1);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error getTotalJobs: " + e.getMessage());
         }
         return 0;
     }
@@ -54,7 +55,7 @@ public class JobDAO extends DBContext {
                      FROM Job_Post j 
                      JOIN Category c ON j.CategoryID = c.CategoryID 
                      JOIN Employer_Profile e ON j.EmployerID = e.EmployerID 
-                     WHERE j.Status = 1 
+                     WHERE j.Status = 1 AND c.Status = 1
                      ORDER BY j.JobID DESC 
                      OFFSET ? ROWS FETCH NEXT ? ROWS ONLY
                      """;
@@ -85,33 +86,34 @@ public class JobDAO extends DBContext {
                 list.add(new JobDetailDTO(job, cat, emp));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error getAllJobs: " + e.getMessage());
         }
         return list;
     }
 
     public int countSearchJobs(String categoryId, String city, String ward, String startTime, String endTime) {
         StringBuilder sql = new StringBuilder("""
-                                             SELECT COUNT(*) 
-                                             FROM Job_Post 
-                                             WHERE Status = 1
+                                             SELECT COUNT(j.JobID) 
+                                             FROM Job_Post j
+                                             JOIN Category c ON j.CategoryID = c.CategoryID
+                                             WHERE j.Status = 1 AND c.Status = 1
                                              """);
         List<Object> params = new ArrayList<>();
 
         if (categoryId != null && !categoryId.trim().isEmpty()) {
             try {
-                sql.append(" AND CategoryID = ? ");
+                sql.append(" AND j.CategoryID = ? ");
                 params.add(Integer.parseInt(categoryId.trim()));
             } catch (Exception e) {}
         }
         
         if (city != null && !city.trim().isEmpty()) {
-            sql.append(" AND City LIKE ? ");
+            sql.append(" AND j.City LIKE ? ");
             params.add("%" + city.trim() + "%");
         }
         
         if (ward != null && !ward.trim().isEmpty()) {
-            sql.append(" AND Ward LIKE ? ");
+            sql.append(" AND j.Ward LIKE ? ");
             params.add("%" + ward.trim() + "%");
         }
         
@@ -122,26 +124,26 @@ public class JobDAO extends DBContext {
         if (pStartTime != null && pEndTime != null) {
             // Nếu người dùng tìm kiếm ca trong ngày (VD: 19:00 -> 22:00)
             if (pStartTime.compareTo(pEndTime) <= 0) {
-                sql.append(" AND StartTime <= EndTime "); // Loại bỏ triệt để các ca qua đêm (như 22:00 -> 06:00)
-                sql.append(" AND StartTime >= CAST(? AS TIME) ");
-                sql.append(" AND EndTime <= CAST(? AS TIME) ");
+                sql.append(" AND j.StartTime <= j.EndTime "); 
+                sql.append(" AND j.StartTime >= CAST(? AS TIME) ");
+                sql.append(" AND j.EndTime <= CAST(? AS TIME) ");
                 params.add(pStartTime);
                 params.add(pEndTime);
             } 
             // Nếu người dùng cố tình tìm ca rảnh qua đêm (VD: 22:00 -> 06:00)
             else {
-                sql.append(" AND (StartTime >= CAST(? AS TIME) OR StartTime <= CAST(? AS TIME)) ");
-                sql.append(" AND (EndTime >= CAST(? AS TIME) OR EndTime <= CAST(? AS TIME)) ");
+                sql.append(" AND (j.StartTime >= CAST(? AS TIME) OR j.StartTime <= CAST(? AS TIME)) ");
+                sql.append(" AND (j.EndTime >= CAST(? AS TIME) OR j.EndTime <= CAST(? AS TIME)) ");
                 params.add(pStartTime);
                 params.add(pEndTime);
                 params.add(pStartTime);
                 params.add(pEndTime);
             }
         } else if (pStartTime != null) {
-            sql.append(" AND StartTime >= CAST(? AS TIME) ");
+            sql.append(" AND j.StartTime >= CAST(? AS TIME) ");
             params.add(pStartTime);
         } else if (pEndTime != null) {
-            sql.append(" AND EndTime <= CAST(? AS TIME) ");
+            sql.append(" AND j.EndTime <= CAST(? AS TIME) ");
             params.add(pEndTime);
         }
 
@@ -155,7 +157,7 @@ public class JobDAO extends DBContext {
                 return rs.getInt(1);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error countSearchJobs: " + e.getMessage());
         }
         return 0;
     }
@@ -170,7 +172,7 @@ public class JobDAO extends DBContext {
                                              FROM Job_Post j 
                                              JOIN Category c ON j.CategoryID = c.CategoryID 
                                              JOIN Employer_Profile e ON j.EmployerID = e.EmployerID 
-                                             WHERE j.Status = 1
+                                             WHERE j.Status = 1 AND c.Status = 1
                                              """);
         
         List<Object> params = new ArrayList<>();
@@ -253,7 +255,7 @@ public class JobDAO extends DBContext {
                 list.add(new JobDetailDTO(job, cat, emp));
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error searchJobs: " + e.getMessage());
         }
         return list;
     }
@@ -266,7 +268,7 @@ public class JobDAO extends DBContext {
                      FROM Job_Post j 
                      JOIN Category c ON j.CategoryID = c.CategoryID 
                      JOIN Employer_Profile e ON j.EmployerID = e.EmployerID 
-                     WHERE j.JobID = ?
+                     WHERE j.JobID = ? AND c.Status = 1
                      """;
         try {
             PreparedStatement st = connection.prepareStatement(sql);
@@ -276,7 +278,7 @@ public class JobDAO extends DBContext {
                 Job_Post job = new Job_Post();
                 job.setJobId(rs.getInt("JobID"));
                 job.setTitle(rs.getString("Title"));
-                job.setDescription(rs.getString("Description")); // Lấy mô tả của Job
+                job.setDescription(rs.getString("Description")); 
                 job.setSalary(rs.getInt("Salary"));
                 job.setStartTime(rs.getTime("StartTime"));
                 job.setEndTime(rs.getTime("EndTime"));
@@ -295,7 +297,6 @@ public class JobDAO extends DBContext {
                 emp.setPhone(rs.getString("Phone"));
                 emp.setContactEmail(rs.getString("ContactEmail"));
                 
-                // Đã sửa lại việc lấy giá trị thông qua Alias mới
                 emp.setAddress(rs.getString("EmployerAddress"));
                 emp.setDescription(rs.getString("EmployerDescription")); 
                 emp.setAverageRating(rs.getDouble("AverageRating"));
@@ -303,7 +304,7 @@ public class JobDAO extends DBContext {
                 return new JobDetailDTO(job, cat, emp);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Error getJobById: " + e.getMessage());
         }
         return null;
     }

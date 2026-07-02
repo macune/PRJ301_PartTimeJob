@@ -368,6 +368,28 @@ body {
     box-shadow: 0 4px 15px rgba(0,0,0,0.03) !important;
 }
 
+/* =========================================
+   DYNAMIC STAR RATING UI (SAO THẬP PHÂN)
+   ========================================= */
+.star-rating-wrapper {
+    display: inline-block;
+    position: relative;
+    color: #f59e0b; /* Màu vàng chuẩn của sao */
+}
+
+.star-rating-background {
+    color: #6c757d; /* Màu xám */
+    opacity: 0.25;  /* Làm mờ 25% */
+    white-space: nowrap; /* Ép 5 sao nằm trên 1 dòng */
+}
+
+.star-rating-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden; /* Quan trọng: Ẩn đi những phần bị tràn/cắt xén */
+    white-space: nowrap; /* Ép 5 sao nằm trên 1 dòng */
+}
 
 /* =========================================
    REVIEW LIST UI 
