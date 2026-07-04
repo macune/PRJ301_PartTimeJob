@@ -85,6 +85,10 @@
         <servlet-name>AdminManageCategoryController</servlet-name>
         <servlet-class>controllers.admin.AdminManageCategoryController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>ManageJobController</servlet-name>
+        <servlet-class>controllers.employer.ManageJobController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>UserHomeController</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -136,6 +140,10 @@
     <servlet-mapping>
         <servlet-name>AdminManageCategoryController</servlet-name>
         <url-pattern>/admin/categories</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ManageJobController</servlet-name>
+        <url-pattern>/manageJobs</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
