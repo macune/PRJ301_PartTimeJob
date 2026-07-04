@@ -4,7 +4,7 @@
         <a href="${pageContext.request.contextPath}/employer/dashboard" class="actor-nav-item nav-employer">
             <i class="fas fa-chart-line me-2"></i>Tổng quan
         </a>
-        <a href="#" class="actor-nav-item nav-employer">
+        <a href="${pageContext.request.contextPath}/manageJobs" class="actor-nav-item nav-employer">
             <i class="fas fa-briefcase me-2"></i>Quản lý bài đăng
         </a>
         <a href="#" class="actor-nav-item nav-employer">
