@@ -77,11 +77,15 @@
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold">Tỉnh/Thành phố <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="city" value="${not empty jobToEdit.city ? jobToEdit.city : 'Hà Nội'}" required>
+                                    <select class="form-select" name="city" id="city" data-selected="${jobToEdit.city}" required>
+                                        <option value="">-- Chọn Tỉnh/Thành phố --</option>
+                                    </select>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label fw-semibold">Quận/Huyện <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" name="ward" value="${jobToEdit.ward}" required placeholder="VD: Cầu Giấy">
+                                    <select class="form-select" name="ward" id="ward" data-selected="${jobToEdit.ward}" required>
+                                        <option value="">-- Chọn Quận/Huyện --</option>
+                                    </select>
                                 </div>
                             </div>
                             
@@ -104,6 +108,7 @@
     </div>
 
     <jsp:include page="/views/common/footer.jsp" />
+    <script src="${pageContext.request.contextPath}/assets/js/location-filter.js?v=2.1"></script>
     <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
