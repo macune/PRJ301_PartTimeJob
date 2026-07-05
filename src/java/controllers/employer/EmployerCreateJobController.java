@@ -25,7 +25,7 @@ import viewmodels.JobDetailDTO;
  *
  * @author acer
  */
-public class CreateJobController extends HttpServlet {
+public class EmployerCreateJobController extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -62,18 +62,13 @@ public class CreateJobController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        Account account = (session != null) ? (Account) session.getAttribute("account") : null;
-        if (account == null || account.getRole() != 3) {
-            response.sendRedirect(request.getContextPath() + "/userLogin");
-            return;
-        }
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
 
         CategoryDAO catDAO = new CategoryDAO();
         List<Category> listCategories = catDAO.getAllCategories();
         request.setAttribute("listCategories", listCategories);
 
-        // Kiểm tra xem là luồng tạo mới hay luồng chỉnh sửa (có jobId)
         String jobIdStr = request.getParameter("id");
         if (jobIdStr != null && !jobIdStr.isEmpty()) {
             try {
@@ -87,7 +82,7 @@ public class CreateJobController extends HttpServlet {
             } catch (Exception e) {}
         }
         
-        request.getRequestDispatcher("/views/employer/create_job.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/employer/employer_create_job.jsp").forward(request, response);
     }
 
     /** 
@@ -101,7 +96,7 @@ public class CreateJobController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-        HttpSession session = request.getSession(false);
+        HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
 
         try {
@@ -112,7 +107,6 @@ public class CreateJobController extends HttpServlet {
             job.setDescription(request.getParameter("description"));
             job.setSalary(Integer.parseInt(request.getParameter("salary")));
             
-            // Xử lý Time string (nhận từ type="time" của HTML5)
             String startStr = request.getParameter("startTime");
             String endStr = request.getParameter("endTime");
             job.setStartTime(Time.valueOf(startStr.length() == 5 ? startStr + ":00" : startStr));
@@ -126,20 +120,17 @@ public class CreateJobController extends HttpServlet {
             String jobIdStr = request.getParameter("jobId");
 
             if (jobIdStr != null && !jobIdStr.isEmpty()) {
-                // Luồng UPDATE
                 job.setJobId(Integer.parseInt(jobIdStr));
                 jobDAO.updateJob(job);
             } else {
-                // Luồng INSERT - Status tự nhận Pending theo logic DAO
                 jobDAO.insertJob(job);
             }
             
-            response.sendRedirect(request.getContextPath() + "/manageJobs");
+            response.sendRedirect(request.getContextPath() + "/employer/manageJobs");
             
         } catch (Exception e) {
             e.printStackTrace();
-            // Xử lý lỗi thì tải lại trang và giữ nguyên category list
-            response.sendRedirect(request.getContextPath() + "/createJob");
+            response.sendRedirect(request.getContextPath() + "/employer/createJob");
         }
     }
 

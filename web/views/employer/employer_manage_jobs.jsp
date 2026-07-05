@@ -18,7 +18,7 @@
     <div class="container flex-grow-1">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3 class="text-primary fw-bold"><i class="fas fa-briefcase me-2"></i>Quản lý bài đăng</h3>
-            <a href="${pageContext.request.contextPath}/createJob" class="btn btn-success fw-semibold">
+            <a href="${pageContext.request.contextPath}/employer/createJob" class="btn btn-outline-primary fw-semibold">
                 <i class="fas fa-plus me-1"></i> Đăng tin mới
             </a>
         </div>
@@ -64,11 +64,11 @@
                                         </c:choose>
                                     </td>
                                     <td class="text-end pe-4">
-                                        <a href="${pageContext.request.contextPath}/createJob?id=${item.job.jobId}" class="btn btn-sm btn-outline-primary">
+                                        <a href="${pageContext.request.contextPath}/employer/createJob?id=${item.job.jobId}" class="btn btn-sm btn-outline-primary">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <c:if test="${item.job.status != 3}">
-                                            <form action="${pageContext.request.contextPath}/manageJobs" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn ĐÓNG bài tuyển dụng này? Sinh viên sẽ không thể nộp đơn nữa.');">
+                                            <form action="${pageContext.request.contextPath}/employer/manageJobs" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn ĐÓNG bài tuyển dụng này? Sinh viên sẽ không thể nộp đơn nữa.');">
                                                 <input type="hidden" name="action" value="close">
                                                 <input type="hidden" name="jobId" value="${item.job.jobId}">
                                                 <button type="submit" class="btn btn-sm btn-outline-danger" title="Đóng bài">

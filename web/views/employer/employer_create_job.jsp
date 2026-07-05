@@ -25,7 +25,7 @@
                         </h4>
                     </div>
                     <div class="card-body p-4">
-                        <form action="${pageContext.request.contextPath}/createJob" method="post">
+                        <form action="${pageContext.request.contextPath}/employer/createJob" method="post">
                             <c:if test="${not empty jobToEdit}">
                                 <input type="hidden" name="jobId" value="${jobToEdit.jobId}">
                             </c:if>
@@ -95,7 +95,7 @@
                             </div>
 
                             <div class="d-flex justify-content-end gap-2">
-                                <a href="${pageContext.request.contextPath}/manageJobs" class="btn btn-outline-secondary fw-semibold">Hủy</a>
+                                <a href="${pageContext.request.contextPath}/employer/manageJobs" class="btn btn-outline-secondary fw-semibold">Hủy</a>
                                 <button type="submit" class="btn btn-primary fw-semibold">
                                     <i class="fas fa-save me-1"></i> ${not empty jobToEdit ? 'Lưu thay đổi' : 'Đăng tin tuyển dụng'}
                                 </button>

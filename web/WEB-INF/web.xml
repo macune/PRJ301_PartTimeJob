@@ -86,12 +86,14 @@
         <servlet-class>controllers.admin.AdminManageCategoryController</servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>ManageJobController</servlet-name>
-        <servlet-class>controllers.employer.ManageJobController</servlet-class>
+        <servlet-name>EmployerManageJobController</servlet-name>
+        <servlet-class>controllers.employer.EmployerManageJobController
+        </servlet-class>
     </servlet>
     <servlet>
-        <servlet-name>CreateJobController</servlet-name>
-        <servlet-class>controllers.employer.CreateJobController</servlet-class>
+        <servlet-name>EmployerCreateJobController</servlet-name>
+        <servlet-class>controllers.employer.EmployerCreateJobController
+        </servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>UserHomeController</servlet-name>
@@ -146,12 +148,12 @@
         <url-pattern>/admin/categories</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>ManageJobController</servlet-name>
-        <url-pattern>/manageJobs</url-pattern>
+        <servlet-name>EmployerManageJobController</servlet-name>
+        <url-pattern>/employer/manageJobs</url-pattern> 
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>CreateJobController</servlet-name>
-        <url-pattern>/createJob</url-pattern>
+        <servlet-name>EmployerCreateJobController</servlet-name>
+        <url-pattern>/employer/createJob</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>

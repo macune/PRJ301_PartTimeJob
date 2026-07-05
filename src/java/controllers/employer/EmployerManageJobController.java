@@ -21,7 +21,7 @@ import viewmodels.JobDetailDTO;
  *
  * @author acer
  */
-public class ManageJobController extends HttpServlet {
+public class EmployerManageJobController extends HttpServlet {
    
     /** 
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
@@ -58,19 +58,14 @@ public class ManageJobController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        Account account = (session != null) ? (Account) session.getAttribute("account") : null;
-        
-        if (account == null || account.getRole() != 3) {
-            response.sendRedirect(request.getContextPath() + "/userLogin");
-            return;
-        }
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
 
         JobDAO jobDAO = new JobDAO();
         List<JobDetailDTO> listJobs = jobDAO.getJobsByEmployerId(account.getAccountId());
         request.setAttribute("listJobs", listJobs);
         
-        request.getRequestDispatcher("/views/employer/manage_jobs.jsp").forward(request, response);
+        request.getRequestDispatcher("/views/employer/employer_manage_jobs.jsp").forward(request, response);
     }
 
     /** 
@@ -83,7 +78,7 @@ public class ManageJobController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
+        HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
         
         String action = request.getParameter("action");
@@ -93,11 +88,10 @@ public class ManageJobController extends HttpServlet {
             try {
                 int jobId = Integer.parseInt(jobIdStr);
                 JobDAO jobDAO = new JobDAO();
-                // Status = 3 tương ứng với "Đã đóng" 
                 jobDAO.updateJobStatus(jobId, account.getAccountId(), 3); 
             } catch (Exception e) {}
         }
-        response.sendRedirect(request.getContextPath() + "/manageJobs");
+        response.sendRedirect(request.getContextPath() + "/employer/manageJobs");
     }
 
     /** 
