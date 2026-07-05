@@ -411,4 +411,60 @@ public class JobDAO extends DBContext {
         }
         return false;
     }
+    
+    // Lấy danh sách tất cả các bài đăng đang chờ duyệt (Status = 0)
+    public List<JobDetailDTO> getPendingJobs() {
+        List<JobDetailDTO> list = new ArrayList<>();
+        String sql = """
+                     SELECT j.*, c.CategoryName, e.BusinessName, e.LogoUrl, e.Address AS EmployerAddress 
+                     FROM Job_Post j 
+                     JOIN Category c ON j.CategoryID = c.CategoryID 
+                     JOIN Employer_Profile e ON j.EmployerID = e.EmployerID 
+                     WHERE j.Status = 0
+                     ORDER BY j.CreatedAt ASC
+                     """;
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                Job_Post job = new Job_Post();
+                job.setJobId(rs.getInt("JobID"));
+                job.setTitle(rs.getString("Title"));
+                job.setDescription(rs.getString("Description")); // Bổ sung Mô tả
+                job.setSalary(rs.getInt("Salary"));
+                job.setStartTime(rs.getTime("StartTime"));
+                job.setEndTime(rs.getTime("EndTime"));
+                job.setCity(rs.getString("City"));               // Bổ sung Thành phố
+                job.setWard(rs.getString("Ward"));               // Bổ sung Quận/Huyện
+                job.setDetailAddress(rs.getString("DetailAddress")); // Bổ sung Địa chỉ
+                job.setCreatedAt(rs.getTimestamp("CreatedAt"));
+                job.setStatus(rs.getInt("Status"));
+
+                Category cat = new Category();
+                cat.setCategoryName(rs.getString("CategoryName"));
+
+                Employer_Profile emp = new Employer_Profile();
+                emp.setBusinessName(rs.getString("BusinessName"));
+
+                list.add(new JobDetailDTO(job, cat, emp));
+            }
+        } catch (Exception e) {
+            System.out.println("Error getPendingJobs: " + e.getMessage());
+        }
+        return list;
+    }
+
+    // Admin duyệt (1) hoặc từ chối (2) bài đăng
+    public boolean updateJobStatusByAdmin(int jobId, int status) {
+        String sql = "UPDATE Job_Post SET Status = ? WHERE JobID = ?";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setInt(1, status);
+            st.setInt(2, jobId);
+            return st.executeUpdate() > 0;
+        } catch (Exception e) {
+            System.out.println("Error updateJobStatusByAdmin: " + e.getMessage());
+        }
+        return false;
+    }
 }

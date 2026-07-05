@@ -95,6 +95,10 @@
         <servlet-class>controllers.employer.EmployerCreateJobController
         </servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>AdminApproveJobController</servlet-name>
+        <servlet-class>controllers.admin.AdminApproveJobController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>UserHomeController</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -149,11 +153,15 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>EmployerManageJobController</servlet-name>
-        <url-pattern>/employer/manageJobs</url-pattern> 
+        <url-pattern>/employer/manageJobs</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>EmployerCreateJobController</servlet-name>
         <url-pattern>/employer/createJob</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AdminApproveJobController</servlet-name>
+        <url-pattern>/admin/approveJobs</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>

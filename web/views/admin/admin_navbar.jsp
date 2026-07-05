@@ -4,7 +4,7 @@
         <a href="${pageContext.request.contextPath}/admin/dashboard" class="actor-nav-item nav-admin">
             <i class="fas fa-chart-pie me-2"></i>Tổng quan & Thống kê
         </a>
-        <a href="#" class="actor-nav-item nav-admin">
+        <a href="${pageContext.request.contextPath}/admin/approveJobs" class="actor-nav-item nav-admin">
             <i class="fas fa-clipboard-check me-2"></i>Duyệt bài đăng
         </a>
         <a href="${pageContext.request.contextPath}/admin/users" class="actor-nav-item nav-admin">
