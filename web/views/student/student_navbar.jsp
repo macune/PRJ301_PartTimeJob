@@ -4,7 +4,7 @@
         <a href="${pageContext.request.contextPath}/student/dashboard" class="actor-nav-item nav-student">
             <i class="fas fa-home me-2"></i>Tổng quan
         </a>
-        <a href="${pageContext.request.contextPath}/home" class="actor-nav-item nav-student">
+        <a href="${pageContext.request.contextPath}/student/findJob" class="actor-nav-item nav-student">
             <i class="fas fa-search me-2"></i>Tìm việc làm
         </a>
         <a href="#" class="actor-nav-item nav-student">

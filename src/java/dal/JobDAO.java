@@ -12,9 +12,6 @@ import java.util.List;
 
 public class JobDAO extends DBContext {
 
-    // =====================================================================
-    // HÀM TIỆN ÍCH: CHUẨN HÓA CHUỖI THỜI GIAN
-    // =====================================================================
     private String safeFormatTime(String timeStr) {
         if (timeStr == null || timeStr.trim().isEmpty()) return null;
         try {
@@ -117,21 +114,17 @@ public class JobDAO extends DBContext {
             params.add("%" + ward.trim() + "%");
         }
         
-        // --- LOGIC XỬ LÝ LỌC THỜI GIAN THÔNG MINH ---
         String pStartTime = safeFormatTime(startTime);
         String pEndTime = safeFormatTime(endTime);
 
         if (pStartTime != null && pEndTime != null) {
-            // Nếu người dùng tìm kiếm ca trong ngày (VD: 19:00 -> 22:00)
             if (pStartTime.compareTo(pEndTime) <= 0) {
                 sql.append(" AND j.StartTime <= j.EndTime "); 
                 sql.append(" AND j.StartTime >= CAST(? AS TIME) ");
                 sql.append(" AND j.EndTime <= CAST(? AS TIME) ");
                 params.add(pStartTime);
                 params.add(pEndTime);
-            } 
-            // Nếu người dùng cố tình tìm ca rảnh qua đêm (VD: 22:00 -> 06:00)
-            else {
+            } else {
                 sql.append(" AND (j.StartTime >= CAST(? AS TIME) OR j.StartTime <= CAST(? AS TIME)) ");
                 sql.append(" AND (j.EndTime >= CAST(? AS TIME) OR j.EndTime <= CAST(? AS TIME)) ");
                 params.add(pStartTime);
@@ -162,9 +155,6 @@ public class JobDAO extends DBContext {
         return 0;
     }
 
-    // =====================================================================
-    // HÀM LẤY DANH SÁCH (CÓ LỌC)
-    // =====================================================================
     public List<JobDetailDTO> searchJobs(String categoryId, String city, String ward, String startTime, String endTime, int pageIndex, int pageSize) {
         List<JobDetailDTO> list = new ArrayList<>();
         StringBuilder sql = new StringBuilder("""
@@ -194,7 +184,6 @@ public class JobDAO extends DBContext {
             params.add("%" + ward.trim() + "%");
         }
         
-        // --- LOGIC XỬ LÝ LỌC THỜI GIAN THÔNG MINH ---
         String pStartTime = safeFormatTime(startTime);
         String pEndTime = safeFormatTime(endTime);
 
@@ -264,7 +253,8 @@ public class JobDAO extends DBContext {
         String sql = """
                      SELECT j.*, c.CategoryName, 
                             e.EmployerID, e.BusinessName, e.Phone, e.ContactEmail, 
-                            e.Address AS EmployerAddress, e.Description AS EmployerDescription, e.AverageRating 
+                            e.Address AS EmployerAddress, e.Description AS EmployerDescription, 
+                            e.AverageRating, e.LogoUrl, e.Website 
                      FROM Job_Post j 
                      JOIN Category c ON j.CategoryID = c.CategoryID 
                      JOIN Employer_Profile e ON j.EmployerID = e.EmployerID 
@@ -296,10 +286,11 @@ public class JobDAO extends DBContext {
                 emp.setBusinessName(rs.getString("BusinessName"));
                 emp.setPhone(rs.getString("Phone"));
                 emp.setContactEmail(rs.getString("ContactEmail"));
-                
                 emp.setAddress(rs.getString("EmployerAddress"));
                 emp.setDescription(rs.getString("EmployerDescription")); 
                 emp.setAverageRating(rs.getDouble("AverageRating"));
+                emp.setLogoUrl(rs.getString("LogoUrl"));
+                emp.setWebsite(rs.getString("Website"));
 
                 return new JobDetailDTO(job, cat, emp);
             }
@@ -309,7 +300,6 @@ public class JobDAO extends DBContext {
         return null;
     }
     
-    // Lấy danh sách việc làm theo EmployerID để nhà tuyển dụng quản lý
     public List<JobDetailDTO> getJobsByEmployerId(int employerId) {
         List<JobDetailDTO> list = new ArrayList<>();
         String sql = """
@@ -345,7 +335,6 @@ public class JobDAO extends DBContext {
         return list;
     }
 
-    // Thêm bài đăng mới, Status tự động là 0 (Pending)
     public boolean insertJob(Job_Post job) {
         String sql = """
                      INSERT INTO Job_Post (EmployerID, CategoryID, Title, Description, Salary, StartTime, EndTime, City, Ward, DetailAddress, Status)
@@ -370,7 +359,6 @@ public class JobDAO extends DBContext {
         return false;
     }
 
-    // Cập nhật thông tin bài đăng
     public boolean updateJob(Job_Post job) {
         String sql = """
                      UPDATE Job_Post 
@@ -389,7 +377,7 @@ public class JobDAO extends DBContext {
             st.setString(8, job.getWard());
             st.setString(9, job.getDetailAddress());
             st.setInt(10, job.getJobId());
-            st.setInt(11, job.getEmployerId()); // Check bảo mật: chỉ chủ sở hữu mới sửa được
+            st.setInt(11, job.getEmployerId()); 
             return st.executeUpdate() > 0;
         } catch (Exception e) {
             System.out.println("Error updateJob: " + e.getMessage());
@@ -397,7 +385,6 @@ public class JobDAO extends DBContext {
         return false;
     }
     
-    // Ẩn/Đóng bài đăng
     public boolean updateJobStatus(int jobId, int employerId, int status) {
          String sql = "UPDATE Job_Post SET Status = ? WHERE JobID = ? AND EmployerID = ?";
          try {
@@ -412,7 +399,6 @@ public class JobDAO extends DBContext {
         return false;
     }
     
-    // Lấy danh sách tất cả các bài đăng đang chờ duyệt (Status = 0)
     public List<JobDetailDTO> getPendingJobs() {
         List<JobDetailDTO> list = new ArrayList<>();
         String sql = """
@@ -430,13 +416,13 @@ public class JobDAO extends DBContext {
                 Job_Post job = new Job_Post();
                 job.setJobId(rs.getInt("JobID"));
                 job.setTitle(rs.getString("Title"));
-                job.setDescription(rs.getString("Description")); // Bổ sung Mô tả
+                job.setDescription(rs.getString("Description")); 
                 job.setSalary(rs.getInt("Salary"));
                 job.setStartTime(rs.getTime("StartTime"));
                 job.setEndTime(rs.getTime("EndTime"));
-                job.setCity(rs.getString("City"));               // Bổ sung Thành phố
-                job.setWard(rs.getString("Ward"));               // Bổ sung Quận/Huyện
-                job.setDetailAddress(rs.getString("DetailAddress")); // Bổ sung Địa chỉ
+                job.setCity(rs.getString("City"));               
+                job.setWard(rs.getString("Ward"));               
+                job.setDetailAddress(rs.getString("DetailAddress")); 
                 job.setCreatedAt(rs.getTimestamp("CreatedAt"));
                 job.setStatus(rs.getInt("Status"));
 
@@ -454,7 +440,6 @@ public class JobDAO extends DBContext {
         return list;
     }
 
-    // Admin duyệt (1) hoặc từ chối (2) bài đăng
     public boolean updateJobStatusByAdmin(int jobId, int status) {
         String sql = "UPDATE Job_Post SET Status = ? WHERE JobID = ?";
         try {

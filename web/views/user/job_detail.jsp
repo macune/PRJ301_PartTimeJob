@@ -8,7 +8,7 @@
         <title>${jobDetail.job.title} - Part Time Job</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css?v=9.1">
     </head>
     <body class="d-flex flex-column min-vh-100 bg-light">
         <jsp:include page="/views/common/header.jsp" />
@@ -22,7 +22,7 @@
                             <p class="badge bg-info text-dark fs-6">${jobDetail.category.categoryName}</p>
                             <hr>
                             <h5 class="mt-3">Mô Tả Công Việc:</h5>
-                            <p>${jobDetail.job.description}</p>
+                            <p style="white-space: pre-wrap;">${jobDetail.job.description}</p>
                             
                             <h5 class="mt-4">Thông Tin Chi Tiết:</h5>
                             <ul class="list-group list-group-flush">
@@ -37,9 +37,24 @@
                                     <i class="fas fa-arrow-left me-2"></i>Quay lại
                                 </a>
                                 
-                                <a href="${pageContext.request.contextPath}/apply-job?id=${jobDetail.job.jobId}" class="btn btn-success btn-lg px-5 fw-semibold shadow-sm">
-                                    Ứng Tuyển Ngay <i class="fas fa-paper-plane ms-2"></i>
-                                </a>
+                                <%-- KIỂM TRA ĐĂNG NHẬP VÀ PHÂN QUYỀN Ở ĐÂY --%>
+                                <c:choose>
+                                    <c:when test="${empty sessionScope.account}">
+                                        <a href="${pageContext.request.contextPath}/userLogin" class="btn btn-success btn-lg px-5 fw-semibold shadow-sm">
+                                            Đăng Nhập Để Ứng Tuyển <i class="fas fa-sign-in-alt ms-2"></i>
+                                        </a>
+                                    </c:when>
+                                    <c:when test="${sessionScope.account.role == 2}">
+                                        <a href="${pageContext.request.contextPath}/student/jobDetail?id=${jobDetail.job.jobId}" class="btn btn-success btn-lg px-5 fw-semibold shadow-sm">
+                                            Ứng Tuyển Ngay <i class="fas fa-paper-plane ms-2"></i>
+                                        </a>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <button class="btn btn-secondary btn-lg px-5 fw-semibold shadow-sm" disabled>
+                                            Chỉ sinh viên mới được ứng tuyển
+                                        </button>
+                                    </c:otherwise>
+                                </c:choose>
                             </div>
                         </div>
                     </div>

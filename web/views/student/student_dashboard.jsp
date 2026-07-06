@@ -19,9 +19,6 @@
             <h1 class="text-success fw-bold mb-3"><i class="fas fa-user-graduate me-2"></i>Xin chào Sinh viên</h1>
             <h4 class="text-muted">Chào mừng <span class="text-dark fw-bold">${sessionScope.account.username}</span></h4>
             <p class="mt-4">Hãy tiếp tục tìm kiếm việc làm bán thời gian phù hợp với bạn nhé!</p>
-            <div class="mt-3">
-                <a href="${pageContext.request.contextPath}/home" class="btn btn-outline-success rounded-pill px-4">Xem việc làm mới</a>
-            </div>
         </div>
     </div>
 

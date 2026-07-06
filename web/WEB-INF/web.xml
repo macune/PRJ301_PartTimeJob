@@ -33,6 +33,7 @@
         <filter-name>EmployerFilter</filter-name>
         <url-pattern>/employer/*</url-pattern>
     </filter-mapping>
+    
     <servlet>
         <servlet-name>UserHomeController</servlet-name>
         <servlet-class>controllers.user.UserHomeController</servlet-class>
@@ -87,18 +88,33 @@
     </servlet>
     <servlet>
         <servlet-name>EmployerManageJobController</servlet-name>
-        <servlet-class>controllers.employer.EmployerManageJobController
-        </servlet-class>
+        <servlet-class>controllers.employer.EmployerManageJobController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>EmployerCreateJobController</servlet-name>
-        <servlet-class>controllers.employer.EmployerCreateJobController
-        </servlet-class>
+        <servlet-class>controllers.employer.EmployerCreateJobController</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>AdminApproveJobController</servlet-name>
         <servlet-class>controllers.admin.AdminApproveJobController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>StudentApplyJobController</servlet-name>
+        <servlet-class>controllers.student.StudentApplyJobController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>StudentSaveJobController</servlet-name>
+        <servlet-class>controllers.student.StudentSaveJobController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>StudentFindJobController</servlet-name>
+        <servlet-class>controllers.student.StudentFindJobController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>StudentJobDetailController</servlet-name>
+        <servlet-class>controllers.student.StudentJobDetailController</servlet-class>
+    </servlet>
+    
     <servlet-mapping>
         <servlet-name>UserHomeController</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -163,6 +179,23 @@
         <servlet-name>AdminApproveJobController</servlet-name>
         <url-pattern>/admin/approveJobs</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StudentFindJobController</servlet-name>
+        <url-pattern>/student/findJob</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StudentJobDetailController</servlet-name>
+        <url-pattern>/student/jobDetail</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StudentApplyJobController</servlet-name>
+        <url-pattern>/student/apply</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StudentSaveJobController</servlet-name>
+        <url-pattern>/student/save-job</url-pattern>
+    </servlet-mapping>
+    
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
