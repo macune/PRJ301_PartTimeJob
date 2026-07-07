@@ -10,10 +10,8 @@ import models.Application;
 public class ApplicationDAO extends DBContext {
 
     public boolean apply(int studentID, int jobID, int desiredSalary, String message) {
-        String sql = """
-                     INSERT INTO Application (StudentID, JobID, DesiredSalary, Message, Status, AppliedAt) 
-                     VALUES (?, ?, ?, ?, 0, GETDATE())
-                     """;
+        String sql = "INSERT INTO Application (StudentID, JobID, DesiredSalary, Message, Status, AppliedAt) "
+                   + "VALUES (?, ?, ?, ?, 0, GETDATE())";
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, studentID);
@@ -42,11 +40,9 @@ public class ApplicationDAO extends DBContext {
 
     public List<Application> getByStudentID(int studentID) {
         List<Application> list = new ArrayList<>();
-        String sql = """
-                    SELECT ApplicationID, StudentID, JobID, DesiredSalary, 
-                    Message, Status, EmployerNote, AppliedAt 
-                    FROM Application WHERE StudentID = ? ORDER BY AppliedAt DESC
-                     """;
+        String sql = "SELECT ApplicationID, StudentID, JobID, DesiredSalary, "
+                + "Message, Status, EmployerNote, AppliedAt "
+                + "FROM Application WHERE StudentID = ? ORDER BY AppliedAt DESC";
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, studentID);
@@ -69,7 +65,6 @@ public class ApplicationDAO extends DBContext {
         return list;
     }
     
-    // --- BỔ SUNG: KIỂM TRA TRÙNG GIỜ LÀM VIỆC (ĐÃ FIX LỖI LỆCH NGÀY & QUA ĐÊM) ---
     public boolean hasTimeOverlap(int studentID, java.sql.Time newStartTime, java.sql.Time newEndTime) {
         String sql = """
                      WITH Params AS (
@@ -81,92 +76,151 @@ public class ApplicationDAO extends DBContext {
                      CROSS JOIN Params p
                      WHERE a.StudentID = p.StudentID AND a.Status IN (0, 1)
                      AND (
-                         -- TH1: Cả 2 ca đều làm trong ngày (VD: 05:00 - 17:00 và 12:00 - 18:00)
                          (CAST(j.StartTime AS TIME) <= CAST(j.EndTime AS TIME) AND p.NewStart <= p.NewEnd
                           AND CAST(j.StartTime AS TIME) < p.NewEnd AND CAST(j.EndTime AS TIME) > p.NewStart)
-                         
-                         -- TH2: Ca cũ làm qua đêm (VD: 22:00 - 06:00), Ca mới làm trong ngày
                          OR (CAST(j.StartTime AS TIME) > CAST(j.EndTime AS TIME) AND p.NewStart <= p.NewEnd
                              AND (p.NewEnd > CAST(j.StartTime AS TIME) OR p.NewStart < CAST(j.EndTime AS TIME)))
-                             
-                         -- TH3: Ca cũ trong ngày, Ca mới làm qua đêm
                          OR (CAST(j.StartTime AS TIME) <= CAST(j.EndTime AS TIME) AND p.NewStart > p.NewEnd
                              AND (CAST(j.EndTime AS TIME) > p.NewStart OR CAST(j.StartTime AS TIME) < p.NewEnd))
-                             
-                         -- TH4: Cả 2 ca đều làm qua đêm (Chắc chắn đè lên nhau ở khoảng nửa đêm)
                          OR (CAST(j.StartTime AS TIME) > CAST(j.EndTime AS TIME) AND p.NewStart > p.NewEnd)
                      )
                      """;
         try {
             java.sql.PreparedStatement ps = connection.prepareStatement(sql);
-            // Lưu ý: Đã đổi lại thứ tự set tham số cho khớp với lệnh WITH ở trên
             ps.setTime(1, newStartTime);
             ps.setTime(2, newEndTime);
             ps.setInt(3, studentID);
-            
-            return ps.executeQuery().next(); // Có bất kỳ 1 dòng nào trả về -> Bị trùng giờ
+            return ps.executeQuery().next();
         } catch (java.sql.SQLException e) {
             System.out.println("[ApplicationDAO.hasTimeOverlap] Error: " + e.getMessage());
         }
         return false;
     }
+
+    // =====================================================================
+    // CÁC HÀM DÀNH CHO NHÀ TUYỂN DỤNG (EMPLOYER)
+    // =====================================================================
     
     public List<viewmodels.ApplicationDTO> getApplicationsByJobId(int jobId) {
         List<viewmodels.ApplicationDTO> list = new ArrayList<>();
+        // ĐÃ BỔ SUNG: ContactEmail, Address, Introduction
         String sql = """
-                     SELECT a.*, s.FullName, s.AvatarUrl, s.ContactEmail, s.Phone, 
-                            s.Address, s.University, s.Introduction, s.Experience, s.AverageRating
+                     SELECT a.ApplicationID, a.StudentID, a.JobID, a.DesiredSalary, a.Message, a.Status, a.EmployerNote, a.AppliedAt,
+                            s.FullName, s.Phone, s.University, s.Experience, s.AverageRating,
+                            s.ContactEmail, s.Address, s.Introduction
                      FROM Application a
                      JOIN Student_Profile s ON a.StudentID = s.StudentID
                      WHERE a.JobID = ?
-                     ORDER BY a.AppliedAt DESC
+                     ORDER BY a.AppliedAt ASC
                      """;
         try {
             java.sql.PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, jobId);
-            java.sql.ResultSet rs = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                models.Application app = new models.Application();
-                app.setApplicationID(rs.getInt("ApplicationID"));
-                app.setStudentID(rs.getInt("StudentID"));
-                app.setJobID(rs.getInt("JobID"));
-                app.setDesiredSalary(rs.getInt("DesiredSalary"));
-                app.setMessage(rs.getString("Message"));
-                app.setStatus(rs.getInt("Status"));
-                app.setEmployerNote(rs.getString("EmployerNote"));
-                app.setAppliedAt(rs.getTimestamp("AppliedAt"));
+                Application a = new Application();
+                a.setApplicationID(rs.getInt("ApplicationID"));
+                a.setStudentID(rs.getInt("StudentID"));
+                a.setJobID(rs.getInt("JobID"));
+                a.setDesiredSalary(rs.getInt("DesiredSalary"));
+                a.setMessage(rs.getString("Message"));
+                a.setStatus(rs.getInt("Status"));
+                a.setEmployerNote(rs.getString("EmployerNote"));
+                a.setAppliedAt(rs.getTimestamp("AppliedAt"));
+
+                models.Student_Profile sp = new models.Student_Profile();
+                sp.setStudentId(rs.getInt("StudentID"));
+                sp.setFullName(rs.getString("FullName"));
+                sp.setPhone(rs.getString("Phone"));
+                sp.setUniversity(rs.getString("University"));
+                sp.setExperience(rs.getString("Experience"));
+                sp.setAverageRating(rs.getDouble("AverageRating"));
                 
-                models.Student_Profile stu = new models.Student_Profile();
-                stu.setStudentId(rs.getInt("StudentID"));
-                stu.setFullName(rs.getString("FullName"));
-                stu.setAvatarUrl(rs.getString("AvatarUrl"));
-                stu.setContactEmail(rs.getString("ContactEmail"));
-                stu.setPhone(rs.getString("Phone"));
-                stu.setAddress(rs.getString("Address"));
-                stu.setUniversity(rs.getString("University"));
-                stu.setIntroduction(rs.getString("Introduction"));
-                stu.setExperience(rs.getString("Experience"));
-                stu.setAverageRating(rs.getDouble("AverageRating"));
-                
-                list.add(new viewmodels.ApplicationDTO(app, stu));
+                // Đã Mapping các trường mới
+                sp.setContactEmail(rs.getString("ContactEmail"));
+                sp.setAddress(rs.getString("Address"));
+                sp.setIntroduction(rs.getString("Introduction"));
+
+                list.add(new viewmodels.ApplicationDTO(a, sp));
             }
-        } catch (java.sql.SQLException e) {
+        } catch (SQLException e) {
             System.out.println("[ApplicationDAO.getApplicationsByJobId] Error: " + e.getMessage());
         }
         return list;
     }
 
-    public boolean updateApplicationStatus(int applicationId, int status, String employerNote) {
-        String sql = "UPDATE Application SET Status = ?, EmployerNote = ? WHERE ApplicationID = ?";
+    public boolean updateApplicationStatus(int applicationId, int status, String employerNote, int employerId) {
+        String sql = """
+                     UPDATE Application 
+                     SET Status = ?, EmployerNote = ? 
+                     WHERE ApplicationID = ? 
+                     AND JobID IN (SELECT JobID FROM Job_Post WHERE EmployerID = ?)
+                     """;
         try {
             java.sql.PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, status);
             ps.setString(2, employerNote);
             ps.setInt(3, applicationId);
+            ps.setInt(4, employerId);
             return ps.executeUpdate() > 0;
-        } catch (java.sql.SQLException e) {
+        } catch (SQLException e) {
             System.out.println("[ApplicationDAO.updateApplicationStatus] Error: " + e.getMessage());
         }
         return false;
+    }
+    
+    public List<viewmodels.ApplicationDTO> getAcceptedApplicationsByEmployerId(int employerId) {
+        List<viewmodels.ApplicationDTO> list = new ArrayList<>();
+        String sql = """
+                     SELECT a.ApplicationID, a.StudentID, a.JobID, a.DesiredSalary, a.Message, a.Status, a.EmployerNote, a.AppliedAt,
+                            s.FullName, s.Phone, s.University, s.Experience, s.AverageRating,
+                            s.ContactEmail, s.Address, s.Introduction,
+                            j.Title AS JobTitle, j.Salary AS BaseSalary
+                     FROM Application a
+                     JOIN Student_Profile s ON a.StudentID = s.StudentID
+                     JOIN Job_Post j ON a.JobID = j.JobID
+                     WHERE j.EmployerID = ? AND a.Status = 1
+                     ORDER BY a.AppliedAt DESC
+                     """;
+        try {
+            java.sql.PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, employerId);
+            java.sql.ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                models.Application a = new models.Application();
+                a.setApplicationID(rs.getInt("ApplicationID"));
+                a.setStudentID(rs.getInt("StudentID"));
+                a.setJobID(rs.getInt("JobID"));
+                
+                // Nếu sinh viên có mức lương mong muốn thì ưu tiên hiển thị, nếu không thì lấy lương gốc của Job
+                int desired = rs.getInt("DesiredSalary");
+                a.setDesiredSalary(desired > 0 ? desired : rs.getInt("BaseSalary"));
+                
+                a.setMessage(rs.getString("Message"));
+                a.setStatus(rs.getInt("Status"));
+                a.setEmployerNote(rs.getString("EmployerNote"));
+                a.setAppliedAt(rs.getTimestamp("AppliedAt"));
+
+                models.Student_Profile sp = new models.Student_Profile();
+                sp.setStudentId(rs.getInt("StudentID"));
+                sp.setFullName(rs.getString("FullName"));
+                sp.setPhone(rs.getString("Phone"));
+                sp.setUniversity(rs.getString("University"));
+                sp.setExperience(rs.getString("Experience"));
+                sp.setAverageRating(rs.getDouble("AverageRating"));
+                sp.setContactEmail(rs.getString("ContactEmail"));
+                sp.setAddress(rs.getString("Address"));
+                sp.setIntroduction(rs.getString("Introduction"));
+
+                models.Job_Post job = new models.Job_Post();
+                job.setJobId(rs.getInt("JobID"));
+                job.setTitle(rs.getString("JobTitle"));
+
+                list.add(new viewmodels.ApplicationDTO(a, sp, job));
+            }
+        } catch (java.sql.SQLException e) {
+            System.out.println("[ApplicationDAO.getAcceptedApplicationsByEmployerId] Error: " + e.getMessage());
+        }
+        return list;
     }
 }

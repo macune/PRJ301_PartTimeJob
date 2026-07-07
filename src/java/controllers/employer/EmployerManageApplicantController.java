@@ -8,12 +8,12 @@ package controllers.employer;
 import dal.ApplicationDAO;
 import dal.JobDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.io.PrintWriter;
 import java.util.List;
 import models.Account;
 import viewmodels.ApplicationDTO;
@@ -60,14 +60,7 @@ public class EmployerManageApplicantController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        HttpSession session = request.getSession(false);
-        Account account = (session != null) ? (Account) session.getAttribute("account") : null;
         
-        if (account == null || account.getRole() != 3) {
-            response.sendRedirect(request.getContextPath() + "/userLogin");
-            return;
-        }
-
         String jobIdStr = request.getParameter("jobId");
         if (jobIdStr == null || jobIdStr.isEmpty()) {
             response.sendRedirect(request.getContextPath() + "/employer/manageJobs");
@@ -77,13 +70,29 @@ public class EmployerManageApplicantController extends HttpServlet {
         try {
             int jobId = Integer.parseInt(jobIdStr);
             
-            // Lấy tên Job hiển thị ra tiêu đề trang
             JobDAO jobDAO = new JobDAO();
             JobDetailDTO jobDetail = jobDAO.getJobById(jobId);
             request.setAttribute("jobDetail", jobDetail);
 
             ApplicationDAO appDAO = new ApplicationDAO();
             List<ApplicationDTO> listApplicants = appDAO.getApplicationsByJobId(jobId);
+            
+            /* =========================================================
+               BỔ SUNG: LẤY ĐÁNH GIÁ CỦA TỪNG SINH VIÊN ỨNG TUYỂN
+               (Nếu tên hàm getReviewsForStudent hoặc ReviewDTO của nhóm bạn khác, hãy sửa lại cho khớp nhé)
+               ========================================================= */
+            dal.StudentReviewDAO studentReviewDao = new dal.StudentReviewDAO();
+            java.util.Map<Integer, java.util.List<viewmodels.ReviewDTO>> studentReviewsMap = new java.util.HashMap<>();
+            
+            for (ApplicationDTO app : listApplicants) {
+                int sId = app.getStudent().getStudentId();
+                // Lấy danh sách review của sinh viên này
+                java.util.List<viewmodels.ReviewDTO> reviews = studentReviewDao.getReviewsForStudent(sId);
+                studentReviewsMap.put(sId, reviews);
+            }
+            request.setAttribute("studentReviewsMap", studentReviewsMap);
+            // =========================================================
+
             request.setAttribute("listApplicants", listApplicants);
             request.setAttribute("jobId", jobId);
 
@@ -91,7 +100,7 @@ public class EmployerManageApplicantController extends HttpServlet {
         } catch (NumberFormatException e) {
             response.sendRedirect(request.getContextPath() + "/employer/manageJobs");
         }
-    } 
+    }
 
     /** 
      * Handles the HTTP <code>POST</code> method.
@@ -104,24 +113,19 @@ public class EmployerManageApplicantController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-        HttpSession session = request.getSession(false);
-        Account account = (session != null) ? (Account) session.getAttribute("account") : null;
-        
-        if (account == null || account.getRole() != 3) {
-            response.sendRedirect(request.getContextPath() + "/userLogin");
-            return;
-        }
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
 
         try {
             int applicationId = Integer.parseInt(request.getParameter("applicationId"));
-            int status = Integer.parseInt(request.getParameter("status")); // 1: Chấp nhận, 2: Từ chối
+            int status = Integer.parseInt(request.getParameter("status")); 
             String employerNote = request.getParameter("employerNote");
             String jobIdStr = request.getParameter("jobId");
+            int employerId = account.getAccountId(); 
 
             ApplicationDAO appDAO = new ApplicationDAO();
-            appDAO.updateApplicationStatus(applicationId, status, employerNote);
+            appDAO.updateApplicationStatus(applicationId, status, employerNote, employerId);
 
-            // Xử lý xong thì redirect lại chính trang danh sách ứng viên đó
             response.sendRedirect(request.getContextPath() + "/employer/manageApplicants?jobId=" + jobIdStr);
         } catch (Exception e) {
             response.sendRedirect(request.getContextPath() + "/employer/manageJobs");

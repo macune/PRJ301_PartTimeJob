@@ -8,7 +8,7 @@
             <i class="fas fa-search me-2"></i>Tìm việc làm
         </a>
         <a href="#" class="actor-nav-item nav-student">
-            <i class="fas fa-file-alt me-2"></i>Quản lý đơn ứng tuyển
+            <i class="fas fa-file-alt me-2"></i>Quản lý công việc
         </a>
         <a href="${pageContext.request.contextPath}/student/profile" class="actor-nav-item nav-student">
             <i class="fas fa-id-badge me-2"></i>Hồ sơ cá nhân
