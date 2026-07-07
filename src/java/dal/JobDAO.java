@@ -362,7 +362,9 @@ public class JobDAO extends DBContext {
     public boolean updateJob(Job_Post job) {
         String sql = """
                      UPDATE Job_Post 
-                     SET CategoryID=?, Title=?, Description=?, Salary=?, StartTime=?, EndTime=?, City=?, Ward=?, DetailAddress=?
+                     SET CategoryID=?, Title=?, Description=?, Salary=?, 
+                         StartTime=?, EndTime=?, City=?, Ward=?, DetailAddress=?, 
+                         Status=0 
                      WHERE JobID=? AND EmployerID=?
                      """;
         try {
@@ -376,8 +378,11 @@ public class JobDAO extends DBContext {
             st.setString(7, job.getCity());
             st.setString(8, job.getWard());
             st.setString(9, job.getDetailAddress());
+            
+            // Điều kiện WHERE
             st.setInt(10, job.getJobId());
-            st.setInt(11, job.getEmployerId()); 
+            st.setInt(11, job.getEmployerId()); // Check bảo mật: chỉ chủ sở hữu mới sửa được
+            
             return st.executeUpdate() > 0;
         } catch (Exception e) {
             System.out.println("Error updateJob: " + e.getMessage());
