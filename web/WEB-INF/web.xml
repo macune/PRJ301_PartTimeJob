@@ -33,7 +33,6 @@
         <filter-name>EmployerFilter</filter-name>
         <url-pattern>/employer/*</url-pattern>
     </filter-mapping>
-    
     <servlet>
         <servlet-name>UserHomeController</servlet-name>
         <servlet-class>controllers.user.UserHomeController</servlet-class>
@@ -114,7 +113,10 @@
         <servlet-name>StudentJobDetailController</servlet-name>
         <servlet-class>controllers.student.StudentJobDetailController</servlet-class>
     </servlet>
-    
+    <servlet>
+        <servlet-name>EmployerManageApplicantController</servlet-name>
+        <servlet-class>controllers.employer.EmployerManageApplicantController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>UserHomeController</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -195,7 +197,10 @@
         <servlet-name>StudentSaveJobController</servlet-name>
         <url-pattern>/student/save-job</url-pattern>
     </servlet-mapping>
-    
+    <servlet-mapping>
+        <servlet-name>EmployerManageApplicantController</servlet-name>
+        <url-pattern>/employer/manageApplicants</url-pattern>
+    </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
