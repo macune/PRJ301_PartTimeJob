@@ -10,7 +10,6 @@ import models.Application;
 public class ApplicationDAO extends DBContext {
 
     public boolean apply(int studentID, int jobID, int desiredSalary, String message) {
-        // ĐÃ BỔ SUNG: GETDATE() để SQL Server tự động ghi nhận thời gian nộp đơn
         String sql = """
                      INSERT INTO Application (StudentID, JobID, DesiredSalary, Message, Status, AppliedAt) 
                      VALUES (?, ?, ?, ?, 0, GETDATE())
@@ -108,6 +107,65 @@ public class ApplicationDAO extends DBContext {
             return ps.executeQuery().next(); // Có bất kỳ 1 dòng nào trả về -> Bị trùng giờ
         } catch (java.sql.SQLException e) {
             System.out.println("[ApplicationDAO.hasTimeOverlap] Error: " + e.getMessage());
+        }
+        return false;
+    }
+    
+    public List<viewmodels.ApplicationDTO> getApplicationsByJobId(int jobId) {
+        List<viewmodels.ApplicationDTO> list = new ArrayList<>();
+        String sql = """
+                     SELECT a.*, s.FullName, s.AvatarUrl, s.ContactEmail, s.Phone, 
+                            s.Address, s.University, s.Introduction, s.Experience, s.AverageRating
+                     FROM Application a
+                     JOIN Student_Profile s ON a.StudentID = s.StudentID
+                     WHERE a.JobID = ?
+                     ORDER BY a.AppliedAt DESC
+                     """;
+        try {
+            java.sql.PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, jobId);
+            java.sql.ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                models.Application app = new models.Application();
+                app.setApplicationID(rs.getInt("ApplicationID"));
+                app.setStudentID(rs.getInt("StudentID"));
+                app.setJobID(rs.getInt("JobID"));
+                app.setDesiredSalary(rs.getInt("DesiredSalary"));
+                app.setMessage(rs.getString("Message"));
+                app.setStatus(rs.getInt("Status"));
+                app.setEmployerNote(rs.getString("EmployerNote"));
+                app.setAppliedAt(rs.getTimestamp("AppliedAt"));
+                
+                models.Student_Profile stu = new models.Student_Profile();
+                stu.setStudentId(rs.getInt("StudentID"));
+                stu.setFullName(rs.getString("FullName"));
+                stu.setAvatarUrl(rs.getString("AvatarUrl"));
+                stu.setContactEmail(rs.getString("ContactEmail"));
+                stu.setPhone(rs.getString("Phone"));
+                stu.setAddress(rs.getString("Address"));
+                stu.setUniversity(rs.getString("University"));
+                stu.setIntroduction(rs.getString("Introduction"));
+                stu.setExperience(rs.getString("Experience"));
+                stu.setAverageRating(rs.getDouble("AverageRating"));
+                
+                list.add(new viewmodels.ApplicationDTO(app, stu));
+            }
+        } catch (java.sql.SQLException e) {
+            System.out.println("[ApplicationDAO.getApplicationsByJobId] Error: " + e.getMessage());
+        }
+        return list;
+    }
+
+    public boolean updateApplicationStatus(int applicationId, int status, String employerNote) {
+        String sql = "UPDATE Application SET Status = ?, EmployerNote = ? WHERE ApplicationID = ?";
+        try {
+            java.sql.PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, status);
+            ps.setString(2, employerNote);
+            ps.setInt(3, applicationId);
+            return ps.executeUpdate() > 0;
+        } catch (java.sql.SQLException e) {
+            System.out.println("[ApplicationDAO.updateApplicationStatus] Error: " + e.getMessage());
         }
         return false;
     }
