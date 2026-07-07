@@ -67,6 +67,9 @@
                                         <a href="${pageContext.request.contextPath}/employer/createJob?id=${item.job.jobId}" class="btn btn-sm btn-outline-primary">
                                             <i class="fas fa-edit"></i>
                                         </a>
+                                        <a href="${pageContext.request.contextPath}/employer/manageApplicants?jobId=${item.job.jobId}" class="btn btn-sm btn-outline-info" title="Xem ứng viên">
+                                            <i class="fas fa-users"></i>
+                                        </a>
                                         <c:if test="${item.job.status != 3}">
                                             <form action="${pageContext.request.contextPath}/employer/manageJobs" method="post" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn ĐÓNG bài tuyển dụng này? Sinh viên sẽ không thể nộp đơn nữa.');">
                                                 <input type="hidden" name="action" value="close">
