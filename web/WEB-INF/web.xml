@@ -121,6 +121,14 @@
         <servlet-name>EmployerManageHRController</servlet-name>
         <servlet-class>controllers.employer.EmployerManageHRController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>StudentApplicationHistoryController</servlet-name>
+        <servlet-class>controllers.student.StudentApplicationHistoryController</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>StudentManageJobController</servlet-name>
+        <servlet-class>controllers.student.StudentManageJobController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>UserHomeController</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -208,6 +216,14 @@
     <servlet-mapping>
         <servlet-name>EmployerManageHRController</servlet-name>
         <url-pattern>/employer/manageHR</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StudentApplicationHistoryController</servlet-name>
+        <url-pattern>/student/application-history</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StudentManageJobController</servlet-name>
+        <url-pattern>/student/manageJobs</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>

@@ -72,4 +72,50 @@ public class SavedJobDAO extends DBContext {
         }
         return list;
     }
+    
+    // =====================================================================
+    // HÀM LẤY CHI TIẾT CÁC CÔNG VIỆC ĐÃ LƯU
+    // =====================================================================
+    public List<viewmodels.JobDetailDTO> getSavedJobsWithDetails(int studentId) {
+        List<viewmodels.JobDetailDTO> list = new ArrayList<>();
+        String sql = """
+                     SELECT j.*, c.CategoryName, e.BusinessName, e.LogoUrl, e.Address AS EmployerAddress, sj.SavedAt 
+                     FROM Saved_Job sj
+                     JOIN Job_Post j ON sj.JobID = j.JobID
+                     JOIN Category c ON j.CategoryID = c.CategoryID
+                     JOIN Employer_Profile e ON j.EmployerID = e.EmployerID
+                     WHERE sj.StudentID = ?
+                     ORDER BY sj.SavedAt DESC
+                     """;
+        try {
+            java.sql.PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, studentId);
+            java.sql.ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                models.Job_Post job = new models.Job_Post();
+                job.setJobId(rs.getInt("JobID"));
+                job.setTitle(rs.getString("Title"));
+                job.setSalary(rs.getInt("Salary"));
+                job.setCity(rs.getString("City"));
+                job.setWard(rs.getString("Ward"));
+                job.setStartTime(rs.getTime("StartTime"));
+                job.setEndTime(rs.getTime("EndTime"));
+                // Mượn field CreatedAt để chứa thời gian Lưu bài (hiển thị cho tiện)
+                job.setCreatedAt(rs.getTimestamp("SavedAt"));
+
+                models.Category cat = new models.Category();
+                cat.setCategoryName(rs.getString("CategoryName"));
+
+                models.Employer_Profile emp = new models.Employer_Profile();
+                emp.setBusinessName(rs.getString("BusinessName"));
+                emp.setLogoUrl(rs.getString("LogoUrl"));
+                emp.setAddress(rs.getString("EmployerAddress"));
+
+                list.add(new viewmodels.JobDetailDTO(job, cat, emp));
+            }
+        } catch (java.sql.SQLException e) {
+            System.out.println("[SavedJobDAO.getSavedJobsWithDetails] Error: " + e.getMessage());
+        }
+        return list;
+    }
 }

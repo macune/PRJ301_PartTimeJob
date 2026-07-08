@@ -169,13 +169,18 @@ public class ApplicationDAO extends DBContext {
         return false;
     }
     
+    // =====================================================================
+    // HÀM LẤY DANH SÁCH NHÂN SỰ ĐÃ ĐƯỢC DUYỆT (HR MANAGEMENT)
+    // =====================================================================
     public List<viewmodels.ApplicationDTO> getAcceptedApplicationsByEmployerId(int employerId) {
         List<viewmodels.ApplicationDTO> list = new ArrayList<>();
+        // ĐÃ BỔ SUNG: Địa chỉ công việc (DetailAddress, Ward, City)
         String sql = """
                      SELECT a.ApplicationID, a.StudentID, a.JobID, a.DesiredSalary, a.Message, a.Status, a.EmployerNote, a.AppliedAt,
                             s.FullName, s.Phone, s.University, s.Experience, s.AverageRating,
                             s.ContactEmail, s.Address, s.Introduction,
-                            j.Title AS JobTitle, j.Salary AS BaseSalary
+                            j.Title AS JobTitle, j.Salary AS BaseSalary, j.StartTime, j.EndTime,
+                            j.DetailAddress AS JobDetailAddress, j.Ward AS JobWard, j.City AS JobCity
                      FROM Application a
                      JOIN Student_Profile s ON a.StudentID = s.StudentID
                      JOIN Job_Post j ON a.JobID = j.JobID
@@ -192,7 +197,6 @@ public class ApplicationDAO extends DBContext {
                 a.setStudentID(rs.getInt("StudentID"));
                 a.setJobID(rs.getInt("JobID"));
                 
-                // Nếu sinh viên có mức lương mong muốn thì ưu tiên hiển thị, nếu không thì lấy lương gốc của Job
                 int desired = rs.getInt("DesiredSalary");
                 a.setDesiredSalary(desired > 0 ? desired : rs.getInt("BaseSalary"));
                 
@@ -215,11 +219,73 @@ public class ApplicationDAO extends DBContext {
                 models.Job_Post job = new models.Job_Post();
                 job.setJobId(rs.getInt("JobID"));
                 job.setTitle(rs.getString("JobTitle"));
+                job.setStartTime(rs.getTime("StartTime"));
+                job.setEndTime(rs.getTime("EndTime"));
+                
+                // Bắt dữ liệu Địa chỉ làm việc
+                job.setDetailAddress(rs.getString("JobDetailAddress"));
+                job.setWard(rs.getString("JobWard"));
+                job.setCity(rs.getString("JobCity"));
 
                 list.add(new viewmodels.ApplicationDTO(a, sp, job));
             }
         } catch (java.sql.SQLException e) {
             System.out.println("[ApplicationDAO.getAcceptedApplicationsByEmployerId] Error: " + e.getMessage());
+        }
+        return list;
+    }
+    
+    // =====================================================================
+    // HÀM DÀNH CHO SINH VIÊN: XEM LỊCH SỬ ỨNG TUYỂN
+    // =====================================================================
+    public List<viewmodels.ApplicationDTO> getApplicationHistoryByStudentId(int studentId) {
+        List<viewmodels.ApplicationDTO> list = new ArrayList<>();
+        String sql = """
+                     SELECT a.ApplicationID, a.StudentID, a.JobID, a.DesiredSalary, a.Message, a.Status, a.EmployerNote, a.AppliedAt,
+                            j.Title AS JobTitle, j.City AS JobCity, j.Ward AS JobWard, j.DetailAddress AS JobDetailAddress, j.Salary AS JobSalary, j.StartTime, j.EndTime,
+                            e.BusinessName, e.Phone AS EmployerPhone
+                     FROM Application a
+                     JOIN Job_Post j ON a.JobID = j.JobID
+                     JOIN Employer_Profile e ON j.EmployerID = e.EmployerID
+                     WHERE a.StudentID = ?
+                     ORDER BY a.AppliedAt DESC
+                     """;
+        try {
+            java.sql.PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, studentId);
+            java.sql.ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                models.Application a = new models.Application();
+                a.setApplicationID(rs.getInt("ApplicationID"));
+                a.setStudentID(rs.getInt("StudentID"));
+                a.setJobID(rs.getInt("JobID"));
+                a.setDesiredSalary(rs.getInt("DesiredSalary"));
+                a.setMessage(rs.getString("Message"));
+                a.setStatus(rs.getInt("Status"));
+                a.setEmployerNote(rs.getString("EmployerNote"));
+                a.setAppliedAt(rs.getTimestamp("AppliedAt"));
+
+                models.Job_Post job = new models.Job_Post();
+                job.setJobId(rs.getInt("JobID"));
+                job.setTitle(rs.getString("JobTitle"));
+                job.setCity(rs.getString("JobCity"));
+                // Lấy thêm chi tiết địa chỉ
+                job.setWard(rs.getString("JobWard"));
+                job.setDetailAddress(rs.getString("JobDetailAddress"));
+                
+                job.setSalary(rs.getInt("JobSalary"));
+                job.setStartTime(rs.getTime("StartTime"));
+                job.setEndTime(rs.getTime("EndTime"));
+
+                models.Employer_Profile emp = new models.Employer_Profile();
+                emp.setBusinessName(rs.getString("BusinessName"));
+                // Lấy thêm SĐT liên hệ
+                emp.setPhone(rs.getString("EmployerPhone"));
+
+                list.add(new viewmodels.ApplicationDTO(a, job, emp));
+            }
+        } catch (java.sql.SQLException e) {
+            System.out.println("[ApplicationDAO.getApplicationHistoryByStudentId] Error: " + e.getMessage());
         }
         return list;
     }

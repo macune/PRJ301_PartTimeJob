@@ -70,7 +70,7 @@
                                 </div>
                             </div>
                             
-                            <button class="btn btn-outline-info w-100 mb-3 fw-semibold rounded-pill bg-white" data-bs-toggle="modal" data-bs-target="#studentProfileModal${item.student.studentId}">
+                            <button class="btn btn-outline-primary w-100 fw-semibold rounded-pill" data-bs-toggle="modal" data-bs-target="#studentProfileModal${item.student.studentId}">
                                 <i class="fas fa-id-badge me-2"></i>Xem Hồ Sơ & Đánh Giá Chi Tiết
                             </button>
                             

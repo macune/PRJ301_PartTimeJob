@@ -28,9 +28,10 @@
                             <tr>
                                 <th class="ps-4">Họ và tên</th>
                                 <th>Vị trí công việc</th>
-                                <th>Liên hệ</th>
+                                <th>Cơ sở làm việc</th>
+                                <th>Liên hệ ứng viên</th>
+                                <th>Ca làm việc</th>
                                 <th>Mức lương duyệt</th>
-                                <th>Lời hẹn của bạn</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -40,26 +41,33 @@
                                         <div class="fw-bold text-dark">${item.student.fullName}</div>
                                         <div class="text-muted small"><i class="fas fa-star text-warning"></i> ${item.student.averageRating}/5</div>
                                     </td>
-                                    <td><span class="badge bg-info text-dark">${item.job.title}</span></td>
+                                    <td><span class="badge bg-info text-dark px-2 py-2">${item.job.title}</span></td>
+                                    <td>
+                                        <div class="text-dark small fw-semibold">
+                                            <i class="fas fa-map-marker-alt text-danger me-1"></i> ${item.job.detailAddress}
+                                        </div>
+                                        <div class="text-muted small">${item.job.ward}, ${item.job.city}</div>
+                                    </td>
                                     <td>
                                         <div class="text-dark fw-semibold"><i class="fas fa-phone-alt text-secondary me-1"></i> ${item.student.phone}</div>
                                         <div class="text-muted small"><i class="fas fa-envelope text-secondary me-1"></i> ${not empty item.student.contactEmail ? item.student.contactEmail : 'Không có'}</div>
                                     </td>
                                     <td>
-                                        <strong class="text-success"><fmt:formatNumber value="${item.application.desiredSalary}" pattern="#,###"/> đ/ca</strong>
+                                        <div class="text-dark fw-semibold">
+                                            <i class="fas fa-clock text-warning me-1"></i>
+                                            <fmt:formatDate value="${item.job.startTime}" type="time" pattern="HH:mm" /> - <fmt:formatDate value="${item.job.endTime}" type="time" pattern="HH:mm" />
+                                        </div>
                                     </td>
                                     <td>
-                                        <p class="mb-0 text-secondary small" style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${item.application.employerNote}">
-                                            ${item.application.employerNote}
-                                        </p>
+                                        <strong class="text-success fs-6"><fmt:formatNumber value="${item.application.desiredSalary}" pattern="#,###"/> đ/ca</strong>
                                     </td>
                                 </tr>
                             </c:forEach>
                             <c:if test="${empty listAccepted}">
                                 <tr>
-                                    <td colspan="5" class="text-center py-5 text-muted">
+                                    <td colspan="6" class="text-center py-5 text-muted">
                                         <i class="fas fa-user-slash fa-2x mb-2 opacity-50 d-block"></i>
-                                        Bạn chưa duyệt chấp nhận ứng viên nào.
+                                        Bạn chưa có nhân viên nào đang làm việc.
                                     </td>
                                 </tr>
                             </c:if>

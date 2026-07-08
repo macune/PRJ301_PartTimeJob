@@ -6,11 +6,6 @@ package models;
 
 import java.util.Date;
 
-/**
- * Model ánh xạ bảng Application
- * Status: 0 = Pending | 1 = Accepted | 2 = Rejected
- * @author PRJ301
- */
 public class Application {
 
     private int applicationID;
