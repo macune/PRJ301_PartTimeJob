@@ -86,6 +86,39 @@ public class ApplicationDAO extends DBContext {
         }
         return list;
     }
+      public List<Application> getApplicationsByStudentId(int studentID) {
+        List<Application> list = new ArrayList<>();
+        String sql = "SELECT a.ApplicationID, a.StudentID, a.JobID, "
+                + "       a.DesiredSalary, a.Message, a.Status, "
+                + "       a.EmployerNote, a.AppliedAt, "
+                + "       jp.Title      AS JobTitle, "
+                + "       jp.City       AS JobCity, "
+                + "       jp.Salary     AS JobSalary, "
+                + "       jp.StartTime  AS JobStartTime, "
+                + "       jp.EndTime    AS JobEndTime "
+                + "FROM Application a "
+                + "JOIN Job_Post jp ON a.JobID = jp.JobID "
+                + "WHERE a.StudentID = ? "
+                + "ORDER BY a.AppliedAt DESC";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, studentID);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Application a = mapRow(rs);
+                // Gắn thêm thông tin Job vào các transient field
+                a.setJobTitle(rs.getString("JobTitle"));
+                a.setJobCity(rs.getString("JobCity"));
+                a.setJobSalary(rs.getInt("JobSalary"));
+                a.setJobStartTime(rs.getString("JobStartTime"));
+                a.setJobEndTime(rs.getString("JobEndTime"));
+                list.add(a);
+            }
+        } catch (SQLException e) {
+            System.err.println("[ApplicationDAO.getApplicationsByStudentId] " + e.getMessage());
+        }
+        return list;
+    }
 
     // -------- Helper --------
     private Application mapRow(ResultSet rs) throws SQLException {
