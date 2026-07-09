@@ -208,4 +208,30 @@ public class AccountDAO extends DBContext {
         }
         return false;
     }
+    
+    public int countUsersByRole(int role) {
+        String sql = "SELECT COUNT(AccountID) FROM Account WHERE Role = ? AND IsDeleted = 0";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, role);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        } catch (Exception e) {}
+        return 0;
+    }
+    
+    // type = 1 (Hoạt động), 2 (Bị khóa), 3 (Đã xóa)
+    public int countAccountsByState(int type) {
+        String sql = "";
+        if (type == 1) sql = "SELECT COUNT(AccountID) FROM Account WHERE Status = 1 AND IsDeleted = 0 AND Role != 1";
+        else if (type == 2) sql = "SELECT COUNT(AccountID) FROM Account WHERE Status = 0 AND IsDeleted = 0 AND Role != 1";
+        else if (type == 3) sql = "SELECT COUNT(AccountID) FROM Account WHERE IsDeleted = 1 AND Role != 1";
+        
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        } catch (Exception e) {}
+        return 0;
+    }
 }

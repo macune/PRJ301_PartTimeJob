@@ -6,6 +6,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import models.Application;
+import models.Employer_Profile;
+import models.Job_Post;
+import models.Student_Profile;
+import viewmodels.ApplicationDTO;
+import viewmodels.StatDTO;
 
 public class ApplicationDAO extends DBContext {
 
@@ -86,12 +91,12 @@ public class ApplicationDAO extends DBContext {
                      )
                      """;
         try {
-            java.sql.PreparedStatement ps = connection.prepareStatement(sql);
+            PreparedStatement ps = connection.prepareStatement(sql);
             ps.setTime(1, newStartTime);
             ps.setTime(2, newEndTime);
             ps.setInt(3, studentID);
             return ps.executeQuery().next();
-        } catch (java.sql.SQLException e) {
+        } catch (SQLException e) {
             System.out.println("[ApplicationDAO.hasTimeOverlap] Error: " + e.getMessage());
         }
         return false;
@@ -101,8 +106,8 @@ public class ApplicationDAO extends DBContext {
     // CÁC HÀM DÀNH CHO NHÀ TUYỂN DỤNG (EMPLOYER)
     // =====================================================================
     
-    public List<viewmodels.ApplicationDTO> getApplicationsByJobId(int jobId) {
-        List<viewmodels.ApplicationDTO> list = new ArrayList<>();
+    public List<ApplicationDTO> getApplicationsByJobId(int jobId) {
+        List<ApplicationDTO> list = new ArrayList<>();
         // ĐÃ BỔ SUNG: ContactEmail, Address, Introduction
         String sql = """
                      SELECT a.ApplicationID, a.StudentID, a.JobID, a.DesiredSalary, a.Message, a.Status, a.EmployerNote, a.AppliedAt,
@@ -114,7 +119,7 @@ public class ApplicationDAO extends DBContext {
                      ORDER BY a.AppliedAt ASC
                      """;
         try {
-            java.sql.PreparedStatement ps = connection.prepareStatement(sql);
+            PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, jobId);
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -128,7 +133,7 @@ public class ApplicationDAO extends DBContext {
                 a.setEmployerNote(rs.getString("EmployerNote"));
                 a.setAppliedAt(rs.getTimestamp("AppliedAt"));
 
-                models.Student_Profile sp = new models.Student_Profile();
+                Student_Profile sp = new Student_Profile();
                 sp.setStudentId(rs.getInt("StudentID"));
                 sp.setFullName(rs.getString("FullName"));
                 sp.setPhone(rs.getString("Phone"));
@@ -141,7 +146,7 @@ public class ApplicationDAO extends DBContext {
                 sp.setAddress(rs.getString("Address"));
                 sp.setIntroduction(rs.getString("Introduction"));
 
-                list.add(new viewmodels.ApplicationDTO(a, sp));
+                list.add(new ApplicationDTO(a, sp));
             }
         } catch (SQLException e) {
             System.out.println("[ApplicationDAO.getApplicationsByJobId] Error: " + e.getMessage());
@@ -157,7 +162,7 @@ public class ApplicationDAO extends DBContext {
                      AND JobID IN (SELECT JobID FROM Job_Post WHERE EmployerID = ?)
                      """;
         try {
-            java.sql.PreparedStatement ps = connection.prepareStatement(sql);
+            PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, status);
             ps.setString(2, employerNote);
             ps.setInt(3, applicationId);
@@ -172,8 +177,8 @@ public class ApplicationDAO extends DBContext {
     // =====================================================================
     // HÀM LẤY DANH SÁCH NHÂN SỰ ĐÃ ĐƯỢC DUYỆT (HR MANAGEMENT)
     // =====================================================================
-    public List<viewmodels.ApplicationDTO> getAcceptedApplicationsByEmployerId(int employerId) {
-        List<viewmodels.ApplicationDTO> list = new ArrayList<>();
+    public List<ApplicationDTO> getAcceptedApplicationsByEmployerId(int employerId) {
+        List<ApplicationDTO> list = new ArrayList<>();
         String sql = """
                      SELECT a.ApplicationID, a.StudentID, a.JobID, a.DesiredSalary, a.Message, a.Status, a.EmployerNote, a.AppliedAt,
                             s.FullName, s.Phone, s.University, s.Experience, s.AverageRating,
@@ -187,11 +192,11 @@ public class ApplicationDAO extends DBContext {
                      ORDER BY a.AppliedAt DESC
                      """;
         try {
-            java.sql.PreparedStatement ps = connection.prepareStatement(sql);
+            PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, employerId);
-            java.sql.ResultSet rs = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                models.Application a = new models.Application();
+                Application a = new Application();
                 a.setApplicationID(rs.getInt("ApplicationID"));
                 a.setStudentID(rs.getInt("StudentID"));
                 a.setJobID(rs.getInt("JobID"));
@@ -204,7 +209,7 @@ public class ApplicationDAO extends DBContext {
                 a.setEmployerNote(rs.getString("EmployerNote"));
                 a.setAppliedAt(rs.getTimestamp("AppliedAt"));
 
-                models.Student_Profile sp = new models.Student_Profile();
+                Student_Profile sp = new Student_Profile();
                 sp.setStudentId(rs.getInt("StudentID"));
                 sp.setFullName(rs.getString("FullName"));
                 sp.setPhone(rs.getString("Phone"));
@@ -215,7 +220,7 @@ public class ApplicationDAO extends DBContext {
                 sp.setAddress(rs.getString("Address"));
                 sp.setIntroduction(rs.getString("Introduction"));
 
-                models.Job_Post job = new models.Job_Post();
+                Job_Post job = new Job_Post();
                 job.setJobId(rs.getInt("JobID"));
                 job.setTitle(rs.getString("JobTitle"));
                 job.setStartTime(rs.getTime("StartTime"));
@@ -224,9 +229,9 @@ public class ApplicationDAO extends DBContext {
                 job.setWard(rs.getString("JobWard"));
                 job.setCity(rs.getString("JobCity"));
 
-                list.add(new viewmodels.ApplicationDTO(a, sp, job));
+                list.add(new ApplicationDTO(a, sp, job));
             }
-        } catch (java.sql.SQLException e) {
+        } catch (SQLException e) {
             System.out.println("[ApplicationDAO.getAcceptedApplications] Error: " + e.getMessage());
         }
         return list;
@@ -235,8 +240,8 @@ public class ApplicationDAO extends DBContext {
     // =====================================================================
     // HÀM DÀNH CHO SINH VIÊN: XEM LỊCH SỬ ỨNG TUYỂN & ĐÁNH GIÁ
     // =====================================================================
-    public List<viewmodels.ApplicationDTO> getApplicationHistoryByStudentId(int studentId) {
-        List<viewmodels.ApplicationDTO> list = new ArrayList<>();
+    public List<ApplicationDTO> getApplicationHistoryByStudentId(int studentId) {
+        List<ApplicationDTO> list = new ArrayList<>();
         String sql = """
                      SELECT a.ApplicationID, a.StudentID, a.JobID, a.DesiredSalary, a.Message, a.Status, a.EmployerNote, a.AppliedAt,
                             j.Title AS JobTitle, j.City AS JobCity, j.Ward AS JobWard, j.DetailAddress AS JobDetailAddress, j.Salary AS JobSalary, j.StartTime, j.EndTime,
@@ -248,11 +253,11 @@ public class ApplicationDAO extends DBContext {
                      ORDER BY a.AppliedAt DESC
                      """;
         try {
-            java.sql.PreparedStatement ps = connection.prepareStatement(sql);
+            PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, studentId);
             java.sql.ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                models.Application a = new models.Application();
+                Application a = new Application();
                 a.setApplicationID(rs.getInt("ApplicationID"));
                 a.setStudentID(rs.getInt("StudentID"));
                 a.setJobID(rs.getInt("JobID"));
@@ -262,7 +267,7 @@ public class ApplicationDAO extends DBContext {
                 a.setEmployerNote(rs.getString("EmployerNote"));
                 a.setAppliedAt(rs.getTimestamp("AppliedAt"));
 
-                models.Job_Post job = new models.Job_Post();
+                Job_Post job = new Job_Post();
                 job.setJobId(rs.getInt("JobID"));
                 job.setTitle(rs.getString("JobTitle"));
                 job.setCity(rs.getString("JobCity"));
@@ -272,17 +277,57 @@ public class ApplicationDAO extends DBContext {
                 job.setStartTime(rs.getTime("StartTime"));
                 job.setEndTime(rs.getTime("EndTime"));
 
-                models.Employer_Profile emp = new models.Employer_Profile();
+                Employer_Profile emp = new Employer_Profile();
                 // DÒNG QUAN TRỌNG NHẤT ĐỂ SỬA LỖI ĐÁNH GIÁ: Lấy EmployerID
                 emp.setEmployerId(rs.getInt("EmployerID")); 
                 emp.setBusinessName(rs.getString("BusinessName"));
                 emp.setPhone(rs.getString("EmployerPhone"));
 
-                list.add(new viewmodels.ApplicationDTO(a, job, emp));
+                list.add(new ApplicationDTO(a, job, emp));
             }
         } catch (java.sql.SQLException e) {
             System.out.println("[ApplicationDAO.getApplicationHistory] Error: " + e.getMessage());
         }
+        return list;
+    }
+    
+    // =====================================================================
+    // HÀM THỐNG KÊ CHO ADMIN DASHBOARD 
+    // =====================================================================
+    public int getTotalApplications() {
+        String sql = "SELECT COUNT(ApplicationID) FROM Application";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        } catch (java.sql.SQLException e) {}
+        return 0;
+    }
+
+    public List<StatDTO> getApplicationStatsByStatus() {
+        List<StatDTO> list = new java.util.ArrayList<>();
+        int pending = 0, accepted = 0, rejected = 0;
+
+        String sql = "SELECT Status, COUNT(ApplicationID) AS Total FROM Application GROUP BY Status";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                int status = rs.getInt("Status");
+                int count = rs.getInt("Total");
+                if (status == 0) pending = count;
+                else if (status == 1) accepted = count;
+                else if (status == 2) rejected = count;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error getApplicationStatsByStatus: " + e.getMessage());
+        }
+        
+        // Add vào list theo thứ tự mong muốn
+        list.add(new StatDTO("Đang chờ", pending));
+        list.add(new StatDTO("Chấp nhận", accepted));
+        list.add(new StatDTO("Từ chối", rejected));
+
         return list;
     }
 }

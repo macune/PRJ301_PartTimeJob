@@ -4,11 +4,11 @@ import models.Category;
 import models.Employer_Profile;
 import models.Job_Post;
 import viewmodels.JobDetailDTO; 
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+import viewmodels.StatDTO;
 
 public class JobDAO extends DBContext {
 
@@ -456,5 +456,46 @@ public class JobDAO extends DBContext {
             System.out.println("Error updateJobStatusByAdmin: " + e.getMessage());
         }
         return false;
+    }
+    
+    // =====================================================================
+    // HÀM THỐNG KÊ CHO ADMIN DASHBOARD 
+    // =====================================================================
+    public int countAllJobs() {
+        String sql = "SELECT COUNT(JobID) FROM Job_Post";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        } catch (Exception e) {}
+        return 0;
+    }
+
+    public List<StatDTO> getJobStatsByCategory() {
+        List<StatDTO> list = new ArrayList<>();
+        String sql = """
+                     SELECT c.CategoryName, COUNT(j.JobID) AS Total
+                     FROM Category c
+                     LEFT JOIN Job_Post j ON c.CategoryID = j.CategoryID
+                     GROUP BY c.CategoryName
+                     """;
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(new StatDTO(rs.getString("CategoryName"), rs.getInt("Total")));
+            }
+        } catch (Exception e) {}
+        return list;
+    }
+    
+    public int countPendingJobs() {
+        String sql = "SELECT COUNT(JobID) FROM Job_Post WHERE Status = 0";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        } catch (Exception e) {}
+        return 0;
     }
 }

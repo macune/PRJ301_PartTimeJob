@@ -5,12 +5,17 @@
 
 package controllers.admin;
 
+import dal.AccountDAO;
+import dal.ApplicationDAO;
+import dal.JobDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.List;
+import viewmodels.StatDTO;
 
 /**
  *
@@ -53,9 +58,32 @@ public class AdminDashboardController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        //processRequest(request, response);
+        
+        AccountDAO accDAO = new AccountDAO();
+        JobDAO jobDAO = new JobDAO();
+        ApplicationDAO appDAO = new ApplicationDAO();
+
+        // 1. Số liệu tổng quan 4 thẻ Card
+        request.setAttribute("totalStudents", accDAO.countUsersByRole(2));
+        request.setAttribute("totalEmployers", accDAO.countUsersByRole(3));
+        request.setAttribute("totalJobs", jobDAO.countAllJobs());
+        request.setAttribute("totalApps", appDAO.getTotalApplications());
+
+        // 2. Số liệu trạng thái mới thêm (Bài đăng & Tài khoản)
+        request.setAttribute("pendingJobs", jobDAO.countPendingJobs());
+        request.setAttribute("activeAccs", accDAO.countAccountsByState(1));
+        request.setAttribute("lockedAccs", accDAO.countAccountsByState(2));
+        request.setAttribute("deletedAccs", accDAO.countAccountsByState(3));
+
+        // 3. Danh sách đối tượng thống kê chi tiết (Không dùng Map)
+        List<StatDTO> appStats = appDAO.getApplicationStatsByStatus();
+        List<StatDTO> jobStats = jobDAO.getJobStatsByCategory();
+
+        request.setAttribute("appStats", appStats);
+        request.setAttribute("jobStats", jobStats);
+
         request.getRequestDispatcher("/views/admin/admin_dashboard.jsp").forward(request, response);
-    } 
+    }
 
     /** 
      * Handles the HTTP <code>POST</code> method.
