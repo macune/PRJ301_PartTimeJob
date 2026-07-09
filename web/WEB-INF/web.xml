@@ -133,6 +133,10 @@
         <servlet-name>StudentReviewController</servlet-name>
         <servlet-class>controllers.student.StudentReviewController</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>EmployerReviewController</servlet-name>
+        <servlet-class>controllers.employer.EmployerReviewController</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>UserHomeController</servlet-name>
         <url-pattern>/home</url-pattern>
@@ -232,6 +236,10 @@
     <servlet-mapping>
         <servlet-name>StudentReviewController</servlet-name>
         <url-pattern>/student/review</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>EmployerReviewController</servlet-name>
+        <url-pattern>/employer/review</url-pattern>
     </servlet-mapping>
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
