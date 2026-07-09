@@ -8,13 +8,7 @@
     <title>Quản lý ứng viên - PartTimeJobs</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css?v=2.8">
-    <style>
-        .star-rating { direction: rtl; display: inline-block; padding: 10px 0; }
-        .star-rating input[type=radio] { display: none; }
-        .star-rating label { font-size: 2rem; color: #d1d5db; cursor: pointer; transition: color 0.2s; padding: 0 5px; }
-        .star-rating label:hover, .star-rating label:hover ~ label, .star-rating input[type=radio]:checked ~ label { color: #f59e0b; }
-    </style>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css?v=5.0">
 </head>
 <body class="d-flex flex-column min-vh-100 bg-light">
 
@@ -32,22 +26,6 @@
                 </h3>
             </div>
         </div>
-        
-        <c:if test="${not empty sessionScope.successMsg}">
-            <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
-                <i class="fas fa-check-circle me-2"></i>${sessionScope.successMsg}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            <c:remove var="successMsg" scope="session"/>
-        </c:if>
-
-        <c:if test="${not empty sessionScope.errorMsg}">
-            <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
-                <i class="fas fa-exclamation-circle me-2"></i>${sessionScope.errorMsg}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            <c:remove var="errorMsg" scope="session"/>
-        </c:if>
 
         <c:if test="${empty listApplicants}">
             <div class="alert alert-info text-center py-4 rounded-4 shadow-sm">
@@ -92,46 +70,9 @@
                                 </div>
                             </div>
                             
-                            <button class="btn btn-outline-primary w-100 fw-semibold rounded-pill" data-bs-toggle="modal" data-bs-target="#studentProfileModal${item.student.studentId}">
+                            <button class="btn btn-outline-info w-100 mb-3 fw-semibold rounded-pill bg-white" data-bs-toggle="modal" data-bs-target="#studentProfileModal${item.student.studentId}">
                                 <i class="fas fa-id-badge me-2"></i>Xem Hồ Sơ & Đánh Giá Chi Tiết
                             </button>
-                            <!-- Nút chấm sao cho Employer nếu đơn đã chấp nhận -->
-                            <c:if test="${item.application.status == 1}">
-                                <button class="btn btn-warning w-100 fw-semibold rounded-pill mt-2" data-bs-toggle="modal" data-bs-target="#reviewStudentModal${item.student.studentId}">
-                                    <i class="fas fa-star me-2"></i>Đánh giá thái độ làm việc
-                                </button>
-                                
-                                <!-- Modal Đánh giá Sinh viên -->
-                                <div class="modal fade" id="reviewStudentModal${item.student.studentId}" tabindex="-1" aria-hidden="true">
-                                    <div class="modal-dialog modal-dialog-centered">
-                                        <div class="modal-content rounded-4 border-0 shadow">
-                                            <div class="modal-header bg-warning text-dark border-0 pb-3 rounded-top-4">
-                                                <h5 class="modal-title fw-bold"><i class="fas fa-star me-2"></i>Đánh giá Ứng viên</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                            </div>
-                                            <form action="${pageContext.request.contextPath}/employer/review" method="POST">
-                                                <div class="modal-body p-4 text-center">
-                                                    <p class="mb-2">Thái độ và hiệu suất làm việc của <strong>${item.student.fullName}</strong> như thế nào?</p>
-                                                    <input type="hidden" name="studentId" value="${item.student.studentId}">
-                                                    <input type="hidden" name="jobId" value="${jobId}">
-                                                    
-                                                    <div class="star-rating">
-                                                        <input type="radio" id="st5_${item.student.studentId}" name="rating" value="5" required/><label for="st5_${item.student.studentId}"><i class="fas fa-star"></i></label>
-                                                        <input type="radio" id="st4_${item.student.studentId}" name="rating" value="4"/><label for="st4_${item.student.studentId}"><i class="fas fa-star"></i></label>
-                                                        <input type="radio" id="st3_${item.student.studentId}" name="rating" value="3"/><label for="st3_${item.student.studentId}"><i class="fas fa-star"></i></label>
-                                                        <input type="radio" id="st2_${item.student.studentId}" name="rating" value="2"/><label for="st2_${item.student.studentId}"><i class="fas fa-star"></i></label>
-                                                        <input type="radio" id="st1_${item.student.studentId}" name="rating" value="1"/><label for="st1_${item.student.studentId}"><i class="fas fa-star"></i></label>
-                                                    </div>
-                                                    <textarea class="form-control mt-3" name="comment" rows="3" placeholder="Nhận xét về giờ giấc, thái độ..." required></textarea>
-                                                </div>
-                                                <div class="modal-footer bg-light border-top-0 rounded-bottom-4">
-                                                    <button type="submit" class="btn btn-warning fw-semibold w-100">Gửi đánh giá</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </c:if>
                             
                             <div class="mb-3">
                                 <small class="text-muted">Kinh nghiệm làm việc tóm tắt:</small>
@@ -179,26 +120,21 @@
                     </div>
                 </div>
 
+                <!-- MODAL HỒ SƠ ỨNG VIÊN -->
                 <div class="modal fade" id="studentProfileModal${item.student.studentId}" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
                         <div class="modal-content rounded-4 border-0 shadow">
-                            
                             <div class="modal-header bg-info text-white border-bottom-0 pb-3 rounded-top-4">
                                 <h5 class="modal-title fw-bold text-dark"><i class="fas fa-id-card me-2"></i>Hồ Sơ Ứng Viên Chi Tiết</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                             </div>
-                            
                             <div class="modal-body p-4 bg-light">
-                                
                                 <div class="card border-0 shadow-sm rounded-4 mb-4">
                                     <div class="card-body p-4">
                                         <h3 class="fw-bold text-center text-primary mb-2">${item.student.fullName}</h3>
                                         <div class="d-flex justify-content-center align-items-center mb-4">
-                                            <span class="text-warning fw-bold fs-5">
-                                                ${item.student.averageRating} <i class="fas fa-star"></i>
-                                            </span>
+                                            <span class="text-warning fw-bold fs-5">${item.student.averageRating} <i class="fas fa-star"></i></span>
                                         </div>
-                                        
                                         <div class="row g-4">
                                             <div class="col-md-6">
                                                 <p class="mb-1 text-muted small fw-semibold"><i class="fas fa-phone-alt me-2"></i>Số điện thoại</p>
@@ -216,23 +152,19 @@
                                                 <p class="mb-1 text-muted small fw-semibold"><i class="fas fa-map-marker-alt me-2"></i>Địa chỉ hiện tại</p>
                                                 <p class="fw-bold text-dark ms-4">${not empty item.student.address ? item.student.address : '<span class="text-muted fw-normal fst-italic">Chưa cập nhật</span>'}</p>
                                             </div>
-                                            
                                             <div class="col-12 mt-4">
                                                 <p class="mb-2 text-muted small fw-semibold"><i class="fas fa-user-circle me-2"></i>Giới thiệu bản thân</p>
-                                                <div class="p-3 bg-white rounded-3 text-secondary border" style="white-space: pre-wrap; font-size: 0.95rem;">${not empty item.student.introduction ? item.student.introduction : 'Chưa cập nhật thông tin giới thiệu.'}</div>
+                                                <div class="p-3 bg-white rounded-3 text-secondary border text-pre-wrap-sm">${not empty item.student.introduction ? item.student.introduction : 'Chưa cập nhật thông tin giới thiệu.'}</div>
                                             </div>
                                             <div class="col-12 mt-2">
                                                 <p class="mb-2 text-muted small fw-semibold"><i class="fas fa-briefcase me-2"></i>Kinh nghiệm làm việc</p>
-                                                <div class="p-3 bg-white rounded-3 text-secondary border" style="white-space: pre-wrap; font-size: 0.95rem;">${not empty item.student.experience ? item.student.experience : 'Chưa cập nhật kinh nghiệm làm việc.'}</div>
+                                                <div class="p-3 bg-white rounded-3 text-secondary border text-pre-wrap-sm">${not empty item.student.experience ? item.student.experience : 'Chưa cập nhật kinh nghiệm làm việc.'}</div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
-                                <h5 class="fw-bold text-dark mb-3">
-                                    <i class="fas fa-comments text-warning me-2"></i>Nhận xét từ Nhà tuyển dụng cũ
-                                </h5>
-                                
+                                <h5 class="fw-bold text-dark mb-3"><i class="fas fa-comments text-warning me-2"></i>Nhận xét từ Nhà tuyển dụng cũ</h5>
                                 <c:choose>
                                     <c:when test="${empty studentReviewsMap[item.student.studentId]}">
                                         <div class="text-center text-muted py-4 bg-white rounded-4 shadow-sm border-0">
@@ -245,30 +177,24 @@
                                             <div class="card mb-3 p-3 border-0 bg-white shadow-sm rounded-4">
                                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                                     <span class="fw-bold text-dark"><i class="fas fa-store text-secondary me-2"></i>${r.reviewerName}</span>
-                                                    <span class="text-warning fw-bold">
-                                                        ${r.rating} <i class="fas fa-star"></i>
-                                                    </span>
+                                                    <span class="text-warning fw-bold">${r.rating} <i class="fas fa-star"></i></span>
                                                 </div>
                                                 <p class="mb-2 text-secondary ms-4">${r.comment}</p>
                                                 <div class="text-end">
-                                                    <small class="text-muted fst-italic">
-                                                        <i class="fas fa-clock me-1"></i> <fmt:formatDate value="${r.createdAt}" pattern="yyyy-MM-dd HH:mm" />
-                                                    </small>
+                                                    <small class="text-muted fst-italic"><i class="fas fa-clock me-1"></i> <fmt:formatDate value="${r.createdAt}" pattern="yyyy-MM-dd HH:mm" /></small>
                                                 </div>
                                             </div>
                                         </c:forEach>
                                     </c:otherwise>
                                 </c:choose>
-
                             </div>
-                            
                             <div class="modal-footer border-top-0 pt-0 bg-light rounded-bottom-4 justify-content-end">
                                 <button type="button" class="btn btn-secondary rounded-pill px-4 fw-semibold" data-bs-dismiss="modal">Đóng</button>
                             </div>
                         </div>
                     </div>
                 </div>
-                </c:forEach>
+            </c:forEach>
         </div>
     </div>
 

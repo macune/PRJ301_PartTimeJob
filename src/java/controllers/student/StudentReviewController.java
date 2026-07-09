@@ -7,14 +7,13 @@ package controllers.student;
 
 import dal.ReviewDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.io.PrintWriter;
 import models.Account;
-
 /**
  *
  * @author acer
@@ -70,22 +69,16 @@ public class StudentReviewController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-        HttpSession session = request.getSession(false);
-        Account account = (session != null) ? (Account) session.getAttribute("account") : null;
-        
-        if (account == null || account.getRole() != 2) {
-            response.sendRedirect(request.getContextPath() + "/userLogin");
-            return;
-        }
+        HttpSession session = request.getSession();
+        models.Account account = (models.Account) session.getAttribute("account");
 
         try {
             int employerId = Integer.parseInt(request.getParameter("employerId"));
             int rating = Integer.parseInt(request.getParameter("rating"));
             String comment = request.getParameter("comment");
 
-            ReviewDAO reviewDAO = new ReviewDAO();
+            dal.ReviewDAO reviewDAO = new dal.ReviewDAO();
             
-            // Chống spam review
             if (reviewDAO.hasStudentReviewedEmployer(account.getAccountId(), employerId)) {
                 session.setAttribute("errorMsg", "Bạn đã đánh giá cửa hàng này trước đó rồi!");
             } else {
@@ -95,9 +88,12 @@ public class StudentReviewController extends HttpServlet {
                     session.setAttribute("errorMsg", "Đã xảy ra lỗi, vui lòng thử lại sau.");
                 }
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            e.printStackTrace(); // In lỗi ra NetBeans Output
+            session.setAttribute("errorMsg", "Dữ liệu không hợp lệ, vui lòng tải lại trang.");
+        }
         
-        response.sendRedirect(request.getContextPath() + "/student/application-history");
+        response.sendRedirect(request.getContextPath() + "/student/manageJobs");
     }
 
     /** 

@@ -491,3 +491,75 @@ body {
     color: #fff !important;
     border-color: #2e7d32 !important;
 }
+
+/* ================= CSS THAY THẾ CHO CÁC INLINE STYLE CŨ ================= */
+/* Dùng trong trang Lịch sử ứng tuyển */
+.border-left-warning { border-left: 5px solid #f59e0b !important; }
+.border-left-success { border-left: 5px solid #16a34a !important; }
+.border-left-danger { border-left: 5px solid #dc2626 !important; }
+
+.btn-filter-all { background-color: #2e7d32; color: white; }
+.btn-filter-all:hover { background-color: #1b5e20; color: white; }
+.btn-filter-status { background-color: #0d6efd; color: white; }
+.btn-filter-status:hover { background-color: #0b5ed7; color: white; }
+
+.status-bar-0 { background-color: #f59e0b; }
+.status-bar-1 { background-color: #16a34a; }
+.status-bar-2 { background-color: #dc2626; }
+
+.note-box-student {
+    border-color: #64748b;
+    border-left-width: 3px;
+}
+
+/* Dùng trong trang Quản lý ứng viên */
+.text-pre-wrap-sm {
+    white-space: pre-wrap;
+    font-size: 0.95rem;
+}
+
+/* ================= STAR RATING ================= */
+.star-rating {
+    direction: rtl; 
+    display: inline-block; 
+    padding: 10px 0;
+}
+.star-rating input[type=radio] {
+    display: none;
+}
+.star-rating label {
+    font-size: 2rem; 
+    color: #d1d5db; 
+    cursor: pointer; 
+    transition: color 0.2s; 
+    padding: 0 5px;
+}
+.star-rating label:hover, 
+.star-rating label:hover ~ label, 
+.star-rating input[type=radio]:checked ~ label {
+    color: #f59e0b;
+}
+
+/* ================= MODAL ĐÁNH GIÁ (YELLOW THEME) ================= */
+.modal-header-yellow {
+    background-color: #ffc107;
+}
+
+.review-prompt-text {
+    font-size: 1.05rem;
+}
+
+.review-textarea {
+    resize: none;
+}
+
+.btn-submit-yellow {
+    background-color: #ffc107;
+    font-size: 1.1rem;
+    padding: 10px;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.btn-submit-yellow:hover {
+    background-color: #e0a800;
+}

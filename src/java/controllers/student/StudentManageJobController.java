@@ -66,17 +66,21 @@ public class StudentManageJobController extends HttpServlet {
         Account account = (Account) session.getAttribute("account");
         int studentId = account.getAccountId();
         
-        // 1. Lấy danh sách Việc đã lưu
         SavedJobDAO savedJobDAO = new SavedJobDAO();
         List<JobDetailDTO> savedJobs = savedJobDAO.getSavedJobsWithDetails(studentId);
         
-        // 2. Lấy danh sách Công việc đang làm (Status = 1)
         ApplicationDAO appDAO = new ApplicationDAO();
         List<ApplicationDTO> allApps = appDAO.getApplicationHistoryByStudentId(studentId);
         List<ApplicationDTO> workingJobs = new ArrayList<>();
         
+        dal.ReviewDAO reviewDAO = new dal.ReviewDAO();
+        
         for (ApplicationDTO app : allApps) {
-            if (app.getApplication().getStatus() == 1) { // 1 = Chấp nhận
+            if (app.getApplication().getStatus() == 1) { 
+                // Kiểm tra xem sinh viên đã đánh giá cửa hàng này chưa
+                boolean hasReviewed = reviewDAO.hasStudentReviewedEmployer(studentId, app.getEmployer().getEmployerId());
+                app.setIsReviewed(hasReviewed); // Gắn thẳng vào object
+                
                 workingJobs.add(app);
             }
         }
@@ -85,7 +89,7 @@ public class StudentManageJobController extends HttpServlet {
         request.setAttribute("workingJobs", workingJobs);
         
         request.getRequestDispatcher("/views/student/student_manage_jobs.jsp").forward(request, response);
-    }
+    } 
 
     /** 
      * Handles the HTTP <code>POST</code> method.

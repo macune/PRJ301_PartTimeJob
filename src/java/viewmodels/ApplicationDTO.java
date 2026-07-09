@@ -10,6 +10,7 @@ public class ApplicationDTO {
     private Student_Profile student;
     private Job_Post job; 
     private Employer_Profile employer; // Bổ sung thêm Employer
+    private boolean isReviewed;
 
     public ApplicationDTO() {}
 
@@ -38,4 +39,6 @@ public class ApplicationDTO {
     public void setJob(Job_Post job) { this.job = job; }
     public Employer_Profile getEmployer() { return employer; }
     public void setEmployer(Employer_Profile employer) { this.employer = employer; }
+    public boolean getIsReviewed() { return isReviewed; }
+    public void setIsReviewed(boolean isReviewed) { this.isReviewed = isReviewed; }
 }

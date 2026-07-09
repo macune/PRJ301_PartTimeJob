@@ -7,12 +7,12 @@ package controllers.employer;
 
 import dal.ReviewDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.io.PrintWriter;
 import models.Account;
 
 /**
@@ -54,37 +54,18 @@ public class EmployerReviewController extends HttpServlet {
      * @throws IOException if an I/O error occurs
      */
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-    throws ServletException, IOException {
-        processRequest(request, response);
-    } 
-
-    /** 
-     * Handles the HTTP <code>POST</code> method.
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
-        HttpSession session = request.getSession(false);
-        Account account = (session != null) ? (Account) session.getAttribute("account") : null;
-        
-        if (account == null || account.getRole() != 3) {
-            response.sendRedirect(request.getContextPath() + "/userLogin");
-            return;
-        }
+        HttpSession session = request.getSession();
+        models.Account account = (models.Account) session.getAttribute("account");
 
-        String jobId = request.getParameter("jobId"); // Để redirect lại đúng trang
         try {
             int studentId = Integer.parseInt(request.getParameter("studentId"));
             int rating = Integer.parseInt(request.getParameter("rating"));
             String comment = request.getParameter("comment");
 
-            ReviewDAO reviewDAO = new ReviewDAO();
+            dal.ReviewDAO reviewDAO = new dal.ReviewDAO();
             
             if (reviewDAO.hasEmployerReviewedStudent(account.getAccountId(), studentId)) {
                 session.setAttribute("errorMsg", "Bạn đã đánh giá ứng viên này trước đó rồi!");
@@ -95,9 +76,12 @@ public class EmployerReviewController extends HttpServlet {
                     session.setAttribute("errorMsg", "Đã xảy ra lỗi, vui lòng thử lại sau.");
                 }
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            e.printStackTrace(); // In lỗi ra NetBeans Output
+            session.setAttribute("errorMsg", "Dữ liệu không hợp lệ, vui lòng tải lại trang.");
+        }
         
-        response.sendRedirect(request.getContextPath() + "/employer/manageApplicants?jobId=" + jobId);
+        response.sendRedirect(request.getContextPath() + "/employer/manageHR");
     }
 
     /** 

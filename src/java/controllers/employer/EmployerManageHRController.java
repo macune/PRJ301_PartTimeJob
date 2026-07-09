@@ -67,7 +67,16 @@ public class EmployerManageHRController extends HttpServlet {
         ApplicationDAO appDAO = new ApplicationDAO();
         List<ApplicationDTO> listAccepted = appDAO.getAcceptedApplicationsByEmployerId(employerId);
         
+        dal.ReviewDAO reviewDAO = new dal.ReviewDAO();
+        for (ApplicationDTO app : listAccepted) {
+            if (app.getApplication().getStatus() == 1) {
+                boolean hasReviewed = reviewDAO.hasEmployerReviewedStudent(employerId, app.getStudent().getStudentId());
+                app.setIsReviewed(hasReviewed); // Gắn thẳng vào object
+            }
+        }
+        
         request.setAttribute("listAccepted", listAccepted);
+        
         request.getRequestDispatcher("/views/employer/employer_manage_hr.jsp").forward(request, response);
     }
 

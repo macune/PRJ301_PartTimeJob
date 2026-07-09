@@ -174,7 +174,6 @@ public class ApplicationDAO extends DBContext {
     // =====================================================================
     public List<viewmodels.ApplicationDTO> getAcceptedApplicationsByEmployerId(int employerId) {
         List<viewmodels.ApplicationDTO> list = new ArrayList<>();
-        // ĐÃ BỔ SUNG: Địa chỉ công việc (DetailAddress, Ward, City)
         String sql = """
                      SELECT a.ApplicationID, a.StudentID, a.JobID, a.DesiredSalary, a.Message, a.Status, a.EmployerNote, a.AppliedAt,
                             s.FullName, s.Phone, s.University, s.Experience, s.AverageRating,
@@ -221,8 +220,6 @@ public class ApplicationDAO extends DBContext {
                 job.setTitle(rs.getString("JobTitle"));
                 job.setStartTime(rs.getTime("StartTime"));
                 job.setEndTime(rs.getTime("EndTime"));
-                
-                // Bắt dữ liệu Địa chỉ làm việc
                 job.setDetailAddress(rs.getString("JobDetailAddress"));
                 job.setWard(rs.getString("JobWard"));
                 job.setCity(rs.getString("JobCity"));
@@ -230,20 +227,20 @@ public class ApplicationDAO extends DBContext {
                 list.add(new viewmodels.ApplicationDTO(a, sp, job));
             }
         } catch (java.sql.SQLException e) {
-            System.out.println("[ApplicationDAO.getAcceptedApplicationsByEmployerId] Error: " + e.getMessage());
+            System.out.println("[ApplicationDAO.getAcceptedApplications] Error: " + e.getMessage());
         }
         return list;
     }
     
     // =====================================================================
-    // HÀM DÀNH CHO SINH VIÊN: XEM LỊCH SỬ ỨNG TUYỂN
+    // HÀM DÀNH CHO SINH VIÊN: XEM LỊCH SỬ ỨNG TUYỂN & ĐÁNH GIÁ
     // =====================================================================
     public List<viewmodels.ApplicationDTO> getApplicationHistoryByStudentId(int studentId) {
         List<viewmodels.ApplicationDTO> list = new ArrayList<>();
         String sql = """
                      SELECT a.ApplicationID, a.StudentID, a.JobID, a.DesiredSalary, a.Message, a.Status, a.EmployerNote, a.AppliedAt,
                             j.Title AS JobTitle, j.City AS JobCity, j.Ward AS JobWard, j.DetailAddress AS JobDetailAddress, j.Salary AS JobSalary, j.StartTime, j.EndTime,
-                            e.BusinessName, e.Phone AS EmployerPhone
+                            e.EmployerID, e.BusinessName, e.Phone AS EmployerPhone
                      FROM Application a
                      JOIN Job_Post j ON a.JobID = j.JobID
                      JOIN Employer_Profile e ON j.EmployerID = e.EmployerID
@@ -269,23 +266,22 @@ public class ApplicationDAO extends DBContext {
                 job.setJobId(rs.getInt("JobID"));
                 job.setTitle(rs.getString("JobTitle"));
                 job.setCity(rs.getString("JobCity"));
-                // Lấy thêm chi tiết địa chỉ
                 job.setWard(rs.getString("JobWard"));
                 job.setDetailAddress(rs.getString("JobDetailAddress"));
-                
                 job.setSalary(rs.getInt("JobSalary"));
                 job.setStartTime(rs.getTime("StartTime"));
                 job.setEndTime(rs.getTime("EndTime"));
 
                 models.Employer_Profile emp = new models.Employer_Profile();
+                // DÒNG QUAN TRỌNG NHẤT ĐỂ SỬA LỖI ĐÁNH GIÁ: Lấy EmployerID
+                emp.setEmployerId(rs.getInt("EmployerID")); 
                 emp.setBusinessName(rs.getString("BusinessName"));
-                // Lấy thêm SĐT liên hệ
                 emp.setPhone(rs.getString("EmployerPhone"));
 
                 list.add(new viewmodels.ApplicationDTO(a, job, emp));
             }
         } catch (java.sql.SQLException e) {
-            System.out.println("[ApplicationDAO.getApplicationHistoryByStudentId] Error: " + e.getMessage());
+            System.out.println("[ApplicationDAO.getApplicationHistory] Error: " + e.getMessage());
         }
         return list;
     }
