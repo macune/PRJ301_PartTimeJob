@@ -9,6 +9,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css?v=3.0">
+    <style>
+        .star-rating { direction: rtl; display: inline-block; padding: 10px 0; }
+        .star-rating input[type=radio] { display: none; }
+        .star-rating label { font-size: 2rem; color: #d1d5db; cursor: pointer; transition: color 0.2s; padding: 0 5px; }
+        .star-rating label:hover, .star-rating label:hover ~ label, .star-rating input[type=radio]:checked ~ label { color: #f59e0b; }
+    </style>
 </head>
 <body class="d-flex flex-column min-vh-100 bg-light">
 
@@ -125,6 +131,21 @@
                                         </c:when>
                                     </c:choose>
                                 </div>
+                                <c:if test="${not empty sessionScope.successMsg}">
+                                    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                                        <i class="fas fa-check-circle me-2"></i>${sessionScope.successMsg}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                    <c:remove var="successMsg" scope="session"/>
+                                </c:if>
+
+                                <c:if test="${not empty sessionScope.errorMsg}">
+                                    <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                                        <i class="fas fa-exclamation-circle me-2"></i>${sessionScope.errorMsg}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                    <c:remove var="errorMsg" scope="session"/>
+                                </c:if>
 
                                 <div class="row g-2 mb-3">
                                     <div class="col-md-3 col-sm-6 text-muted small">
@@ -171,6 +192,42 @@
                                         </div>
                                     </c:when>
                                 </c:choose>
+                                <!-- Hiện nút đánh giá nếu Status = 1 (Đã nhận) -->
+                                <c:if test="${item.application.status == 1}">
+                                    <button class="btn btn-sm btn-outline-warning fw-semibold mt-3" data-bs-toggle="modal" data-bs-target="#reviewEmployerModal${item.employer.employerId}">
+                                        <i class="fas fa-star me-1"></i> Đánh giá cửa hàng
+                                    </button>
+                                    
+                                    <!-- Modal Đánh giá Cửa hàng -->
+                                    <div class="modal fade" id="reviewEmployerModal${item.employer.employerId}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered">
+                                            <div class="modal-content rounded-4 border-0 shadow">
+                                                <div class="modal-header bg-warning text-dark border-0 pb-3 rounded-top-4">
+                                                    <h5 class="modal-title fw-bold"><i class="fas fa-star me-2"></i>Đánh giá nơi làm việc</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <form action="${pageContext.request.contextPath}/student/review" method="POST">
+                                                    <div class="modal-body p-4 text-center">
+                                                        <p class="mb-2">Bạn đánh giá trải nghiệm làm việc tại <strong>${item.employer.businessName}</strong> như thế nào?</p>
+                                                        <input type="hidden" name="employerId" value="${item.employer.employerId}">
+                                                        
+                                                        <div class="star-rating">
+                                                            <input type="radio" id="star5_${item.employer.employerId}" name="rating" value="5" required/><label for="star5_${item.employer.employerId}"><i class="fas fa-star"></i></label>
+                                                            <input type="radio" id="star4_${item.employer.employerId}" name="rating" value="4"/><label for="star4_${item.employer.employerId}"><i class="fas fa-star"></i></label>
+                                                            <input type="radio" id="star3_${item.employer.employerId}" name="rating" value="3"/><label for="star3_${item.employer.employerId}"><i class="fas fa-star"></i></label>
+                                                            <input type="radio" id="star2_${item.employer.employerId}" name="rating" value="2"/><label for="star2_${item.employer.employerId}"><i class="fas fa-star"></i></label>
+                                                            <input type="radio" id="star1_${item.employer.employerId}" name="rating" value="1"/><label for="star1_${item.employer.employerId}"><i class="fas fa-star"></i></label>
+                                                        </div>
+                                                        <textarea class="form-control mt-3" name="comment" rows="3" placeholder="Chia sẻ thêm về môi trường làm việc, quản lý..." required></textarea>
+                                                    </div>
+                                                    <div class="modal-footer bg-light border-top-0 rounded-bottom-4">
+                                                        <button type="submit" class="btn btn-warning fw-semibold w-100">Gửi đánh giá</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </c:if>
 
                             </div>
                         </div>

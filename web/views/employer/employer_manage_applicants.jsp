@@ -9,6 +9,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css?v=2.8">
+    <style>
+        .star-rating { direction: rtl; display: inline-block; padding: 10px 0; }
+        .star-rating input[type=radio] { display: none; }
+        .star-rating label { font-size: 2rem; color: #d1d5db; cursor: pointer; transition: color 0.2s; padding: 0 5px; }
+        .star-rating label:hover, .star-rating label:hover ~ label, .star-rating input[type=radio]:checked ~ label { color: #f59e0b; }
+    </style>
 </head>
 <body class="d-flex flex-column min-vh-100 bg-light">
 
@@ -26,6 +32,22 @@
                 </h3>
             </div>
         </div>
+        
+        <c:if test="${not empty sessionScope.successMsg}">
+            <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+                <i class="fas fa-check-circle me-2"></i>${sessionScope.successMsg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <c:remove var="successMsg" scope="session"/>
+        </c:if>
+
+        <c:if test="${not empty sessionScope.errorMsg}">
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>${sessionScope.errorMsg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <c:remove var="errorMsg" scope="session"/>
+        </c:if>
 
         <c:if test="${empty listApplicants}">
             <div class="alert alert-info text-center py-4 rounded-4 shadow-sm">
@@ -73,6 +95,43 @@
                             <button class="btn btn-outline-primary w-100 fw-semibold rounded-pill" data-bs-toggle="modal" data-bs-target="#studentProfileModal${item.student.studentId}">
                                 <i class="fas fa-id-badge me-2"></i>Xem Hồ Sơ & Đánh Giá Chi Tiết
                             </button>
+                            <!-- Nút chấm sao cho Employer nếu đơn đã chấp nhận -->
+                            <c:if test="${item.application.status == 1}">
+                                <button class="btn btn-warning w-100 fw-semibold rounded-pill mt-2" data-bs-toggle="modal" data-bs-target="#reviewStudentModal${item.student.studentId}">
+                                    <i class="fas fa-star me-2"></i>Đánh giá thái độ làm việc
+                                </button>
+                                
+                                <!-- Modal Đánh giá Sinh viên -->
+                                <div class="modal fade" id="reviewStudentModal${item.student.studentId}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-dialog-centered">
+                                        <div class="modal-content rounded-4 border-0 shadow">
+                                            <div class="modal-header bg-warning text-dark border-0 pb-3 rounded-top-4">
+                                                <h5 class="modal-title fw-bold"><i class="fas fa-star me-2"></i>Đánh giá Ứng viên</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <form action="${pageContext.request.contextPath}/employer/review" method="POST">
+                                                <div class="modal-body p-4 text-center">
+                                                    <p class="mb-2">Thái độ và hiệu suất làm việc của <strong>${item.student.fullName}</strong> như thế nào?</p>
+                                                    <input type="hidden" name="studentId" value="${item.student.studentId}">
+                                                    <input type="hidden" name="jobId" value="${jobId}">
+                                                    
+                                                    <div class="star-rating">
+                                                        <input type="radio" id="st5_${item.student.studentId}" name="rating" value="5" required/><label for="st5_${item.student.studentId}"><i class="fas fa-star"></i></label>
+                                                        <input type="radio" id="st4_${item.student.studentId}" name="rating" value="4"/><label for="st4_${item.student.studentId}"><i class="fas fa-star"></i></label>
+                                                        <input type="radio" id="st3_${item.student.studentId}" name="rating" value="3"/><label for="st3_${item.student.studentId}"><i class="fas fa-star"></i></label>
+                                                        <input type="radio" id="st2_${item.student.studentId}" name="rating" value="2"/><label for="st2_${item.student.studentId}"><i class="fas fa-star"></i></label>
+                                                        <input type="radio" id="st1_${item.student.studentId}" name="rating" value="1"/><label for="st1_${item.student.studentId}"><i class="fas fa-star"></i></label>
+                                                    </div>
+                                                    <textarea class="form-control mt-3" name="comment" rows="3" placeholder="Nhận xét về giờ giấc, thái độ..." required></textarea>
+                                                </div>
+                                                <div class="modal-footer bg-light border-top-0 rounded-bottom-4">
+                                                    <button type="submit" class="btn btn-warning fw-semibold w-100">Gửi đánh giá</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </c:if>
                             
                             <div class="mb-3">
                                 <small class="text-muted">Kinh nghiệm làm việc tóm tắt:</small>
