@@ -8,7 +8,7 @@
         <title>Tìm kiếm Việc làm - Part Time Job</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
         <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css">
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css?v=9.1">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css?v=9.2">
     </head>
     <body class="d-flex flex-column min-vh-100 bg-light"> 
         <jsp:include page="/views/common/header.jsp" />
@@ -56,11 +56,18 @@
             </div>
 
             <div class="job-list-wrapper">
-                <h2 class="section-title">Việc Làm Bán Thời Gian Mới Nhất</h2>
+                
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="section-title mb-0">Việc Làm Bán Thời Gian Mới Nhất</h2>
+                    <button class="btn btn-outline-warning fw-bold shadow-sm" data-bs-toggle="modal" data-bs-target="#savedJobsModal">
+                        <i class="fas fa-bookmark me-1"></i> Việc đã lưu (${savedJobs.size()})
+                    </button>
+                </div>
+
                 <div class="row">
                     <c:forEach items="${listJobs}" var="item">
                         <div class="col-md-4 mb-4">
-                            <div class="card job-card">
+                            <div class="card job-card h-100">
                                 <div class="card-body">
                                     <h5 class="card-title job-title">${item.job.title}</h5>
                                     <h6 class="card-subtitle mb-2 text-muted">
@@ -97,6 +104,78 @@
                     </nav>
                 </c:if>
             </div> 
+        </div>
+
+        <div class="modal fade" id="savedJobsModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content border-0 shadow-lg rounded-4">
+                    <div class="modal-header bg-warning border-0 pb-3 rounded-top-4">
+                        <h5 class="modal-title fw-bold text-dark"><i class="fas fa-bookmark me-2"></i>Danh sách Việc làm đã lưu</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-0">
+                        <c:if test="${empty savedJobs}">
+                            <div class="text-center py-5">
+                                <i class="far fa-folder-open fa-3x text-muted mb-3 opacity-50"></i>
+                                <p class="text-muted mb-0">Bạn chưa lưu công việc nào.</p>
+                            </div>
+                        </c:if>
+                        
+                        <c:if test="${not empty savedJobs}">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-saved-jobs mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th class="ps-4">Tên công việc</th>
+                                            <th>Cửa hàng</th>
+                                            <th>Mức lương</th>
+                                            <th>Thời gian ca</th>
+                                            <th class="text-center pe-4">Hành động</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <c:forEach items="${savedJobs}" var="s">
+                                            <tr>
+                                                <td class="ps-4 fw-bold text-dark">
+                                                    <a href="${pageContext.request.contextPath}/student/jobDetail?id=${s.job.jobId}" class="text-decoration-none text-primary">
+                                                        ${s.job.title}
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    <span class="text-muted small fw-semibold"><i class="fas fa-store me-1"></i> ${s.employer.businessName}</span>
+                                                </td>
+                                                <td>
+                                                    <strong class="text-success"><fmt:formatNumber value="${s.job.salary}" pattern="#,###"/>đ/ca</strong>
+                                                </td>
+                                                <td>
+                                                    <span class="text-dark small"><i class="fas fa-clock text-warning me-1"></i> <fmt:formatDate value="${s.job.startTime}" type="time" pattern="HH:mm" /> - <fmt:formatDate value="${s.job.endTime}" type="time" pattern="HH:mm" /></span>
+                                                </td>
+                                                <td class="text-center pe-4">
+                                                    <div class="d-flex justify-content-center align-items-center gap-2">
+                                                        <a href="${pageContext.request.contextPath}/student/jobDetail?id=${s.job.jobId}" class="btn btn-sm btn-primary fw-semibold rounded-pill px-3">
+                                                            Chi tiết
+                                                        </a>
+                                                        <form action="${pageContext.request.contextPath}/student/save-job" method="post" class="m-0">
+                                                            <input type="hidden" name="action" value="unsave">
+                                                            <input type="hidden" name="jobID" value="${s.job.jobId}">
+                                                            <button type="submit" class="btn-unsave" title="Bỏ lưu công việc này">
+                                                                <i class="fas fa-trash-alt fs-5"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </c:if>
+                    </div>
+                    <div class="modal-footer bg-light border-0 rounded-bottom-4">
+                        <button type="button" class="btn btn-secondary rounded-pill px-4 fw-semibold" data-bs-dismiss="modal">Đóng</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>

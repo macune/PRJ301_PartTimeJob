@@ -6,19 +6,18 @@
 package controllers.student;
 
 import dal.ApplicationDAO;
-import dal.SavedJobDAO;
+import dal.ReviewDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import models.Account;
 import viewmodels.ApplicationDTO;
-import viewmodels.JobDetailDTO;
 
 /**
  *
@@ -66,28 +65,21 @@ public class StudentManageJobController extends HttpServlet {
         Account account = (Account) session.getAttribute("account");
         int studentId = account.getAccountId();
         
-        SavedJobDAO savedJobDAO = new SavedJobDAO();
-        List<JobDetailDTO> savedJobs = savedJobDAO.getSavedJobsWithDetails(studentId);
-        
         ApplicationDAO appDAO = new ApplicationDAO();
         List<ApplicationDTO> allApps = appDAO.getApplicationHistoryByStudentId(studentId);
         List<ApplicationDTO> workingJobs = new ArrayList<>();
         
-        dal.ReviewDAO reviewDAO = new dal.ReviewDAO();
+        ReviewDAO reviewDAO = new ReviewDAO();
         
         for (ApplicationDTO app : allApps) {
-            if (app.getApplication().getStatus() == 1) { 
-                // Kiểm tra xem sinh viên đã đánh giá cửa hàng này chưa
+            if (app.getApplication().getStatus() == 1) { // 1 = Chấp nhận
                 boolean hasReviewed = reviewDAO.hasStudentReviewedEmployer(studentId, app.getEmployer().getEmployerId());
-                app.setIsReviewed(hasReviewed); // Gắn thẳng vào object
-                
+                app.setIsReviewed(hasReviewed);
                 workingJobs.add(app);
             }
         }
         
-        request.setAttribute("savedJobs", savedJobs);
         request.setAttribute("workingJobs", workingJobs);
-        
         request.getRequestDispatcher("/views/student/student_manage_jobs.jsp").forward(request, response);
     } 
 

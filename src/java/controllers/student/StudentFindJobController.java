@@ -7,13 +7,16 @@ package controllers.student;
 
 import dal.CategoryDAO;
 import dal.JobDAO;
+import dal.SavedJobDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
+import models.Account;
 import models.Category;
 import viewmodels.JobDetailDTO;
 
@@ -92,13 +95,18 @@ public class StudentFindJobController extends HttpServlet {
         int totalPages = (totalJobs % pageSize == 0) ? (totalJobs / pageSize) : (totalJobs / pageSize) + 1;
         List<Category> listCategories = catDao.getAllCategories();
         
+        // --- LẤY DANH SÁCH VIỆC ĐÃ LƯU ---
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
+        SavedJobDAO savedJobDAO = new SavedJobDAO();
+        request.setAttribute("savedJobs", savedJobDAO.getSavedJobsWithDetails(account.getAccountId()));
+        
         request.setAttribute("listJobs", listJobs);
         request.setAttribute("categories", listCategories);
         request.setAttribute("currentPage", pageIndex);
         request.setAttribute("totalPages", totalPages);
         request.setAttribute("param", request.getParameterMap());
         
-        // Đã trỏ về View mới
         request.getRequestDispatcher("/views/student/student_find_job.jsp").forward(request, response);
     }
 

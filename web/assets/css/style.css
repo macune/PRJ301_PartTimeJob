@@ -586,3 +586,23 @@ body {
     overflow-y: auto; 
 }
 .min-w-150 { min-width: 150px; }
+
+/* ================= BẢNG VIỆC ĐÃ LƯU (MODAL) ================= */
+.table-saved-jobs th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+}
+.table-saved-jobs td {
+    vertical-align: middle;
+}
+.btn-unsave {
+    color: #dc3545;
+    background: transparent;
+    border: none;
+    transition: 0.2s;
+}
+.btn-unsave:hover {
+    color: #a11a28;
+    transform: scale(1.1);
+}

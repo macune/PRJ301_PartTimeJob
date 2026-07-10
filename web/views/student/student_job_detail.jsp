@@ -80,9 +80,9 @@
                             </ul>
                             
                             <div class="d-flex justify-content-between align-items-center pt-3 border-top mt-4">
-                                <a href="${pageContext.request.contextPath}/student/findJob" class="btn btn-outline-secondary px-4 fw-semibold">
+                                <button type="button" onclick="history.back()" class="btn btn-outline-secondary px-4 fw-semibold">
                                     <i class="fas fa-arrow-left me-2"></i>Quay lại
-                                </a>
+                                </button>
                                 <div class="d-flex gap-2">
                                     <!-- Form Lưu Bài -->
                                     <form action="${pageContext.request.contextPath}/student/save-job" method="post">

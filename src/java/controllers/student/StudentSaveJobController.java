@@ -93,14 +93,26 @@ public class StudentSaveJobController extends HttpServlet {
         int studentID = account.getAccountId();
         SavedJobDAO dao = new SavedJobDAO();
 
+        // Lấy URL trang trước đó người dùng vừa đứng
+        String referer = request.getHeader("Referer");
+
         if ("unsave".equals(action)) {
             dao.unsave(studentID, jobID);
-            response.sendRedirect(request.getContextPath() + "/student/jobDetail?id=" + jobID + "&saved=0");
+            // Nếu thao tác từ trang findJob thì Load lại nguyên trang findJob
+            if (referer != null && referer.contains("findJob")) {
+                response.sendRedirect(referer);
+            } else {
+                response.sendRedirect(request.getContextPath() + "/student/jobDetail?id=" + jobID + "&saved=0");
+            }
         } else {
             if (!dao.isSaved(studentID, jobID)) {
                 dao.save(studentID, jobID);
             }
-            response.sendRedirect(request.getContextPath() + "/student/jobDetail?id=" + jobID + "&saved=1");
+            if (referer != null && referer.contains("findJob")) {
+                response.sendRedirect(referer);
+            } else {
+                response.sendRedirect(request.getContextPath() + "/student/jobDetail?id=" + jobID + "&saved=1");
+            }
         }
     }
     /** 
