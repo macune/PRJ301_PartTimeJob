@@ -195,22 +195,30 @@
                                             </td>
                                             <td class="text-center fw-bold text-success">${stu.totalCount}</td>
                                             <td class="text-center pe-4">
-                                                <button class="btn btn-sm btn-outline-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#stuModal${stu.userId}">Xem việc</button>
+                                                <button class="btn btn-sm btn-outline-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#stuModal${stu.userId}">Xem chi tiết</button>
                                                 
                                                 <div class="modal fade text-start" id="stuModal${stu.userId}" tabindex="-1">
-                                                    <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                                                         <div class="modal-content rounded-4 border-0">
                                                             <div class="modal-header bg-light border-0">
-                                                                <h6 class="modal-title fw-bold">Việc đã nhận: ${stu.userName}</h6>
+                                                                <h6 class="modal-title fw-bold">Chi tiết: ${stu.userName}</h6>
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                                             </div>
                                                             <div class="modal-body p-4">
-                                                                <ul class="list-group list-group-flush">
+                                                                <ul class="list-group list-group-flush mb-3">
                                                                     <c:forEach items="${stu.details}" var="jobName">
                                                                         <li class="list-group-item px-0 py-2"><i class="fas fa-check-circle text-success me-2"></i>${jobName}</li>
                                                                     </c:forEach>
                                                                 </ul>
-                                                                <c:if test="${empty stu.details}"><p class="text-muted text-center mb-0">Chưa có dữ liệu.</p></c:if>
+                                                                <c:if test="${empty stu.details}"><p class="text-muted text-center mb-0">Chưa có công việc nào.</p></c:if>
+
+                                                                <h6 class="fw-bold mt-4 border-top pt-3 text-secondary"><i class="fas fa-comments me-2"></i>Đánh giá từ Nhà tuyển dụng:</h6>
+                                                                <ul class="list-group list-group-flush">
+                                                                    <c:forEach items="${stu.reviews}" var="rev">
+                                                                        <li class="list-group-item px-0 py-2 text-dark small bg-light rounded-3 mb-2 px-3">${rev}</li>
+                                                                    </c:forEach>
+                                                                </ul>
+                                                                <c:if test="${empty stu.reviews}"><p class="text-muted text-center mb-0 small">Chưa có đánh giá nào.</p></c:if>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -237,7 +245,8 @@
                                     <tr>
                                         <th class="ps-4">Doanh nghiệp</th>
                                         <th class="text-center">Số bài đăng</th>
-                                        <th class="text-center text-success">Đang làm việc</th> <th class="text-center pe-4">Chi tiết</th>
+                                        <th class="text-center text-success">Đang làm</th>
+                                        <th class="text-center pe-4">Chi tiết</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -248,22 +257,31 @@
                                                 <div class="small text-muted"><i class="fas fa-phone-alt me-1"></i>${emp.contactInfo}</div>
                                             </td>
                                             <td class="text-center fw-bold text-primary">${emp.totalCount}</td>
-                                            <td class="text-center fw-bold text-success">${emp.activeEmployeesCount}</td> <td class="text-center pe-4">
-                                                <button class="btn btn-sm btn-outline-info rounded-pill" data-bs-toggle="modal" data-bs-target="#empModal${emp.userId}">Xem bài</button>
+                                            <td class="text-center fw-bold text-success">${emp.activeEmployeesCount}</td>
+                                            <td class="text-center pe-4">
+                                                <button class="btn btn-sm btn-outline-info rounded-pill" data-bs-toggle="modal" data-bs-target="#empModal${emp.userId}">Xem chi tiết</button>
                                                 
                                                 <div class="modal fade text-start" id="empModal${emp.userId}" tabindex="-1">
-                                                    <div class="modal-dialog modal-dialog-centered">
+                                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                                                         <div class="modal-content rounded-4 border-0">
                                                             <div class="modal-header bg-light border-0">
-                                                                <h6 class="modal-title fw-bold">Bài đăng của: ${emp.userName}</h6>
+                                                                <h6 class="modal-title fw-bold">Chi tiết: ${emp.userName}</h6>
                                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                                             </div>
                                                             <div class="modal-body p-4">
-                                                                <ul class="list-group list-group-flush">
+                                                                <ul class="list-group list-group-flush mb-3">
                                                                     <c:forEach items="${emp.details}" var="postName">
                                                                         <li class="list-group-item px-0 py-2"><i class="fas fa-file-alt text-primary me-2"></i>${postName}</li>
                                                                     </c:forEach>
                                                                 </ul>
+
+                                                                <h6 class="fw-bold mt-4 border-top pt-3 text-secondary"><i class="fas fa-comments me-2"></i>Đánh giá từ Sinh viên:</h6>
+                                                                <ul class="list-group list-group-flush">
+                                                                    <c:forEach items="${emp.reviews}" var="rev">
+                                                                        <li class="list-group-item px-0 py-2 text-dark small bg-light rounded-3 mb-2 px-3">${rev}</li>
+                                                                    </c:forEach>
+                                                                </ul>
+                                                                <c:if test="${empty emp.reviews}"><p class="text-muted text-center mb-0 small">Chưa có đánh giá nào.</p></c:if>
                                                             </div>
                                                         </div>
                                                     </div>

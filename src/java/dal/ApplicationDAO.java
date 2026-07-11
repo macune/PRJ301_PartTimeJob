@@ -337,7 +337,6 @@ public class ApplicationDAO extends DBContext {
     
     public List<UserActivityDTO> getStudentActivities() {
         List<UserActivityDTO> list = new ArrayList<>();
-        // Sửa WHERE a.Status = 1 thành IN (1, 3) để tính cả việc đã hoàn thành
         String sql = "SELECT s.StudentID, s.FullName, s.Phone, COUNT(a.ApplicationID) as Total " +
                      "FROM Student_Profile s " +
                      "JOIN Application a ON s.StudentID = a.StudentID " +
@@ -354,7 +353,7 @@ public class ApplicationDAO extends DBContext {
                 dto.setContactInfo(rs.getString("Phone"));
                 dto.setTotalCount(rs.getInt("Total"));
                 
-                // Lấy chi tiết các việc sinh viên này đã nhận và hoàn thành
+                // Lấy chi tiết công việc
                 List<String> details = new ArrayList<>();
                 String sql2 = "SELECT j.Title, e.BusinessName FROM Application a JOIN Job_Post j ON a.JobID = j.JobID JOIN Employer_Profile e ON j.EmployerID = e.EmployerID WHERE a.StudentID = ? AND a.Status IN (1, 3)";
                 PreparedStatement ps2 = connection.prepareStatement(sql2);
@@ -364,9 +363,23 @@ public class ApplicationDAO extends DBContext {
                     details.add(rs2.getString("Title") + " (Tại: " + rs2.getString("BusinessName") + ")");
                 }
                 dto.setDetails(details);
+
+                // Lấy danh sách Review đánh giá Sinh viên này
+                List<String> reviews = new ArrayList<>();
+                String sqlRev = "SELECT Rating, Comment FROM Student_Review WHERE StudentID = ?";
+                PreparedStatement psRev = connection.prepareStatement(sqlRev);
+                psRev.setInt(1, dto.getUserId());
+                ResultSet rsRev = psRev.executeQuery();
+                while(rsRev.next()) {
+                    reviews.add("⭐ " + rsRev.getInt("Rating") + "/5: " + rsRev.getString("Comment"));
+                }
+                dto.setReviews(reviews);
+
                 list.add(dto);
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            System.out.println("Error getStudentActivities: " + e.getMessage());
+        }
         return list;
     }
     

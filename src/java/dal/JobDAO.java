@@ -504,7 +504,6 @@ public class JobDAO extends DBContext {
     
     public List<UserActivityDTO> getEmployerActivities() {
         List<UserActivityDTO> list = new ArrayList<>();
-        // Đếm số bài đăng (TotalJobs) và số ứng viên đang làm việc (Status = 1)
         String sql = """
                      SELECT e.EmployerID, e.BusinessName, e.Phone, 
                             COUNT(DISTINCT j.JobID) as TotalJobs, 
@@ -526,7 +525,7 @@ public class JobDAO extends DBContext {
                 dto.setTotalCount(rs.getInt("TotalJobs"));
                 dto.setActiveEmployeesCount(rs.getInt("ActiveEmployees"));
                 
-                // Lấy chi tiết các bài NTD này đã đăng
+                // Lấy chi tiết bài đăng
                 List<String> details = new ArrayList<>();
                 String sql2 = "SELECT Title, Status FROM Job_Post WHERE EmployerID = ?";
                 PreparedStatement ps2 = connection.prepareStatement(sql2);
@@ -538,6 +537,18 @@ public class JobDAO extends DBContext {
                     details.add(rs2.getString("Title") + " [" + stStr + "]");
                 }
                 dto.setDetails(details);
+
+                // Lấy danh sách Review đánh giá Doanh nghiệp này
+                List<String> reviews = new ArrayList<>();
+                String sqlRev = "SELECT Rating, Comment FROM Employer_Review WHERE EmployerID = ?";
+                PreparedStatement psRev = connection.prepareStatement(sqlRev);
+                psRev.setInt(1, dto.getUserId());
+                ResultSet rsRev = psRev.executeQuery();
+                while(rsRev.next()) {
+                    reviews.add("⭐ " + rsRev.getInt("Rating") + "/5: " + rsRev.getString("Comment"));
+                }
+                dto.setReviews(reviews);
+
                 list.add(dto);
             }
         } catch (Exception e) {
@@ -545,7 +556,6 @@ public class JobDAO extends DBContext {
         }
         return list;
     }
-
     public List<JobDetailDTO> getAdminJobsByStatus(int status) {
         List<JobDetailDTO> list = new ArrayList<>();
         String sql = "SELECT j.*, c.CategoryName, e.BusinessName, e.LogoUrl, e.Address AS EmployerAddress " +

@@ -7,8 +7,9 @@ public class UserActivityDTO {
     private String userName;
     private String contactInfo;
     private int totalCount;
-    private int activeEmployeesCount; // Biến mới: Chứa số sinh viên đang làm việc
+    private int activeEmployeesCount; 
     private List<String> details; 
+    private List<String> reviews; // BIẾN MỚI: Chứa danh sách các đánh giá
 
     public UserActivityDTO() {}
 
@@ -29,4 +30,8 @@ public class UserActivityDTO {
     
     public List<String> getDetails() { return details; }
     public void setDetails(List<String> details) { this.details = details; }
+
+    // GETTER & SETTER CHO REVIEWS
+    public List<String> getReviews() { return reviews; }
+    public void setReviews(List<String> reviews) { this.reviews = reviews; }
 }
