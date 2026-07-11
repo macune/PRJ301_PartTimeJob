@@ -114,7 +114,30 @@ public class StudentApplicationHistoryController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        request.setCharacterEncoding("UTF-8");
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
+        
+        String action = request.getParameter("action");
+        ApplicationDAO appDAO = new ApplicationDAO();
+        
+        if ("cancel".equals(action)) {
+            try {
+                int applicationId = Integer.parseInt(request.getParameter("applicationId"));
+                boolean success = appDAO.deletePendingApplication(applicationId, account.getAccountId());
+                
+                if (success) {
+                    session.setAttribute("successMsg", "Đã rút đơn ứng tuyển thành công.");
+                } else {
+                    session.setAttribute("errorMsg", "Không thể rút đơn. Đơn có thể đã được duyệt hoặc từ chối.");
+                }
+            } catch (Exception e) {
+                session.setAttribute("errorMsg", "Dữ liệu không hợp lệ.");
+            }
+            
+            // Trở lại trang Lịch sử ứng tuyển (URL mapping)
+            response.sendRedirect(request.getContextPath() + "/student/application-history");
+        }
     }
 
     /** 

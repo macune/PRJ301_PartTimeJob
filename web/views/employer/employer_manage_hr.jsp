@@ -15,7 +15,7 @@
     <jsp:include page="/views/common/header.jsp" />
     <jsp:include page="/views/employer/employer_navbar.jsp" />
 
-    <div class="container flex-grow-1 mb-5">
+    <div class="container flex-grow-1 mb-5 mt-4">
         <h3 class="text-primary fw-bold mb-4"><i class="fas fa-users-cog me-2"></i>Quản lý nhân sự</h3>
 
         <c:if test="${not empty sessionScope.successMsg}">
@@ -44,14 +44,42 @@
             <div class="tab-pane fade show active" id="activeHR">
                 <div class="card shadow-sm border-0 rounded-4"><div class="card-body p-0"><div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light"><tr><th class="ps-4">Họ và tên</th><th>Vị trí</th><th>Liên hệ</th><th>Ca làm việc</th><th class="text-center pe-4">Hành động</th></tr></thead>
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-4">Họ và tên</th>
+                                <th>Vị trí</th>
+                                <th>Cơ sở làm việc</th>
+                                <th>Liên hệ</th>
+                                <th>Ca làm việc</th>
+                                <th>Mức lương</th>
+                                <th class="text-center pe-4">Hành động</th>
+                            </tr>
+                        </thead>
                         <tbody>
                             <c:forEach items="${listAccepted}" var="item">
                                 <tr>
-                                    <td class="ps-4"><div class="fw-bold text-dark">${item.student.fullName}</div><div class="text-muted small"><i class="fas fa-star text-warning"></i> ${item.student.averageRating}/5</div></td>
-                                    <td><span class="badge bg-info text-dark px-2">${item.job.title}</span></td>
-                                    <td><div class="text-dark fw-semibold"><i class="fas fa-phone-alt me-1"></i> ${item.student.phone}</div></td>
-                                    <td><div class="text-dark fw-semibold"><i class="fas fa-clock text-warning me-1"></i> <fmt:formatDate value="${item.job.startTime}" type="time" pattern="HH:mm" /> - <fmt:formatDate value="${item.job.endTime}" type="time" pattern="HH:mm" /></div></td>
+                                    <td class="ps-4">
+                                        <div class="fw-bold text-dark">${item.student.fullName}</div>
+                                        <div class="text-muted small"><i class="fas fa-star text-warning"></i> ${item.student.averageRating}/5</div>
+                                    </td>
+                                    <td><span class="badge bg-info text-dark px-2 py-2">${item.job.title}</span></td>
+                                    <td>
+                                        <div class="text-dark small fw-semibold"><i class="fas fa-map-marker-alt text-danger me-1"></i> ${item.job.detailAddress}</div>
+                                        <div class="text-muted small">${item.job.ward},${item.job.city}</div>
+                                    </td>
+                                    <td>
+                                        <div class="text-dark fw-semibold"><i class="fas fa-phone-alt text-secondary me-1"></i> ${item.student.phone}</div>
+                                        <div class="text-muted small"><i class="fas fa-envelope text-secondary me-1"></i> ${not empty item.student.contactEmail ? item.student.contactEmail : 'Không có'}</div>
+                                    </td>
+                                    <td>
+                                        <div class="text-dark fw-semibold">
+                                            <i class="fas fa-clock text-warning me-1"></i>
+                                            <fmt:formatDate value="${item.job.startTime}" type="time" pattern="HH:mm" /> - <fmt:formatDate value="${item.job.endTime}" type="time" pattern="HH:mm" />
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong class="text-success fs-6"><fmt:formatNumber value="${item.application.desiredSalary}" pattern="#,###"/>đ/ca</strong>
+                                    </td>
                                     <td class="text-center pe-4">
                                         <button class="btn btn-sm btn-outline-danger fw-semibold rounded-pill" data-bs-toggle="modal" data-bs-target="#fireModal${item.application.applicationID}"><i class="fas fa-user-times me-1"></i> Cho nghỉ</button>
                                         
@@ -71,7 +99,7 @@
                                     </td>
                                 </tr>
                             </c:forEach>
-                            <c:if test="${empty listAccepted}"><tr><td colspan="5" class="text-center py-5 text-muted">Chưa có nhân sự nào đang làm việc.</td></tr></c:if>
+                            <c:if test="${empty listAccepted}"><tr><td colspan=\"7\" class=\"text-center py-5 text-muted\">Chưa có nhân sự nào đang làm việc.</td></tr></c:if>
                         </tbody>
                     </table>
                 </div></div></div>

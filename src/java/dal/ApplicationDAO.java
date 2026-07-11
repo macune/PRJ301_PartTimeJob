@@ -155,6 +155,22 @@ public class ApplicationDAO extends DBContext {
         }
         return list;
     }
+    
+    // =====================================================================
+    // HÀM RÚT/HỦY ĐƠN ỨNG TUYỂN KHI ĐANG CHỜ DUYỆT (STATUS = 0)
+    // =====================================================================
+    public boolean deletePendingApplication(int applicationId, int studentId) {
+        String sql = "DELETE FROM Application WHERE ApplicationID = ? AND StudentID = ? AND Status = 0";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, applicationId);
+            ps.setInt(2, studentId);
+            return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            System.out.println("Error deletePendingApplication: " + e.getMessage());
+        }
+        return false;
+    }
 
     public boolean updateApplicationStatus(int applicationId, int status, String employerNote, int employerId) {
         String sql = """

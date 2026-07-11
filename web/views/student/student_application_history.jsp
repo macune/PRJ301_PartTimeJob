@@ -16,12 +16,25 @@
     <jsp:include page="/views/student/student_navbar.jsp" />
 
     <div class="container flex-grow-1 mb-5">
-        <div class="mb-4">
+        <div class="mb-4 mt-4">
             <h3 class="fw-bold mb-0 text-primary">
                 <i class="fas fa-history me-2"></i>Lịch sử ứng tuyển
             </h3>
             <p class="text-muted mb-0">Bạn đã nộp tổng cộng <strong>${countAll}</strong> đơn ứng tuyển.</p>
         </div>
+
+        <c:if test="${not empty sessionScope.successMsg}">
+            <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4">
+                <i class="fas fa-check-circle me-2"></i>${sessionScope.successMsg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div><c:remove var="successMsg" scope="session"/>
+        </c:if>
+        <c:if test="${not empty sessionScope.errorMsg}">
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4">
+                <i class="fas fa-exclamation-circle me-2"></i>${sessionScope.errorMsg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div><c:remove var="errorMsg" scope="session"/>
+        </c:if>
 
         <div class="row g-3 mb-4">
             <div class="col-sm-4">
@@ -79,7 +92,6 @@
                 <div class="col-12 app-card-wrapper">
                     <div class="card app-card mb-3">
                         <div class="d-flex">
-                            <!-- Chuyển đổi mã màu trực tiếp thành class CSS -->
                             <div class="status-bar status-bar-${item.application.status}"></div>
                             <div class="flex-grow-1 p-3">
                                 <div class="d-flex justify-content-between align-items-start mb-2">
@@ -89,17 +101,22 @@
                                         </h5>
                                         <div class="text-muted small fw-semibold"><i class="fas fa-store me-1"></i> ${item.employer.businessName}</div>
                                     </div>
-                                    <c:choose>
-                                        <c:when test="${item.application.status == 0}">
-                                            <span class="badge bg-warning text-dark px-3 py-2"><i class="fas fa-hourglass-half me-1"></i>Đang chờ</span>
-                                        </c:when>
-                                        <c:when test="${item.application.status == 1}">
-                                            <span class="badge bg-success px-3 py-2"><i class="fas fa-check-circle me-1"></i>Đã nhận</span>
-                                        </c:when>
-                                        <c:when test="${item.application.status == 2}">
-                                            <span class="badge bg-danger px-3 py-2"><i class="fas fa-times-circle me-1"></i>Từ chối</span>
-                                        </c:when>
-                                    </c:choose>
+                                    <div class="text-end">
+                                        <c:choose>
+                                            <c:when test="${item.application.status == 0}">
+                                                <span class="badge bg-warning text-dark px-3 py-2 mb-2 d-inline-block"><i class="fas fa-hourglass-half me-1"></i>Đang chờ</span><br>
+                                                <button type="button" class="btn btn-sm btn-outline-danger fw-semibold" data-bs-toggle="modal" data-bs-target="#cancelModal${item.application.applicationID}">
+                                                    <i class="fas fa-times me-1"></i> Rút đơn
+                                                </button>
+                                            </c:when>
+                                            <c:when test="${item.application.status == 1}">
+                                                <span class="badge bg-success px-3 py-2"><i class="fas fa-check-circle me-1"></i>Đã nhận</span>
+                                            </c:when>
+                                            <c:when test="${item.application.status == 2}">
+                                                <span class="badge bg-danger px-3 py-2"><i class="fas fa-times-circle me-1"></i>Từ chối</span>
+                                            </c:when>
+                                        </c:choose>
+                                    </div>
                                 </div>
 
                                 <div class="row g-2 mb-3">
@@ -112,7 +129,7 @@
                                             </c:choose>
                                         </strong>
                                     </div>
-                                    <div class="col-md-3 col-sm-6 text-muted small"><i class="fas fa-clock text-warning me-1"></i>Ca: <strong class="text-dark">${item.job.startTime} - ${item.job.endTime}</strong></div>
+                                    <div class="col-md-3 col-sm-6 text-muted small"><i class="fas fa-clock text-warning me-1"></i>Ca: <strong class="text-dark"><fmt:formatDate value="${item.job.startTime}" type="time" pattern="HH:mm" /> - <fmt:formatDate value="${item.job.endTime}" type="time" pattern="HH:mm" /></strong></div>
                                     <div class="col-md-3 col-sm-6 text-muted small"><i class="fas fa-calendar-check text-info me-1"></i>Nộp lúc: <strong class="text-dark"><fmt:formatDate value="${item.application.appliedAt}" pattern="dd/MM/yyyy HH:mm" /></strong></div>
                                 </div>
 
@@ -139,6 +156,32 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <c:if test="${item.application.status == 0}">
+                        <div class="modal fade" id="cancelModal${item.application.applicationID}" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content rounded-4 border-0">
+                                    <div class="modal-header bg-danger text-white border-0">
+                                        <h5 class="modal-title fw-bold"><i class="fas fa-trash-alt me-2"></i>Xác nhận Rút đơn</h5>
+                                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                    </div>
+                                    <form action="${pageContext.request.contextPath}/student/application-history" method="POST">
+                                        <div class="modal-body p-4 text-center">
+                                            <p>Bạn có chắc chắn muốn rút đơn ứng tuyển công việc <strong>${item.job.title}</strong>?</p>
+                                            <p class="small text-muted">Hành động này sẽ xóa hoàn toàn đơn ứng tuyển của bạn và không thể hoàn tác.</p>
+                                            <input type="hidden" name="action" value="cancel">
+                                            <input type="hidden" name="applicationId" value="${item.application.applicationID}">
+                                        </div>
+                                        <div class="modal-footer border-0 p-3 pt-0">
+                                            <button type="button" class="btn btn-light rounded-pill px-4 fw-semibold" data-bs-dismiss="modal">Đóng</button>
+                                            <button type="submit" class="btn btn-danger rounded-pill px-4 fw-bold">Xác nhận Rút đơn</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </c:if>
+
                 </div>
             </c:forEach>
         </div>
