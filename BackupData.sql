@@ -1,7 +1,7 @@
 ﻿USE PartTimeJobsDB;
 GO
 
--- XÓA SẠCH RÁC
+-- XÓA SẠCH RÁC BỊ CODE TẠO RA
 DELETE FROM Employer_Review;
 DELETE FROM Student_Review;
 DELETE FROM Saved_Job;
@@ -13,7 +13,7 @@ DELETE FROM Employer_Profile;
 DELETE FROM Account;
 GO
 
--- RESET ID VỀ 0
+-- RESET LẠI BỘ ĐẾM ID VỀ SỐ 0
 DBCC CHECKIDENT ('Employer_Review', RESEED, 0);
 DBCC CHECKIDENT ('Student_Review', RESEED, 0);
 DBCC CHECKIDENT ('Saved_Job', RESEED, 0);
@@ -23,7 +23,7 @@ DBCC CHECKIDENT ('Category', RESEED, 0);
 DBCC CHECKIDENT ('Account', RESEED, 0);
 GO
 
--- BƠM LẠI TOÀN BỘ DỮ LIỆU ĐÃ CHUẨN HÓA
+-- BƠM LẠI TOÀN BỘ DỮ LIỆU
 INSERT INTO Account (Username, Email, Password, Role, Status, IsDeleted) VALUES
 ('admin', 'admin@system.com', '123456', 1, 1, 0),
 ('stu_tuan', 'tuan@student.com', '123456', 2, 1, 0), 
@@ -45,7 +45,6 @@ INSERT INTO Account (Username, Email, Password, Role, Status, IsDeleted) VALUES
 ('emp_katinat', 'hr@katinat.vn', '123456', 3, 1, 0),
 ('emp_hasaki', 'tuyendung@hasaki.vn', '123456', 3, 1, 0),
 ('emp_tocotoco', 'hr@tocotoco.vn', '123456', 3, 1, 0);
-GO
 
 INSERT INTO Student_Profile (StudentID, FullName, AvatarUrl, ContactEmail, Phone, Address, University, Introduction, Experience) VALUES
 (2, N'Lê Minh Tuấn', NULL, 'tuan.leminh@gmail.com', '0901234567', N'Số 10, Ngõ 15, Đường Xuân Thủy, Phường Cầu Giấy, Hà Nội', N'Đại học Bách Khoa', N'Chăm chỉ, nhanh nhẹn, có xe máy.', N'1 năm làm phục vụ nhà hàng tiệc cưới.'),
@@ -58,7 +57,6 @@ INSERT INTO Student_Profile (StudentID, FullName, AvatarUrl, ContactEmail, Phone
 (9, N'Ngô Minh Đức', NULL, 'duc.ngo@gmail.com', '0944555666', N'Số 15, Ngõ 328 Nguyễn Trãi, Phường Thanh Xuân, Hà Nội', N'Đại học KHTN', N'Thành thạo tin học văn phòng.', N'Hỗ trợ nhập liệu dữ liệu cho công ty IT 4 tháng.'),
 (10, N'Bùi Bích Ngọc', NULL, 'ngoc.bui@gmail.com', '0955666777', N'Số 3, Ngõ 120, Phố Trương Định, Phường Tương Mai, Hà Nội', N'Học viện Ngân Hàng', N'Tính toán nhanh, trung thực.', N'Từng làm thu ngân tại siêu thị mini.'),
 (11, N'Trần Quang Huy', NULL, 'huy.tran@gmail.com', '0966777888', N'Số 88, Ngõ Thổ Quan, Phố Tôn Đức Thắng, Phường Ô Chợ Dừa, Hà Nội', N'Đại học Mỹ Thuật', N'Sáng tạo, cẩn thận, biết thiết kế.', N'Làm part-time design banner quảng cáo.');
-GO
 
 INSERT INTO Employer_Profile (EmployerID, BusinessName, LogoUrl, Website, Phone, ContactEmail, Address, Description) VALUES
 (12, N'Highlands Coffee', NULL, 'https://highlandscoffee.com.vn', '0241112223', 'hr@highlandscoffee.vn', N'Tầng 1, Tòa nhà HITC, 239 Xuân Thủy, Phường Cầu Giấy, Hà Nội', N'Chuỗi cửa hàng cafe lớn, lộ trình thăng tiến rõ ràng.'),
@@ -70,108 +68,95 @@ INSERT INTO Employer_Profile (EmployerID, BusinessName, LogoUrl, Website, Phone,
 (18, N'Katinat', NULL, 'https://katinat.vn', '0247897897', 'tuyendung@katinat.vn', N'Số 5, Phố Tràng Thi, Phường Cửa Nam, Hà Nội', N'Cà phê phong cách hiện đại, lương thưởng hấp dẫn.'),
 (19, N'Hasaki', NULL, 'https://hasaki.vn', '0243213213', 'hr@hasaki.vn', N'Số 18, Phố Khâm Thiên, Phường Ô Chợ Dừa, Hà Nội', N'Phân phối mỹ phẩm chính hãng.'),
 (20, N'TocoToco', NULL, 'https://tocotoco.vn', '0246546546', 'tuyendung@tocotoco.vn', N'Số 99, Phố Kẻ Vẽ, Phường Đông Ngạc, Hà Nội', N'Trà sữa đậm vị thiên nhiên.');
-GO
 
 INSERT INTO Category (CategoryName, Status) VALUES
 (N'Phục vụ', 1), (N'Pha chế', 1), (N'Thu ngân', 1), (N'Giao hàng', 1), 
 (N'Bán hàng siêu thị', 1), (N'Gia sư', 1), (N'Lễ tân', 1), 
 (N'Chăm sóc khách hàng', 1), (N'Kho bãi', 1), (N'Tư vấn viên', 1);
-GO
 
 INSERT INTO Job_Post (EmployerID, CategoryID, Title, Description, Salary, StartTime, EndTime, City, Ward, DetailAddress, Status) VALUES
-(12, 1, N'Nhân viên phục vụ ca tối', N'Bưng bê, dọn bàn, dọn dẹp vệ sinh cuối ca.', 25000, '18:00:00', '22:30:00', N'Hà Nội', N'Văn Miếu - Quốc Tử Giám', N'Số 10 Nguyễn Thái Học', 1),
-(13, 2, N'Pha chế trà sữa Mixue', N'Luộc trân châu, pha trà, đón khách.', 30000, '08:00:00', '12:00:00', N'Hà Nội', N'Thanh Xuân', N'Số 20 Khuất Duy Tiến', 1), 
-(12, 3, N'Thu ngân cuối tuần', N'Thanh toán, xuất hóa đơn, nộp tiền cuối ca.', 27000, '09:00:00', '17:00:00', N'Hà Nội', N'Bạch Mai', N'15 Tạ Quang Bửu', 0), 
-(14, 5, N'Nhân viên Circle K ca đêm', N'Sắp xếp hàng, giữ vệ sinh, kiểm bill.', 35000, '22:00:00', '06:00:00', N'Hà Nội', N'Xuân Phương', N'Số 50 Hồ Tùng Mậu', 1),
-(15, 6, N'Gia sư Tiếng Anh IELTS', N'Trợ giảng, kèm giao tiếp cho học viên.', 50000, '17:30:00', '19:30:00', N'Hà Nội', N'Cửa Nam', N'Tòa nhà X, Số 5 Lò Đúc', 1), 
-(16, 7, N'Lễ tân rạp chiếu phim', N'Bán vé, tư vấn phim và combo bắp nước.', 28000, '14:00:00', '22:00:00', N'Hà Nội', N'Kim Liên', N'Tầng 6 Vincom', 1), 
-(17, 5, N'Nhân viên rau củ WinMart', N'Cân đo, dọn dẹp quầy, lọc rau hỏng.', 24000, '07:00:00', '15:00:00', N'Hà Nội', N'Đông Ngạc', N'KĐT Ciputra, Xuân Đỉnh', 1), 
-(18, 2, N'Barista Katinat ca sáng', N'Pha chế chuẩn công thức, vệ sinh máy pha.', 35000, '06:30:00', '12:30:00', N'Hà Nội', N'Tây Hồ', N'Số 8 Đường Thanh Niên', 1), 
-(19, 10, N'Tư vấn viên Hasaki', N'Soi da, tư vấn sản phẩm phù hợp cho khách.', 30000, '15:00:00', '21:00:00', N'Hà Nội', N'Ô Chợ Dừa', N'Số 18 Khâm Thiên', 1), 
-(20, 4, N'Shipper nội bộ TocoToco', N'Giao bán kính 5km, ứng tiền trước.', 22000, '10:00:00', '18:00:00', N'Hà Nội', N'Định Công', N'Số 99 Kim Giang', 1), 
-(14, 9, N'Nhân viên kiểm kho', N'Kiểm đếm hàng hóa nhập vào đầu ca.', 26000, '06:00:00', '14:00:00', N'Hà Nội', N'Xuân Đỉnh', N'Kho tổng Phạm Văn Đồng', 3),
-(15, 8, N'Telesale chăm sóc học viên', N'Gọi điện nhắc lịch học, tư vấn khóa mới.', 35000, '18:00:00', '21:00:00', N'Hà Nội', N'Yên Lãng', N'Số 10 Thái Hà', 1),
-(12, 1, N'Phục vụ bàn Highlands trưa', N'Phục vụ ca gãy giờ nghỉ trưa dân văn phòng.', 25000, '11:00:00', '15:00:00', N'Hà Nội', N'Cầu Giấy', N'Tầng 1 HITC', 1),
-(16, 1, N'Soát vé rạp phim cuối tuần', N'Kiểm tra vé, hướng dẫn ghế, dọn rạp.', 25000, '18:00:00', '23:00:00', N'Hà Nội', N'Kim Liên', N'Tầng 6 Vincom', 1),
-(13, 3, N'Thu ngân Mixue', N'Đứng máy POS, in bill, trả tiền thừa.', 28000, '12:00:00', '18:00:00', N'Hà Nội', N'Thanh Xuân', N'Số 20 Khuất Duy Tiến', 1),
-(18, 1, N'Phục vụ Katinat Tối', N'Bưng nước, dọn bàn, setup không gian.', 30000, '18:00:00', '23:30:00', N'Hà Nội', N'Tây Hồ', N'Số 8 Đường Thanh Niên', 1),
-(20, 2, N'Pha chế TocoToco', N'Làm trà sữa, sinh tố theo công thức.', 25000, '14:00:00', '20:00:00', N'Hà Nội', N'Định Công', N'Số 99 Kim Giang', 0),
-(19, 9, N'Soạn hàng kho Hasaki', N'Nhặt mỹ phẩm theo đơn Shopee/Lazada.', 26000, '08:00:00', '17:00:00', N'Hà Nội', N'Ô Chợ Dừa', N'Số 18 Khâm Thiên', 1);
-GO
+(12, 1, N'Nhân viên phục vụ ca tối', N'Bưng bê, dọn bàn, dọn dẹp vệ sinh.', 25000, '18:00:00', '22:30:00', N'Hà Nội', N'Văn Miếu - Quốc Tử Giám', N'Số 10 Nguyễn Thái Học', 1),
+(13, 2, N'Pha chế trà sữa Mixue', N'Luộc trân châu, pha trà, đón khách.', 30000, '07:00:00', '12:00:00', N'Hà Nội', N'Thanh Xuân', N'Số 20 Khuất Duy Tiến', 1), 
+(12, 3, N'Thu ngân cuối tuần', N'Thanh toán, xuất hóa đơn.', 27000, '08:00:00', '17:00:00', N'Hà Nội', N'Bạch Mai', N'15 Tạ Quang Bửu', 0), 
+(14, 5, N'Nhân viên Circle K ca đêm', N'Sắp xếp hàng, giữ vệ sinh, kiểm bill.', 35000, '23:00:00', '06:00:00', N'Hà Nội', N'Xuân Phương', N'Số 50 Hồ Tùng Mậu', 1),
+(15, 6, N'Gia sư Tiếng Anh IELTS', N'Trợ giảng, kèm giao tiếp cho học viên.', 50000, '18:00:00', '20:00:00', N'Hà Nội', N'Cửa Nam', N'Tòa nhà X, Số 5 Lò Đúc', 1), 
+(16, 7, N'Lễ tân rạp chiếu phim', N'Bán vé, tư vấn phim và combo bắp nước.', 28000, '13:00:00', '17:30:00', N'Hà Nội', N'Kim Liên', N'Tầng 6 Vincom', 1), 
+(17, 5, N'Nhân viên rau củ WinMart', N'Cân đo, dọn dẹp quầy, lọc rau hỏng.', 24000, '07:00:00', '12:00:00', N'Hà Nội', N'Đông Ngạc', N'KĐT Ciputra, Xuân Đỉnh', 1), 
+(18, 2, N'Barista Katinat ca sáng', N'Pha chế chuẩn công thức, vệ sinh.', 35000, '06:30:00', '12:30:00', N'Hà Nội', N'Tây Hồ', N'Số 8 Đường Thanh Niên', 1), 
+(19, 10, N'Tư vấn viên Hasaki', N'Soi da, tư vấn sản phẩm cho khách.', 30000, '13:00:00', '17:00:00', N'Hà Nội', N'Ô Chợ Dừa', N'Số 18 Khâm Thiên', 1), 
+(20, 4, N'Shipper nội bộ TocoToco', N'Giao bán kính 5km, ứng tiền trước.', 22000, '08:00:00', '12:00:00', N'Hà Nội', N'Định Công', N'Số 99 Kim Giang', 1), 
+(14, 9, N'Nhân viên kiểm kho', N'Kiểm đếm hàng hóa nhập vào đầu ca.', 26000, '06:00:00', '12:00:00', N'Hà Nội', N'Xuân Đỉnh', N'Kho Phạm Văn Đồng', 3),
+(15, 8, N'Telesale chăm sóc học viên', N'Gọi điện nhắc lịch học, tư vấn khóa mới.', 35000, '18:30:00', '21:30:00', N'Hà Nội', N'Yên Lãng', N'Số 10 Thái Hà', 1),
+(12, 1, N'Phục vụ bàn Highlands trưa', N'Phục vụ ca gãy dân văn phòng.', 25000, '12:30:00', '17:30:00', N'Hà Nội', N'Cầu Giấy', N'Tầng 1 HITC', 1),
+(16, 1, N'Soát vé rạp phim cuối tuần', N'Kiểm tra vé, hướng dẫn ghế, dọn rạp.', 25000, '18:00:00', '22:00:00', N'Hà Nội', N'Kim Liên', N'Tầng 6 Vincom', 1),
+(13, 3, N'Thu ngân Mixue', N'Đứng máy POS, in bill, trả tiền thừa.', 28000, '13:00:00', '18:00:00', N'Hà Nội', N'Thanh Xuân', N'Số 20 Khuất Duy Tiến', 1), 
+(18, 1, N'Phục vụ Katinat Tối', N'Bưng nước, dọn bàn, setup không gian.', 30000, '18:30:00', '23:30:00', N'Hà Nội', N'Tây Hồ', N'Số 8 Đường Thanh Niên', 1),
+(20, 2, N'Pha chế TocoToco', N'Làm trà sữa, sinh tố theo công thức.', 25000, '13:00:00', '17:00:00', N'Hà Nội', N'Định Công', N'Số 99 Kim Giang', 0),
+(19, 9, N'Soạn hàng kho Hasaki', N'Nhặt mỹ phẩm theo đơn Shopee/Lazada.', 26000, '08:00:00', '12:00:00', N'Hà Nội', N'Ô Chợ Dừa', N'Số 18 Khâm Thiên', 1);
 
 INSERT INTO Application (StudentID, JobID, DesiredSalary, Message, Status, EmployerNote) VALUES
-(2, 1, 25000, N'Em có thể làm full tối, xe máy đi lại thoải mái.', 1, N'Đã nhận việc, bắt đầu ngày mai mang CCCD.'),
-(3, 2, 30000, N'Em có kinh nghiệm 6 tháng pha trà sữa.', 0, NULL), 
-(4, 4, 35000, N'Em sức khỏe rất tốt, thức đêm thoải mái.', 1, N'Đến siêu thị nhận đồng phục nhé.'),
-(5, 5, 55000, N'IELTS 7.0 ạ, đã có KN trợ giảng.', 1, N'Pass test giảng dạy, lương khởi điểm 50k/h.'),
-(6, 6, 28000, N'Em thích môi trường rạp, giao tiếp tốt.', 0, NULL),
-(7, 12, 35000, N'Giọng chuẩn, không nói ngọng.', 1, N'Đi làm từ thứ 2 tuần sau.'),
-(8, 10, 25000, N'Thuộc đường khu vực này.', 2, N'Cửa hàng đã tuyển đủ shipper bạn nhé.'),
-(9, 11, 26000, N'Cẩn thận số liệu, dùng Excel tốt.', 0, NULL),
-(10, 9, 30000, N'Đam mê skincare, hiểu biết thành phần.', 1, N'Giao tiếp cực tốt, nhận việc ngay.'),
-(11, 16, 30000, N'Em làm được các tối trong tuần.', 0, NULL),
-(2, 13, 25000, N'Nhà em gần HITC.', 1, N'Làm ca gãy 11h-15h em nhé.'),
-(3, 15, 28000, N'Đã từng làm thu ngân máy POS.', 1, N'Mai qua test máy.'),
-(4, 11, 26000, N'Sức khỏe tốt, bê vác được.', 2, N'Kho đã chuyển địa điểm.'),
-(5, 12, 40000, N'Em có thể gọi điện chốt sale tốt.', 0, NULL),
-(6, 14, 25000, N'Em rảnh các buổi tối cuối tuần.', 1, N'Duyệt, qua nhận áo CGV.'),
-(7, 5, 50000, N'Sinh viên Sư phạm Ngoại ngữ.', 2, N'Đã chọn ứng viên khác.'),
-(8, 4, 35000, N'Em làm đêm được.', 0, NULL),
-(9, 18, 26000, N'Soạn hàng nhanh, cẩn thận.', 1, N'Đi làm sáng mai.'),
-(10, 3, 27000, N'Học Ngân hàng, tính tiền không bao giờ sai.', 0, NULL),
-(11, 8, 35000, N'Biết pha chế cơ bản.', 2, N'Yêu cầu kinh nghiệm 1 năm.'),
-(2, 18, 25000, N'Xin làm kho phụ.', 0, NULL),
-(3, 8, 35000, N'Kinh nghiệm 6 tháng Barista.', 1, N'Hẹn phỏng vấn chiều nay.'),
-(4, 7, 24000, N'Rảnh các sáng.', 0, NULL),
-(7, 6, 28000, N'Ngoại hình sáng, cao 1m65.', 0, NULL),
-(11, 10, 22000, N'Có xe máy xịn.', 0, NULL); -- Thay (8,10) bằng (11,10) để tránh trùng lặp
-GO
+(2, 2, 25000, N'Rảnh ca sáng.', 0, NULL),
+(2, 13, 25000, N'Nhà em gần HITC.', 1, N'Làm ca gãy 12:30-17:30 em nhé.'),
+(2, 1, 26000, N'Làm ca tối được.', 1, N'Đã nhận, mai đi làm.'),
+(3, 8, 35000, N'Kinh nghiệm 6 tháng.', 1, N'Hẹn phỏng vấn qua zalo.'),
+(3, 15, 28000, N'Từng đứng POS.', 1, N'Mai qua test máy.'),
+(3, 16, 30000, N'Em làm thêm ca tối được.', 0, NULL),
+(4, 9, 30000, N'Ca chiều rảnh.', 0, NULL),
+(4, 14, 25000, N'Rảnh ca tối.', 0, NULL),
+(4, 4, 35000, N'Em làm đêm được, sức khỏe tốt.', 3, N'Sinh viên xin nghỉ do bận lịch học đột xuất.'),
+(5, 7, 24000, N'Rảnh các sáng.', 0, NULL),
+(5, 6, 28000, N'Thích môi trường rạp.', 2, N'Đã tuyển đủ người.'),
+(5, 5, 50000, N'IELTS 7.0 ạ.', 1, N'Pass test giảng dạy.'),
+(6, 11, 26000, N'Bê vác được.', 2, N'Kho đã chuyển vị trí.'),
+(6, 17, 25000, N'Có KN pha chế cơ bản.', 1, N'Bắt đầu việc từ mai.'),
+(6, 4, 30000, N'Nam khỏe mạnh làm đêm.', 0, NULL),
+(7, 10, 22000, N'Có xe máy.', 0, NULL),
+(7, 12, 35000, N'Giọng Bắc chuẩn, không ngọng.', 1, N'Lên văn phòng đào tạo kịch bản.'),
+(8, 3, 27000, N'Học Ngân hàng, tính tiền chuẩn.', 1, N'Nhận việc cuối tuần này.'),
+(8, 1, 25000, N'Làm tối được.', 0, NULL),
+(9, 18, 26000, N'Soạn hàng cẩn thận.', 3, N'Đã kết thúc hợp đồng làm việc, hoàn thành tốt.'),
+(9, 15, 28000, N'Cần việc ca chiều.', 0, NULL),
+(9, 12, 35000, N'Làm ca tối ổn định.', 0, NULL),
+(10, 2, 30000, N'Muốn làm pha chế.', 1, N'Nhận việc luôn.'),
+(10, 9, 30000, N'Đam mê skincare.', 1, N'Giao tiếp tốt, mai đi làm.'),
+(10, 5, 45000, N'Muốn làm trợ giảng.', 0, NULL),
+(11, 7, 24000, N'Đúng giờ, chăm chỉ.', 1, N'Làm ca sáng 7h.'),
+(11, 13, 25000, N'Gần trường học.', 0, NULL),
+(11, 16, 30000, N'Em làm buổi tối được.', 1, N'Nhận việc từ 18:30 nhé.');
 
 INSERT INTO Saved_Job (StudentID, JobID) VALUES
-(2, 2), (2, 5), (3, 1), (4, 6), (5, 5), (5, 7),
-(6, 8), (6, 9), (7, 12), (7, 5), (8, 10), (8, 4),
-(9, 11), (9, 3), (10, 9), (10, 6), (11, 16), (11, 8),
-(2, 13), (3, 15);
-GO
+(2, 5), (2, 8), (3, 1), (3, 4), (4, 6), (4, 15),
+(5, 12), (5, 18), (6, 9), (6, 3), (7, 2), (7, 17),
+(8, 11), (8, 13), (9, 7), (9, 16), (10, 10), (10, 14),
+(11, 1), (11, 5);
 
 INSERT INTO Student_Review (EmployerID, StudentID, Rating, Comment) VALUES
 (12, 2, 5, N'Tuấn đi làm rất đúng giờ, dọn dẹp sạch sẽ.'),
-(15, 2, 4, N'Giao tiếp khá, nhưng thỉnh thoảng xin về sớm.'),
-(13, 3, 4, N'Mai làm đồ uống ngon nhưng hay nhầm lượng đường.'),
-(14, 4, 5, N'Nam sức khỏe tốt, sắp đồ trong kho cực kỳ gọn gàng.'),
+(18, 3, 5, N'Pha chế ngon, đúng công thức quán.'),
+(13, 3, 4, N'Nhanh nhẹn, tính tiền chuẩn.'),
+(14, 4, 5, N'Nam sức khỏe tốt, trực đêm không ngủ gật.'),
 (15, 5, 5, N'Hương phát âm chuẩn, phụ huynh đánh giá rất cao.'),
-(16, 6, 5, N'Khánh lúc nào cũng cười tươi với khách, rạp rất quý.'),
-(14, 6, 3, N'Khánh làm ca đêm hay ngủ gật lúc không có khách.'),
-(19, 10, 5, N'Ngọc tư vấn khách chốt sale đồ mỹ phẩm rất nhanh.'),
-(17, 10, 4, N'Tính tiền chuẩn, nhưng cần hòa đồng hơn với team.'),
-(20, 8, 3, N'Việt đi giao hàng hay bị lạc, hay mượn tiền quỹ.'),
+(20, 6, 4, N'Khánh lúc nào cũng cười tươi với khách.'),
+(15, 7, 4, N'Gọi điện CSKH rất nhiệt tình, chốt được nhiều khóa học.'),
+(12, 8, 4, N'Việt tính tiền chính xác, chưa bao giờ âm quỹ.'),
 (19, 9, 5, N'Đức nhặt hàng Shopee tốc độ ánh sáng, không sót món nào.'),
-(18, 11, 4, N'Huy làm banner cho quán rất đẹp, pha chế ổn.'),
-(12, 11, 5, N'Làm phục vụ rất lanh lẹ.'),
-(15, 7, 5, N'Linh gọi điện CSKH rất nhiệt tình, chốt được nhiều khóa học.'),
-(16, 7, 4, N'Soát vé cẩn thận nhưng hay dùng điện thoại trong ca.'),
-(13, 5, 5, N'Bạn này nói tiếng Anh với khách Tây đỉnh lắm.'),
-(14, 8, 4, N'Làm kho khá chịu khó.'),
-(18, 3, 5, N'Kỹ năng pha chế Katinat xuất sắc, vệ sinh máy kỹ.');
-GO
+(13, 10, 4, N'Ngọc đi làm đúng giờ, hòa đồng.'),
+(19, 10, 5, N'Tư vấn khách chốt sale đồ mỹ phẩm rất nhanh.'),
+(17, 11, 4, N'Huy nhặt rau củ hư hỏng rất cẩn thận.'),
+(18, 11, 5, N'Thái độ phục vụ khách tuyệt vời.');
 
 INSERT INTO Employer_Review (StudentID, EmployerID, Rating, Comment) VALUES
 (2, 12, 5, N'Môi trường cực kỳ chuyên nghiệp, tips chia đều công bằng.'),
-(11, 12, 4, N'Quản lý tốt nhưng quy định chấm công hơi khắt khe.'),
+(3, 18, 5, N'Đồng phục đẹp, máy pha cà phê xịn xò.'),
 (3, 13, 4, N'Quán đông sếp thỉnh thoảng hơi gắt, nhưng bù lại có trà sữa free.'),
-(5, 13, 5, N'Nhân viên toàn gen Z làm việc siêu vui.'),
-(4, 14, 4, N'Ca đêm nhàn nhưng hay buồn ngủ, cần thêm phụ cấp đêm.'),
-(6, 14, 3, N'Kho hàng hơi bụi bặm.'),
+(4, 14, 5, N'Ca đêm nhàn, phụ cấp làm đêm khá cao.'),
 (5, 15, 5, N'Trung tâm xịn xò, đóng BHXH đầy đủ cho cả part-time.'),
+(6, 20, 4, N'Đồng nghiệp thân thiện, không áp lực mấy.'),
 (7, 15, 5, N'Lộ trình training rõ ràng, rất hữu ích.'),
-(6, 16, 5, N'Được xem phim miễn phí 1 vé/tháng, môi trường sạch sẽ.'),
-(7, 16, 4, N'Cuối tuần khách đông soát vé mỏi tay luôn.'),
+(8, 12, 4, N'Lương chuyển khoản cực kỳ chuẩn giờ.'),
+(9, 19, 4, N'Kho mát mẻ, anh chị kho vận thân thiện.'),
+(10, 13, 5, N'Quán đông khách nhưng vui.'),
 (10, 19, 5, N'Được mua mỹ phẩm giá chiết khấu siêu hời.'),
-(9, 19, 5, N'Kho sạch sẽ có điều hòa mát rượi.'),
-(8, 20, 3, N'Không hỗ trợ tiền điện thoại gọi khách nhận hàng.'),
-(10, 17, 4, N'Siêu thị mát mẻ nhưng quản lý hay trừ tiền đi muộn.'),
-(3, 18, 5, N'Đồng phục Katinat siêu đẹp, máy pha cà phê xịn.'),
-(11, 18, 4, N'Lương trả mùng 5 cực kỳ đúng hẹn.'),
-(9, 14, 4, N'Lương cơ bản ổn, đồng phục đẹp.'),
-(2, 15, 5, N'Đã từng học ở đây rồi vào làm luôn, rất tuyệt!');
+(11, 17, 4, N'Siêu thị mát mẻ nhưng quản lý hay trừ tiền đi muộn.'),
+(11, 18, 5, N'Không gian quán đẹp, lương cao.');
 GO

@@ -63,24 +63,25 @@ public class AdminDashboardController extends HttpServlet {
         JobDAO jobDAO = new JobDAO();
         ApplicationDAO appDAO = new ApplicationDAO();
 
-        // 1. Số liệu tổng quan 4 thẻ Card
+        // 1. Số liệu Card
         request.setAttribute("totalStudents", accDAO.countUsersByRole(2));
         request.setAttribute("totalEmployers", accDAO.countUsersByRole(3));
         request.setAttribute("totalJobs", jobDAO.countAllJobs());
         request.setAttribute("totalApps", appDAO.getTotalApplications());
 
-        // 2. Số liệu trạng thái mới thêm (Bài đăng & Tài khoản)
+        // 2. Số liệu Tình trạng
         request.setAttribute("pendingJobs", jobDAO.countPendingJobs());
         request.setAttribute("activeAccs", accDAO.countAccountsByState(1));
         request.setAttribute("lockedAccs", accDAO.countAccountsByState(2));
         request.setAttribute("deletedAccs", accDAO.countAccountsByState(3));
 
-        // 3. Danh sách đối tượng thống kê chi tiết (Không dùng Map)
-        List<StatDTO> appStats = appDAO.getApplicationStatsByStatus();
-        List<StatDTO> jobStats = jobDAO.getJobStatsByCategory();
-
-        request.setAttribute("appStats", appStats);
-        request.setAttribute("jobStats", jobStats);
+        // 3. Số liệu Bảng
+        request.setAttribute("appStats", appDAO.getApplicationStatsByStatus());
+        request.setAttribute("jobStats", jobDAO.getJobStatsByCategory());
+        
+        // 4. Số liệu Hoạt động chi tiết (MỚI THÊM)
+        request.setAttribute("studentActivities", appDAO.getStudentActivities());
+        request.setAttribute("employerActivities", jobDAO.getEmployerActivities());
 
         request.getRequestDispatcher("/views/admin/admin_dashboard.jsp").forward(request, response);
     }

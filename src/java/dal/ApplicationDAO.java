@@ -3,6 +3,7 @@ package dal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import models.Application;
@@ -11,6 +12,7 @@ import models.Job_Post;
 import models.Student_Profile;
 import viewmodels.ApplicationDTO;
 import viewmodels.StatDTO;
+import viewmodels.UserActivityDTO;
 
 public class ApplicationDAO extends DBContext {
 
@@ -70,7 +72,7 @@ public class ApplicationDAO extends DBContext {
         return list;
     }
     
-    public boolean hasTimeOverlap(int studentID, java.sql.Time newStartTime, java.sql.Time newEndTime) {
+    public boolean hasTimeOverlap(int studentID, Time newStartTime, Time newEndTime) {
         String sql = """
                      WITH Params AS (
                          SELECT CAST(? AS TIME) AS NewStart, CAST(? AS TIME) AS NewEnd, ? AS StudentID
@@ -255,7 +257,7 @@ public class ApplicationDAO extends DBContext {
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, studentId);
-            java.sql.ResultSet rs = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 Application a = new Application();
                 a.setApplicationID(rs.getInt("ApplicationID"));
@@ -285,7 +287,7 @@ public class ApplicationDAO extends DBContext {
 
                 list.add(new ApplicationDTO(a, job, emp));
             }
-        } catch (java.sql.SQLException e) {
+        } catch (SQLException e) {
             System.out.println("[ApplicationDAO.getApplicationHistory] Error: " + e.getMessage());
         }
         return list;
@@ -300,12 +302,12 @@ public class ApplicationDAO extends DBContext {
             PreparedStatement ps = connection.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             if (rs.next()) return rs.getInt(1);
-        } catch (java.sql.SQLException e) {}
+        } catch (SQLException e) {}
         return 0;
     }
 
     public List<StatDTO> getApplicationStatsByStatus() {
-        List<StatDTO> list = new java.util.ArrayList<>();
+        List<StatDTO> list = new ArrayList<>();
         int pending = 0, accepted = 0, rejected = 0;
 
         String sql = "SELECT Status, COUNT(ApplicationID) AS Total FROM Application GROUP BY Status";
@@ -328,6 +330,40 @@ public class ApplicationDAO extends DBContext {
         list.add(new StatDTO("Chấp nhận", accepted));
         list.add(new StatDTO("Từ chối", rejected));
 
+        return list;
+    }
+    
+    public List<UserActivityDTO> getStudentActivities() {
+        List<UserActivityDTO> list = new ArrayList<>();
+        String sql = "SELECT s.StudentID, s.FullName, s.Phone, COUNT(a.ApplicationID) as Total " +
+                     "FROM Student_Profile s " +
+                     "JOIN Application a ON s.StudentID = a.StudentID " +
+                     "WHERE a.Status = 1 " +
+                     "GROUP BY s.StudentID, s.FullName, s.Phone " +
+                     "ORDER BY Total DESC";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                UserActivityDTO dto = new UserActivityDTO();
+                dto.setUserId(rs.getInt("StudentID"));
+                dto.setUserName(rs.getString("FullName"));
+                dto.setContactInfo(rs.getString("Phone"));
+                dto.setTotalCount(rs.getInt("Total"));
+                
+                // Lấy chi tiết các việc sinh viên này đã làm
+                List<String> details = new ArrayList<>();
+                String sql2 = "SELECT j.Title, e.BusinessName FROM Application a JOIN Job_Post j ON a.JobID = j.JobID JOIN Employer_Profile e ON j.EmployerID = e.EmployerID WHERE a.StudentID = ? AND a.Status = 1";
+                PreparedStatement ps2 = connection.prepareStatement(sql2);
+                ps2.setInt(1, dto.getUserId());
+                ResultSet rs2 = ps2.executeQuery();
+                while(rs2.next()) {
+                    details.add(rs2.getString("Title") + " (Tại: " + rs2.getString("BusinessName") + ")");
+                }
+                dto.setDetails(details);
+                list.add(dto);
+            }
+        } catch (Exception e) {}
         return list;
     }
 }

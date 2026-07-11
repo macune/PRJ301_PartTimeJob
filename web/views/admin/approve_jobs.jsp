@@ -6,10 +6,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kiểm duyệt bài đăng - Admin</title>
+    <title>Quản lý bài đăng - Admin</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/bootstrap.min.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css?v=8.1">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/assets/css/style.css?v=8.2">
 </head>
 <body class="d-flex flex-column min-vh-100 bg-light">
 
@@ -19,7 +19,7 @@
     <div class="container flex-grow-1 mt-3 mb-5">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h3 class="fw-bold text-primary mb-0">
-                <i class="fas fa-clipboard-check me-2"></i>Kiểm duyệt bài đăng
+                <i class="fas fa-clipboard-check me-2"></i>Quản lý trạng thái bài đăng
             </h3>
         </div>
 
@@ -31,81 +31,153 @@
             <c:remove var="successMsg" scope="session"/>
         </c:if>
 
-        <c:if test="${not empty sessionScope.errorMsg}">
-            <div class="alert alert-danger alert-dismissible fade show rounded-3 shadow-sm">
-                <i class="fas fa-exclamation-circle me-2"></i>${sessionScope.errorMsg}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            <c:remove var="errorMsg" scope="session"/>
-        </c:if>
+        <ul class="nav nav-pills mb-4 border-bottom pb-2" id="jobAdminTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active fw-semibold" data-bs-toggle="pill" data-bs-target="#pendingTab" type="button">
+                    <i class="fas fa-hourglass-half me-1"></i> Chờ duyệt (${pendingJobs.size()})
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-semibold text-success" data-bs-toggle="pill" data-bs-target="#approvedTab" type="button">
+                    <i class="fas fa-check-circle me-1"></i> Đã duyệt (${approvedJobs.size()})
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-semibold text-danger" data-bs-toggle="pill" data-bs-target="#rejectedTab" type="button">
+                    <i class="fas fa-times-circle me-1"></i> Đã từ chối (${rejectedJobs.size()})
+                </button>
+            </li>
+        </ul>
 
-        <div class="card admin-card p-0 overflow-hidden">
-            <div class="table-responsive">
-                <table class="table table-hover mb-0 custom-admin-table align-middle">
-                    <thead>
-                        <tr>
-                            <th>Thời gian tạo</th>
-                            <th>Doanh nghiệp</th>
-                            <th>Tiêu đề bài đăng</th>
-                            <th>Danh mục</th>
-                            <th>Lương / Ca</th>
-                            <th class="text-center" style="width: 280px;">Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <c:choose>
-                            <c:when test="${empty pendingJobs}">
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="pendingTab">
+                <div class="card admin-card p-0 overflow-hidden border-0 shadow-sm">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 custom-admin-table align-middle">
+                            <thead class="table-light">
                                 <tr>
-                                    <td colspan="6" class="text-center py-5 text-muted">
-                                        <i class="fas fa-inbox fa-3x mb-3 opacity-25"></i>
-                                        <p class="mb-0">Hiện không có bài đăng nào cần kiểm duyệt.</p>
-                                    </td>
+                                    <th>Thời gian tạo</th>
+                                    <th>Doanh nghiệp</th>
+                                    <th>Tiêu đề bài đăng</th>
+                                    <th>Danh mục</th>
+                                    <th class="text-center" style="width: 250px;">Hành động</th>
                                 </tr>
-                            </c:when>
-                            <c:otherwise>
-                                <c:forEach var="item" items="${pendingJobs}">
-                                    <tr>
-                                        <td class="text-muted small">
-                                            <fmt:formatDate value="${item.job.createdAt}" pattern="dd/MM/yyyy HH:mm" />
-                                        </td>
-                                        <td class="fw-bold text-dark">${item.employer.businessName}</td>
-                                        <td class="fw-semibold text-primary">${item.job.title}</td>
-                                        <td><span class="badge bg-secondary">${item.category.categoryName}</span></td>
-                                        <td><fmt:formatNumber value="${item.job.salary}" pattern="#,###"/> đ</td>
-                                        
-                                        <td class="text-center">
-                                            <button class="btn btn-sm btn-info fw-semibold text-white" data-bs-toggle="modal" data-bs-target="#detailModal${item.job.jobId}" title="Xem chi tiết">
-                                                <i class="fas fa-eye me-1"></i> Xem
-                                            </button>
-                                            
-                                            <form action="${pageContext.request.contextPath}/admin/approveJobs" method="post" class="d-inline ms-1" onsubmit="return confirm('Xác nhận DUYỆT bài đăng này?');">
-                                                <input type="hidden" name="action" value="approve">
-                                                <input type="hidden" name="jobId" value="${item.job.jobId}">
-                                                <button type="submit" class="btn btn-sm btn-success fw-semibold" title="Duyệt bài">
-                                                    <i class="fas fa-check"></i>
-                                                </button>
-                                            </form>
-                                            
-                                            <form action="${pageContext.request.contextPath}/admin/approveJobs" method="post" class="d-inline ms-1" onsubmit="return confirm('Xác nhận TỪ CHỐI bài đăng này?');">
-                                                <input type="hidden" name="action" value="reject">
-                                                <input type="hidden" name="jobId" value="${item.job.jobId}">
-                                                <button type="submit" class="btn btn-sm btn-danger fw-semibold" title="Từ chối">
-                                                    <i class="fas fa-times"></i>
-                                                </button>
-                                            </form>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </c:otherwise>
-                        </c:choose>
-                    </tbody>
-                </table>
+                            </thead>
+                            <tbody>
+                                <c:choose>
+                                    <c:when test="${empty pendingJobs}">
+                                        <tr><td colspan="5" class="text-center py-5 text-muted"><p class="mb-0">Không có bài đăng chờ duyệt.</p></td></tr>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:forEach var="item" items="${pendingJobs}">
+                                            <tr>
+                                                <td class="text-muted small"><fmt:formatDate value="${item.job.createdAt}" pattern="dd/MM/yyyy HH:mm" /></td>
+                                                <td class="fw-bold text-dark">${item.employer.businessName}</td>
+                                                <td class="fw-semibold text-primary">${item.job.title}</td>
+                                                <td><span class="badge bg-secondary">${item.category.categoryName}</span></td>
+                                                <td class="text-center">
+                                                    <button class="btn btn-sm btn-info fw-semibold text-white" data-bs-toggle="modal" data-bs-target="#detailModal${item.job.jobId}"><i class="fas fa-eye"></i> Xem</button>
+                                                    <form action="${pageContext.request.contextPath}/admin/approveJobs" method="post" class="d-inline ms-1" onsubmit="return confirm('Xác nhận DUYỆT?');">
+                                                        <input type="hidden" name="action" value="approve">
+                                                        <input type="hidden" name="jobId" value="${item.job.jobId}">
+                                                        <button type="submit" class="btn btn-sm btn-success fw-semibold"><i class="fas fa-check"></i></button>
+                                                    </form>
+                                                    <form action="${pageContext.request.contextPath}/admin/approveJobs" method="post" class="d-inline ms-1" onsubmit="return confirm('Xác nhận TỪ CHỐI?');">
+                                                        <input type="hidden" name="action" value="reject">
+                                                        <input type="hidden" name="jobId" value="${item.job.jobId}">
+                                                        <button type="submit" class="btn btn-sm btn-danger fw-semibold"><i class="fas fa-times"></i></button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </c:otherwise>
+                                </c:choose>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="approvedTab">
+                <div class="card admin-card p-0 overflow-hidden border-0 shadow-sm border-top border-success border-3">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 custom-admin-table align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Thời gian tạo</th>
+                                    <th>Doanh nghiệp</th>
+                                    <th>Tiêu đề bài đăng</th>
+                                    <th>Danh mục</th>
+                                    <th class="text-center">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:choose>
+                                    <c:when test="${empty approvedJobs}">
+                                        <tr><td colspan="5" class="text-center py-5 text-muted"><p class="mb-0">Chưa có bài đăng nào được duyệt.</p></td></tr>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:forEach var="item" items="${approvedJobs}">
+                                            <tr>
+                                                <td class="text-muted small"><fmt:formatDate value="${item.job.createdAt}" pattern="dd/MM/yyyy HH:mm" /></td>
+                                                <td class="fw-bold text-dark">${item.employer.businessName}</td>
+                                                <td class="fw-semibold text-primary">${item.job.title}</td>
+                                                <td><span class="badge bg-secondary">${item.category.categoryName}</span></td>
+                                                <td class="text-center">
+                                                    <button class="btn btn-sm btn-info fw-semibold text-white" data-bs-toggle="modal" data-bs-target="#detailModal${item.job.jobId}"><i class="fas fa-eye me-1"></i> Xem chi tiết</button>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </c:otherwise>
+                                </c:choose>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="rejectedTab">
+                <div class="card admin-card p-0 overflow-hidden border-0 shadow-sm border-top border-danger border-3">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 custom-admin-table align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Thời gian tạo</th>
+                                    <th>Doanh nghiệp</th>
+                                    <th>Tiêu đề bài đăng</th>
+                                    <th>Danh mục</th>
+                                    <th class="text-center">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <c:choose>
+                                    <c:when test="${empty rejectedJobs}">
+                                        <tr><td colspan="5" class="text-center py-5 text-muted"><p class="mb-0">Không có bài đăng bị từ chối.</p></td></tr>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:forEach var="item" items="${rejectedJobs}">
+                                            <tr>
+                                                <td class="text-muted small"><fmt:formatDate value="${item.job.createdAt}" pattern="dd/MM/yyyy HH:mm" /></td>
+                                                <td class="fw-bold text-dark">${item.employer.businessName}</td>
+                                                <td class="fw-semibold text-muted text-decoration-line-through">${item.job.title}</td>
+                                                <td><span class="badge bg-secondary">${item.category.categoryName}</span></td>
+                                                <td class="text-center">
+                                                    <button class="btn btn-sm btn-secondary fw-semibold text-white" data-bs-toggle="modal" data-bs-target="#detailModal${item.job.jobId}"><i class="fas fa-eye me-1"></i> Xem chi tiết</button>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </c:otherwise>
+                                </c:choose>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <c:if test="${not empty pendingJobs}">
-        <c:forEach var="item" items="${pendingJobs}">
+    <c:if test="${not empty allAdminJobs}">
+        <c:forEach var="item" items="${allAdminJobs}">
             <div class="modal fade" id="detailModal${item.job.jobId}" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
                     <div class="modal-content rounded-4 border-0 shadow">

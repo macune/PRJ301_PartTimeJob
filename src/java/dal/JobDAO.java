@@ -6,9 +6,12 @@ import models.Job_Post;
 import viewmodels.JobDetailDTO; 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Time;
 import java.util.ArrayList;
 import java.util.List;
 import viewmodels.StatDTO;
+import viewmodels.UserActivityDTO;
+
 
 public class JobDAO extends DBContext {
 
@@ -19,7 +22,7 @@ public class JobDAO extends DBContext {
             if (st.length() == 5) {
                 st += ":00"; 
             }
-            java.sql.Time.valueOf(st); 
+            Time.valueOf(st); 
             return st;
         } catch (Exception e) {
             return null;
@@ -497,5 +500,78 @@ public class JobDAO extends DBContext {
             if (rs.next()) return rs.getInt(1);
         } catch (Exception e) {}
         return 0;
+    }
+    
+    public List<UserActivityDTO> getEmployerActivities() {
+        List<UserActivityDTO> list = new ArrayList<>();
+        String sql = "SELECT e.EmployerID, e.BusinessName, e.Phone, COUNT(j.JobID) as Total " +
+                     "FROM Employer_Profile e " +
+                     "JOIN Job_Post j ON e.EmployerID = j.EmployerID " +
+                     "GROUP BY e.EmployerID, e.BusinessName, e.Phone " +
+                     "ORDER BY Total DESC";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                UserActivityDTO dto = new UserActivityDTO();
+                dto.setUserId(rs.getInt("EmployerID"));
+                dto.setUserName(rs.getString("BusinessName"));
+                dto.setContactInfo(rs.getString("Phone"));
+                dto.setTotalCount(rs.getInt("Total"));
+                
+                // Lấy chi tiết các bài NTD này đã đăng
+                List<String> details = new ArrayList<>();
+                String sql2 = "SELECT Title, Status FROM Job_Post WHERE EmployerID = ?";
+                PreparedStatement ps2 = connection.prepareStatement(sql2);
+                ps2.setInt(1, dto.getUserId());
+                ResultSet rs2 = ps2.executeQuery();
+                while(rs2.next()) {
+                    int st = rs2.getInt("Status");
+                    String stStr = (st == 1) ? "Đã duyệt" : ((st == 0) ? "Chờ duyệt" : "Từ chối/Ẩn");
+                    details.add(rs2.getString("Title") + " [" + stStr + "]");
+                }
+                dto.setDetails(details);
+                list.add(dto);
+            }
+        } catch (Exception e) {}
+        return list;
+    }
+
+    public List<JobDetailDTO> getAdminJobsByStatus(int status) {
+        List<JobDetailDTO> list = new ArrayList<>();
+        String sql = "SELECT j.*, c.CategoryName, e.BusinessName, e.LogoUrl, e.Address AS EmployerAddress " +
+                     "FROM Job_Post j " +
+                     "JOIN Category c ON j.CategoryID = c.CategoryID " +
+                     "JOIN Employer_Profile e ON j.EmployerID = e.EmployerID " +
+                     "WHERE j.Status = ? " +
+                     "ORDER BY j.CreatedAt DESC";
+        try {
+            PreparedStatement st = connection.prepareStatement(sql);
+            st.setInt(1, status);
+            ResultSet rs = st.executeQuery();
+            while (rs.next()) {
+                models.Job_Post job = new models.Job_Post();
+                job.setJobId(rs.getInt("JobID"));
+                job.setTitle(rs.getString("Title"));
+                job.setDescription(rs.getString("Description")); 
+                job.setSalary(rs.getInt("Salary"));
+                job.setStartTime(rs.getTime("StartTime"));
+                job.setEndTime(rs.getTime("EndTime"));
+                job.setCity(rs.getString("City"));               
+                job.setWard(rs.getString("Ward"));               
+                job.setDetailAddress(rs.getString("DetailAddress")); 
+                job.setCreatedAt(rs.getTimestamp("CreatedAt"));
+                job.setStatus(rs.getInt("Status"));
+
+                models.Category cat = new models.Category();
+                cat.setCategoryName(rs.getString("CategoryName"));
+
+                models.Employer_Profile emp = new models.Employer_Profile();
+                emp.setBusinessName(rs.getString("BusinessName"));
+
+                list.add(new JobDetailDTO(job, cat, emp));
+            }
+        } catch (Exception e) {}
+        return list;
     }
 }

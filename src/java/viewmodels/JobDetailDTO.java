@@ -9,6 +9,14 @@ public class JobDetailDTO {
     private Category category;
     private Employer_Profile employer;
 
+    public JobDetailDTO() {
+    }
+    
+    public JobDetailDTO(Job_Post job, Employer_Profile employer) {
+        this.job = job;
+        this.employer = employer;
+    }
+
     public JobDetailDTO(Job_Post job, Category category, Employer_Profile employer) {
         this.job = job;
         this.category = category;

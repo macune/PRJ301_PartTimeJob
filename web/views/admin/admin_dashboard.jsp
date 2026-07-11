@@ -166,8 +166,116 @@
                     </div>
                 </div>
             </div>
-
         </div>
+                            
+        <div class="row g-4 mt-2">
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-header bg-white border-bottom pt-4 pb-3">
+                        <h5 class="fw-bold text-dark mb-0"><i class="fas fa-user-graduate text-success me-2"></i>Sinh viên tiêu biểu</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive table-container-scroll">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light sticky-top">
+                                    <tr>
+                                        <th class="ps-4">Sinh viên</th>
+                                        <th class="text-center">Số việc đã nhận</th>
+                                        <th class="text-center pe-4">Chi tiết</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach items="${studentActivities}" var="stu">
+                                        <tr>
+                                            <td class="ps-4">
+                                                <div class="fw-bold text-dark">${stu.userName}</div>
+                                                <div class="small text-muted"><i class="fas fa-phone-alt me-1"></i>${stu.contactInfo}</div>
+                                            </td>
+                                            <td class="text-center fw-bold text-success">${stu.totalCount}</td>
+                                            <td class="text-center pe-4">
+                                                <button class="btn btn-sm btn-outline-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#stuModal${stu.userId}">Xem việc</button>
+                                                
+                                                <div class="modal fade text-start" id="stuModal${stu.userId}" tabindex="-1">
+                                                    <div class="modal-dialog modal-dialog-centered">
+                                                        <div class="modal-content rounded-4 border-0">
+                                                            <div class="modal-header bg-light border-0">
+                                                                <h6 class="modal-title fw-bold">Việc đã nhận: ${stu.userName}</h6>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <div class="modal-body p-4">
+                                                                <ul class="list-group list-group-flush">
+                                                                    <c:forEach items="${stu.details}" var="jobName">
+                                                                        <li class="list-group-item px-0 py-2"><i class="fas fa-check-circle text-success me-2"></i>${jobName}</li>
+                                                                    </c:forEach>
+                                                                </ul>
+                                                                <c:if test="${empty stu.details}"><p class="text-muted text-center mb-0">Chưa có dữ liệu.</p></c:if>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="card border-0 shadow-sm rounded-4 h-100">
+                    <div class="card-header bg-white border-bottom pt-4 pb-3">
+                        <h5 class="fw-bold text-dark mb-0"><i class="fas fa-building text-primary me-2"></i>Nhà tuyển dụng tích cực</h5>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive table-container-scroll">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light sticky-top">
+                                    <tr>
+                                        <th class="ps-4">Doanh nghiệp</th>
+                                        <th class="text-center">Số bài đã đăng</th>
+                                        <th class="text-center pe-4">Chi tiết</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach items="${employerActivities}" var="emp">
+                                        <tr>
+                                            <td class="ps-4">
+                                                <div class="fw-bold text-dark">${emp.userName}</div>
+                                                <div class="small text-muted"><i class="fas fa-phone-alt me-1"></i>${emp.contactInfo}</div>
+                                            </td>
+                                            <td class="text-center fw-bold text-primary">${emp.totalCount}</td>
+                                            <td class="text-center pe-4">
+                                                <button class="btn btn-sm btn-outline-info rounded-pill" data-bs-toggle="modal" data-bs-target="#empModal${emp.userId}">Xem bài</button>
+                                                
+                                                <div class="modal fade text-start" id="empModal${emp.userId}" tabindex="-1">
+                                                    <div class="modal-dialog modal-dialog-centered">
+                                                        <div class="modal-content rounded-4 border-0">
+                                                            <div class="modal-header bg-light border-0">
+                                                                <h6 class="modal-title fw-bold">Bài đăng của: ${emp.userName}</h6>
+                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <div class="modal-body p-4">
+                                                                <ul class="list-group list-group-flush">
+                                                                    <c:forEach items="${emp.details}" var="postName">
+                                                                        <li class="list-group-item px-0 py-2"><i class="fas fa-file-alt text-primary me-2"></i>${postName}</li>
+                                                                    </c:forEach>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>                    
     </div>
 
     <jsp:include page="/views/common/footer.jsp" />

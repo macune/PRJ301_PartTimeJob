@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.List;
 import viewmodels.JobDetailDTO;
 
@@ -58,9 +59,22 @@ public class AdminApproveJobController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         JobDAO jobDAO = new JobDAO();
-        List<JobDetailDTO> pendingJobs = jobDAO.getPendingJobs();
+        
+        List<JobDetailDTO> pendingJobs = jobDAO.getAdminJobsByStatus(0);
+        List<JobDetailDTO> approvedJobs = jobDAO.getAdminJobsByStatus(1);
+        List<JobDetailDTO> rejectedJobs = jobDAO.getAdminJobsByStatus(2);
+        
+        // Gộp chung 1 list để render Modal chi tiết ở cuối trang (Clean code)
+        List<JobDetailDTO> allAdminJobs = new ArrayList<>();
+        allAdminJobs.addAll(pendingJobs);
+        allAdminJobs.addAll(approvedJobs);
+        allAdminJobs.addAll(rejectedJobs);
         
         request.setAttribute("pendingJobs", pendingJobs);
+        request.setAttribute("approvedJobs", approvedJobs);
+        request.setAttribute("rejectedJobs", rejectedJobs);
+        request.setAttribute("allAdminJobs", allAdminJobs);
+        
         request.getRequestDispatcher("/views/admin/approve_jobs.jsp").forward(request, response);
     } 
 
@@ -75,22 +89,19 @@ public class AdminApproveJobController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
         HttpSession session = request.getSession();
-        
         try {
             String action = request.getParameter("action");
             int jobId = Integer.parseInt(request.getParameter("jobId"));
             JobDAO jobDAO = new JobDAO();
             
             if ("approve".equals(action)) {
-                jobDAO.updateJobStatusByAdmin(jobId, 1); // 1 = Đã duyệt (Active)
+                jobDAO.updateJobStatusByAdmin(jobId, 1); 
                 session.setAttribute("successMsg", "Đã DUYỆT bài đăng thành công!");
             } else if ("reject".equals(action)) {
-                jobDAO.updateJobStatusByAdmin(jobId, 2); // 2 = Từ chối (Rejected)
+                jobDAO.updateJobStatusByAdmin(jobId, 2); 
                 session.setAttribute("successMsg", "Đã TỪ CHỐI bài đăng!");
             }
-        } catch (Exception e) {
-            session.setAttribute("errorMsg", "Có lỗi xảy ra, vui lòng thử lại!");
-        }
+        } catch (Exception e) {}
         
         response.sendRedirect(request.getContextPath() + "/admin/approveJobs");
     }
