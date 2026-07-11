@@ -81,6 +81,7 @@
                                     <c:choose>
                                         <c:when test="${item.label == 'Chấp nhận'}"><c:set var="barBg" value="bg-success"/></c:when>
                                         <c:when test="${item.label == 'Từ chối'}"><c:set var="barBg" value="bg-danger"/></c:when>
+                                        <c:when test="${item.label == 'Đã kết thúc'}"><c:set var="barBg" value="bg-secondary"/></c:when>
                                         <c:otherwise><c:set var="barBg" value="bg-warning"/></c:otherwise>
                                     </c:choose>
 
@@ -166,8 +167,9 @@
                     </div>
                 </div>
             </div>
+
         </div>
-                            
+
         <div class="row g-4 mt-2">
             <div class="col-lg-6">
                 <div class="card border-0 shadow-sm rounded-4 h-100">
@@ -234,8 +236,8 @@
                                 <thead class="table-light sticky-top">
                                     <tr>
                                         <th class="ps-4">Doanh nghiệp</th>
-                                        <th class="text-center">Số bài đã đăng</th>
-                                        <th class="text-center pe-4">Chi tiết</th>
+                                        <th class="text-center">Số bài đăng</th>
+                                        <th class="text-center text-success">Đang làm việc</th> <th class="text-center pe-4">Chi tiết</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -246,7 +248,7 @@
                                                 <div class="small text-muted"><i class="fas fa-phone-alt me-1"></i>${emp.contactInfo}</div>
                                             </td>
                                             <td class="text-center fw-bold text-primary">${emp.totalCount}</td>
-                                            <td class="text-center pe-4">
+                                            <td class="text-center fw-bold text-success">${emp.activeEmployeesCount}</td> <td class="text-center pe-4">
                                                 <button class="btn btn-sm btn-outline-info rounded-pill" data-bs-toggle="modal" data-bs-target="#empModal${emp.userId}">Xem bài</button>
                                                 
                                                 <div class="modal fade text-start" id="empModal${emp.userId}" tabindex="-1">
@@ -275,7 +277,8 @@
                     </div>
                 </div>
             </div>
-        </div>                    
+        </div>
+
     </div>
 
     <jsp:include page="/views/common/footer.jsp" />

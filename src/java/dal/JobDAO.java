@@ -504,11 +504,17 @@ public class JobDAO extends DBContext {
     
     public List<UserActivityDTO> getEmployerActivities() {
         List<UserActivityDTO> list = new ArrayList<>();
-        String sql = "SELECT e.EmployerID, e.BusinessName, e.Phone, COUNT(j.JobID) as Total " +
-                     "FROM Employer_Profile e " +
-                     "JOIN Job_Post j ON e.EmployerID = j.EmployerID " +
-                     "GROUP BY e.EmployerID, e.BusinessName, e.Phone " +
-                     "ORDER BY Total DESC";
+        // Đếm số bài đăng (TotalJobs) và số ứng viên đang làm việc (Status = 1)
+        String sql = """
+                     SELECT e.EmployerID, e.BusinessName, e.Phone, 
+                            COUNT(DISTINCT j.JobID) as TotalJobs, 
+                            COUNT(DISTINCT CASE WHEN a.Status = 1 THEN a.ApplicationID ELSE NULL END) as ActiveEmployees 
+                     FROM Employer_Profile e 
+                     JOIN Job_Post j ON e.EmployerID = j.EmployerID 
+                     LEFT JOIN Application a ON j.JobID = a.JobID 
+                     GROUP BY e.EmployerID, e.BusinessName, e.Phone 
+                     ORDER BY TotalJobs DESC
+                     """;
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -517,7 +523,8 @@ public class JobDAO extends DBContext {
                 dto.setUserId(rs.getInt("EmployerID"));
                 dto.setUserName(rs.getString("BusinessName"));
                 dto.setContactInfo(rs.getString("Phone"));
-                dto.setTotalCount(rs.getInt("Total"));
+                dto.setTotalCount(rs.getInt("TotalJobs"));
+                dto.setActiveEmployeesCount(rs.getInt("ActiveEmployees"));
                 
                 // Lấy chi tiết các bài NTD này đã đăng
                 List<String> details = new ArrayList<>();
@@ -533,7 +540,9 @@ public class JobDAO extends DBContext {
                 dto.setDetails(details);
                 list.add(dto);
             }
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            System.out.println("Error getEmployerActivities: " + e.getMessage());
+        }
         return list;
     }
 

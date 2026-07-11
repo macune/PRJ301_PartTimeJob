@@ -58,25 +58,28 @@ public class AdminApproveJobController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        JobDAO jobDAO = new JobDAO();
+        dal.JobDAO jobDAO = new dal.JobDAO();
         
-        List<JobDetailDTO> pendingJobs = jobDAO.getAdminJobsByStatus(0);
-        List<JobDetailDTO> approvedJobs = jobDAO.getAdminJobsByStatus(1);
-        List<JobDetailDTO> rejectedJobs = jobDAO.getAdminJobsByStatus(2);
+        List<viewmodels.JobDetailDTO> pendingJobs = jobDAO.getAdminJobsByStatus(0);
+        List<viewmodels.JobDetailDTO> approvedJobs = jobDAO.getAdminJobsByStatus(1);
+        List<viewmodels.JobDetailDTO> rejectedJobs = jobDAO.getAdminJobsByStatus(2);
+        List<viewmodels.JobDetailDTO> closedJobs = jobDAO.getAdminJobsByStatus(3);
         
-        // Gộp chung 1 list để render Modal chi tiết ở cuối trang (Clean code)
-        List<JobDetailDTO> allAdminJobs = new ArrayList<>();
+        // Gộp chung vào 1 list để render Modal chi tiết ở cuối trang (Clean code)
+        List<viewmodels.JobDetailDTO> allAdminJobs = new java.util.ArrayList<>();
         allAdminJobs.addAll(pendingJobs);
         allAdminJobs.addAll(approvedJobs);
         allAdminJobs.addAll(rejectedJobs);
+        allAdminJobs.addAll(closedJobs); // Thêm bài đã đóng vào Modal
         
         request.setAttribute("pendingJobs", pendingJobs);
         request.setAttribute("approvedJobs", approvedJobs);
         request.setAttribute("rejectedJobs", rejectedJobs);
+        request.setAttribute("closedJobs", closedJobs); // Gửi sang JSP
         request.setAttribute("allAdminJobs", allAdminJobs);
         
         request.getRequestDispatcher("/views/admin/approve_jobs.jsp").forward(request, response);
-    } 
+    }
 
     /** 
      * Handles the HTTP <code>POST</code> method.

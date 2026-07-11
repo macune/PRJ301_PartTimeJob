@@ -61,22 +61,21 @@ public class EmployerManageHRController extends HttpServlet {
         
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
-
         int employerId = account.getAccountId(); 
         
         ApplicationDAO appDAO = new ApplicationDAO();
         List<ApplicationDTO> listAccepted = appDAO.getAcceptedApplicationsByEmployerId(employerId);
+        List<ApplicationDTO> listHistory = appDAO.getHRHistoryByEmployerId(employerId);
         
         dal.ReviewDAO reviewDAO = new dal.ReviewDAO();
-        for (ApplicationDTO app : listAccepted) {
-            if (app.getApplication().getStatus() == 1) {
-                boolean hasReviewed = reviewDAO.hasEmployerReviewedStudent(employerId, app.getStudent().getStudentId());
-                app.setIsReviewed(hasReviewed); // Gắn thẳng vào object
-            }
+        for (ApplicationDTO app : listHistory) {
+            // Nút đánh giá chỉ kích hoạt ở phần Lịch sử
+            boolean hasReviewed = reviewDAO.hasEmployerReviewedStudent(employerId, app.getStudent().getStudentId());
+            app.setIsReviewed(hasReviewed); 
         }
         
         request.setAttribute("listAccepted", listAccepted);
-        
+        request.setAttribute("listHistory", listHistory);
         request.getRequestDispatcher("/views/employer/employer_manage_hr.jsp").forward(request, response);
     }
 
@@ -90,7 +89,34 @@ public class EmployerManageHRController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        request.setCharacterEncoding("UTF-8");
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
+        
+        String action = request.getParameter("action");
+        
+        // XỬ LÝ LOGIC CHO NGHỈ / SA THẢI
+        if ("fire".equals(action)) {
+            try {
+                int applicationId = Integer.parseInt(request.getParameter("applicationId"));
+                String reason = request.getParameter("reason");
+                
+                ApplicationDAO appDAO = new ApplicationDAO();
+                // Truyền "EMPLOYER" để DAO biết gắn tiền tố [NTD Cho nghỉ]
+                boolean success = appDAO.updateStatusToFinished(applicationId, account.getAccountId(), "EMPLOYER", reason);
+                
+                if (success) {
+                    session.setAttribute("successMsg", "Đã cho nhân viên nghỉ việc thành công. Hồ sơ đã chuyển vào lịch sử.");
+                } else {
+                    session.setAttribute("errorMsg", "Không thể thực hiện yêu cầu. Vui lòng thử lại.");
+                }
+            } catch (Exception e) {
+                session.setAttribute("errorMsg", "Dữ liệu không hợp lệ.");
+            }
+            
+            // Reload lại trang Quản lý nhân sự
+            response.sendRedirect(request.getContextPath() + "/employer/manageHR"); 
+        }
     }
 
     /** 

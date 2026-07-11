@@ -308,7 +308,7 @@ public class ApplicationDAO extends DBContext {
 
     public List<StatDTO> getApplicationStatsByStatus() {
         List<StatDTO> list = new ArrayList<>();
-        int pending = 0, accepted = 0, rejected = 0;
+        int pending = 0, accepted = 0, rejected = 0, finished = 0; // Thêm finished
 
         String sql = "SELECT Status, COUNT(ApplicationID) AS Total FROM Application GROUP BY Status";
         try {
@@ -320,25 +320,28 @@ public class ApplicationDAO extends DBContext {
                 if (status == 0) pending = count;
                 else if (status == 1) accepted = count;
                 else if (status == 2) rejected = count;
+                else if (status == 3) finished = count; // Bắt thêm Status = 3
             }
-        } catch (SQLException e) {
+        } catch (java.sql.SQLException e) {
             System.out.println("Error getApplicationStatsByStatus: " + e.getMessage());
         }
         
-        // Add vào list theo thứ tự mong muốn
-        list.add(new StatDTO("Đang chờ", pending));
-        list.add(new StatDTO("Chấp nhận", accepted));
-        list.add(new StatDTO("Từ chối", rejected));
+        // Add vào list theo thứ tự
+        list.add(new viewmodels.StatDTO("Đang chờ", pending));
+        list.add(new viewmodels.StatDTO("Chấp nhận", accepted));
+        list.add(new viewmodels.StatDTO("Từ chối", rejected));
+        list.add(new viewmodels.StatDTO("Đã kết thúc", finished)); // Thêm dòng này
 
         return list;
     }
     
     public List<UserActivityDTO> getStudentActivities() {
         List<UserActivityDTO> list = new ArrayList<>();
+        // Sửa WHERE a.Status = 1 thành IN (1, 3) để tính cả việc đã hoàn thành
         String sql = "SELECT s.StudentID, s.FullName, s.Phone, COUNT(a.ApplicationID) as Total " +
                      "FROM Student_Profile s " +
                      "JOIN Application a ON s.StudentID = a.StudentID " +
-                     "WHERE a.Status = 1 " +
+                     "WHERE a.Status IN (1, 3) " + 
                      "GROUP BY s.StudentID, s.FullName, s.Phone " +
                      "ORDER BY Total DESC";
         try {
@@ -351,9 +354,9 @@ public class ApplicationDAO extends DBContext {
                 dto.setContactInfo(rs.getString("Phone"));
                 dto.setTotalCount(rs.getInt("Total"));
                 
-                // Lấy chi tiết các việc sinh viên này đã làm
+                // Lấy chi tiết các việc sinh viên này đã nhận và hoàn thành
                 List<String> details = new ArrayList<>();
-                String sql2 = "SELECT j.Title, e.BusinessName FROM Application a JOIN Job_Post j ON a.JobID = j.JobID JOIN Employer_Profile e ON j.EmployerID = e.EmployerID WHERE a.StudentID = ? AND a.Status = 1";
+                String sql2 = "SELECT j.Title, e.BusinessName FROM Application a JOIN Job_Post j ON a.JobID = j.JobID JOIN Employer_Profile e ON j.EmployerID = e.EmployerID WHERE a.StudentID = ? AND a.Status IN (1, 3)";
                 PreparedStatement ps2 = connection.prepareStatement(sql2);
                 ps2.setInt(1, dto.getUserId());
                 ResultSet rs2 = ps2.executeQuery();
@@ -364,6 +367,94 @@ public class ApplicationDAO extends DBContext {
                 list.add(dto);
             }
         } catch (Exception e) {}
+        return list;
+    }
+    
+    // =====================================================================
+    // HÀM XỬ LÝ XIN NGHỈ / SA THẢI (STATUS = 3)
+    // =====================================================================
+    public boolean updateStatusToFinished(int applicationId, int actorId, String role, String reason) {
+        // Gắn tiền tố để phân biệt ai là người ghi chú
+        String prefix = role.equals("STUDENT") ? "[SV Xin nghỉ] " : "[NTD Cho nghỉ] ";
+        String finalNote = prefix + reason;
+        
+        String sql = "";
+        if (role.equals("STUDENT")) {
+            // Xác thực đúng Sinh viên đó mới được xin nghỉ
+            sql = "UPDATE Application SET Status = 3, EmployerNote = ? WHERE ApplicationID = ? AND StudentID = ?";
+        } else {
+            // Xác thực đúng NTD sở hữu bài đăng đó mới được cho nghỉ
+            sql = "UPDATE Application SET Status = 3, EmployerNote = ? WHERE ApplicationID = ? AND JobID IN (SELECT JobID FROM Job_Post WHERE EmployerID = ?)";
+        }
+        
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setString(1, finalNote);
+            ps.setInt(2, applicationId);
+            ps.setInt(3, actorId);
+            return ps.executeUpdate() > 0;
+        } catch (java.sql.SQLException e) {
+            System.out.println("Error updateStatusToFinished: " + e.getMessage());
+        }
+        return false;
+    }
+    
+    // =====================================================================
+    // HÀM LẤY LỊCH SỬ NHÂN SỰ ĐÃ NGHỈ (STATUS = 3) CHO EMPLOYER
+    // =====================================================================
+    public List<ApplicationDTO> getHRHistoryByEmployerId(int employerId) {
+        List<ApplicationDTO> list = new ArrayList<>();
+        String sql = """
+                     SELECT a.ApplicationID, a.StudentID, a.JobID, a.DesiredSalary, a.Message, a.Status, a.EmployerNote, a.AppliedAt,
+                            s.FullName, s.Phone, s.University, s.Experience, s.AverageRating,
+                            s.ContactEmail, s.Address, s.Introduction,
+                            j.Title AS JobTitle, j.Salary AS BaseSalary, j.StartTime, j.EndTime,
+                            j.DetailAddress AS JobDetailAddress, j.Ward AS JobWard, j.City AS JobCity
+                     FROM Application a
+                     JOIN Student_Profile s ON a.StudentID = s.StudentID
+                     JOIN Job_Post j ON a.JobID = j.JobID
+                     WHERE j.EmployerID = ? AND a.Status = 3
+                     ORDER BY a.AppliedAt DESC
+                     """;
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, employerId);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Application a = new Application();
+                a.setApplicationID(rs.getInt("ApplicationID"));
+                a.setStudentID(rs.getInt("StudentID"));
+                a.setJobID(rs.getInt("JobID"));
+                
+                int desired = rs.getInt("DesiredSalary");
+                a.setDesiredSalary(desired > 0 ? desired : rs.getInt("BaseSalary"));
+                
+                a.setMessage(rs.getString("Message"));
+                a.setStatus(rs.getInt("Status"));
+                a.setEmployerNote(rs.getString("EmployerNote")); // Chứa lý do nghỉ
+                a.setAppliedAt(rs.getTimestamp("AppliedAt"));
+
+                Student_Profile sp = new Student_Profile();
+                sp.setStudentId(rs.getInt("StudentID"));
+                sp.setFullName(rs.getString("FullName"));
+                sp.setPhone(rs.getString("Phone"));
+                sp.setUniversity(rs.getString("University"));
+                sp.setExperience(rs.getString("Experience"));
+                sp.setAverageRating(rs.getDouble("AverageRating"));
+                sp.setContactEmail(rs.getString("ContactEmail"));
+
+                Job_Post job = new Job_Post();
+                job.setJobId(rs.getInt("JobID"));
+                job.setTitle(rs.getString("JobTitle"));
+                job.setStartTime(rs.getTime("StartTime"));
+                job.setEndTime(rs.getTime("EndTime"));
+                job.setDetailAddress(rs.getString("JobDetailAddress"));
+                job.setWard(rs.getString("JobWard"));
+                job.setCity(rs.getString("JobCity"));
+
+                list.add(new viewmodels.ApplicationDTO(a, sp, job));
+            }
+        } catch (java.sql.SQLException e) {}
         return list;
     }
 }

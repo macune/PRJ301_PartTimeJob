@@ -67,21 +67,27 @@ public class StudentManageJobController extends HttpServlet {
         
         ApplicationDAO appDAO = new ApplicationDAO();
         List<ApplicationDTO> allApps = appDAO.getApplicationHistoryByStudentId(studentId);
-        List<ApplicationDTO> workingJobs = new ArrayList<>();
         
-        ReviewDAO reviewDAO = new ReviewDAO();
+        List<ApplicationDTO> workingJobs = new ArrayList<>();
+        List<ApplicationDTO> historyJobs = new ArrayList<>();
+        
+        dal.ReviewDAO reviewDAO = new dal.ReviewDAO();
         
         for (ApplicationDTO app : allApps) {
-            if (app.getApplication().getStatus() == 1) { // 1 = Chấp nhận
+            if (app.getApplication().getStatus() == 1) { 
+                workingJobs.add(app);
+            } else if (app.getApplication().getStatus() == 3) {
+                // ĐÃ NGHỈ -> Gắn nút Đánh giá vào đây
                 boolean hasReviewed = reviewDAO.hasStudentReviewedEmployer(studentId, app.getEmployer().getEmployerId());
                 app.setIsReviewed(hasReviewed);
-                workingJobs.add(app);
+                historyJobs.add(app);
             }
         }
         
         request.setAttribute("workingJobs", workingJobs);
+        request.setAttribute("historyJobs", historyJobs);
         request.getRequestDispatcher("/views/student/student_manage_jobs.jsp").forward(request, response);
-    } 
+    }
 
     /** 
      * Handles the HTTP <code>POST</code> method.
@@ -93,7 +99,33 @@ public class StudentManageJobController extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
-        processRequest(request, response);
+        request.setCharacterEncoding("UTF-8");
+        HttpSession session = request.getSession();
+        Account account = (Account) session.getAttribute("account");
+        
+        String action = request.getParameter("action");
+        
+        if ("resign".equals(action)) {
+            try {
+                int applicationId = Integer.parseInt(request.getParameter("applicationId"));
+                String reason = request.getParameter("reason");
+                
+                ApplicationDAO appDAO = new ApplicationDAO();
+                // Truyền "STUDENT" để DAO biết gắn tiền tố [SV Xin nghỉ]
+                boolean success = appDAO.updateStatusToFinished(applicationId, account.getAccountId(), "STUDENT", reason);
+                
+                if (success) {
+                    session.setAttribute("successMsg", "Đã báo cáo xin nghỉ thành công. Công việc đã được chuyển vào lịch sử.");
+                } else {
+                    session.setAttribute("errorMsg", "Không thể thực hiện yêu cầu. Vui lòng thử lại.");
+                }
+            } catch (Exception e) {
+                session.setAttribute("errorMsg", "Dữ liệu không hợp lệ.");
+            }
+            
+            // Reload lại trang Quản lý việc làm (Thay đường dẫn này bằng URL Mapping thực tế của bạn nếu cần)
+            response.sendRedirect(request.getContextPath() + "/student/manageJobs"); 
+        }
     }
 
     /** 
