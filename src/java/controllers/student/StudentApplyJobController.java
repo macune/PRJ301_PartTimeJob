@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import models.Account;
 import viewmodels.JobDetailDTO;
+import java.sql.Time;
 
 /**
  *
@@ -104,8 +105,8 @@ public class StudentApplyJobController extends HttpServlet {
         JobDetailDTO newJobDetail = jobDao.getJobById(jobID);
         
         if (newJobDetail != null) {
-            java.sql.Time newStart = newJobDetail.getJob().getStartTime();
-            java.sql.Time newEnd = newJobDetail.getJob().getEndTime();
+            Time newStart = newJobDetail.getJob().getStartTime();
+            Time newEnd = newJobDetail.getJob().getEndTime();
             
             // Nếu có đơn nào trùng lịch -> Chặn lại và báo lỗi Overlap
             if (dao.hasTimeOverlap(studentID, newStart, newEnd)) {

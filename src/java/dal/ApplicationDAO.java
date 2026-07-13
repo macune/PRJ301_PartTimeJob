@@ -338,15 +338,15 @@ public class ApplicationDAO extends DBContext {
                 else if (status == 2) rejected = count;
                 else if (status == 3) finished = count; // Bắt thêm Status = 3
             }
-        } catch (java.sql.SQLException e) {
+        } catch (SQLException e) {
             System.out.println("Error getApplicationStatsByStatus: " + e.getMessage());
         }
         
         // Add vào list theo thứ tự
-        list.add(new viewmodels.StatDTO("Đang chờ", pending));
-        list.add(new viewmodels.StatDTO("Chấp nhận", accepted));
-        list.add(new viewmodels.StatDTO("Từ chối", rejected));
-        list.add(new viewmodels.StatDTO("Đã kết thúc", finished)); // Thêm dòng này
+        list.add(new StatDTO("Đang chờ", pending));
+        list.add(new StatDTO("Chấp nhận", accepted));
+        list.add(new StatDTO("Từ chối", rejected));
+        list.add(new StatDTO("Đã kết thúc", finished)); // Thêm dòng này
 
         return list;
     }
@@ -422,7 +422,7 @@ public class ApplicationDAO extends DBContext {
             ps.setInt(2, applicationId);
             ps.setInt(3, actorId);
             return ps.executeUpdate() > 0;
-        } catch (java.sql.SQLException e) {
+        } catch (SQLException e) {
             System.out.println("Error updateStatusToFinished: " + e.getMessage());
         }
         return false;
@@ -481,9 +481,9 @@ public class ApplicationDAO extends DBContext {
                 job.setWard(rs.getString("JobWard"));
                 job.setCity(rs.getString("JobCity"));
 
-                list.add(new viewmodels.ApplicationDTO(a, sp, job));
+                list.add(new ApplicationDTO(a, sp, job));
             }
-        } catch (java.sql.SQLException e) {}
+        } catch (SQLException e) {}
         return list;
     }
 }

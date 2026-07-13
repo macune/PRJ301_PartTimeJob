@@ -5,7 +5,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import models.Category;
+import models.Employer_Profile;
+import models.Job_Post;
 import models.SavedJob;
+import viewmodels.JobDetailDTO;
 
 public class SavedJobDAO extends DBContext {
 
@@ -76,8 +80,8 @@ public class SavedJobDAO extends DBContext {
     // =====================================================================
     // HÀM LẤY CHI TIẾT CÁC CÔNG VIỆC ĐÃ LƯU
     // =====================================================================
-    public List<viewmodels.JobDetailDTO> getSavedJobsWithDetails(int studentId) {
-        List<viewmodels.JobDetailDTO> list = new ArrayList<>();
+    public List<JobDetailDTO> getSavedJobsWithDetails(int studentId) {
+        List<JobDetailDTO> list = new ArrayList<>();
         String sql = """
                      SELECT j.*, c.CategoryName, e.BusinessName, e.LogoUrl, e.Address AS EmployerAddress, sj.SavedAt 
                      FROM Saved_Job sj
@@ -88,11 +92,11 @@ public class SavedJobDAO extends DBContext {
                      ORDER BY sj.SavedAt DESC
                      """;
         try {
-            java.sql.PreparedStatement ps = connection.prepareStatement(sql);
+            PreparedStatement ps = connection.prepareStatement(sql);
             ps.setInt(1, studentId);
-            java.sql.ResultSet rs = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                models.Job_Post job = new models.Job_Post();
+                Job_Post job = new Job_Post();
                 job.setJobId(rs.getInt("JobID"));
                 job.setTitle(rs.getString("Title"));
                 job.setSalary(rs.getInt("Salary"));
@@ -103,17 +107,17 @@ public class SavedJobDAO extends DBContext {
                 // Mượn field CreatedAt để chứa thời gian Lưu bài (hiển thị cho tiện)
                 job.setCreatedAt(rs.getTimestamp("SavedAt"));
 
-                models.Category cat = new models.Category();
+                Category cat = new Category();
                 cat.setCategoryName(rs.getString("CategoryName"));
 
-                models.Employer_Profile emp = new models.Employer_Profile();
+                Employer_Profile emp = new Employer_Profile();
                 emp.setBusinessName(rs.getString("BusinessName"));
                 emp.setLogoUrl(rs.getString("LogoUrl"));
                 emp.setAddress(rs.getString("EmployerAddress"));
 
-                list.add(new viewmodels.JobDetailDTO(job, cat, emp));
+                list.add(new JobDetailDTO(job, cat, emp));
             }
-        } catch (java.sql.SQLException e) {
+        } catch (SQLException e) {
             System.out.println("[SavedJobDAO.getSavedJobsWithDetails] Error: " + e.getMessage());
         }
         return list;

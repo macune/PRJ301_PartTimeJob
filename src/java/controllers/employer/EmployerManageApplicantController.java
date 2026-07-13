@@ -18,6 +18,7 @@ import java.util.List;
 import models.Account;
 import viewmodels.ApplicationDTO;
 import viewmodels.JobDetailDTO;
+import viewmodels.ReviewDTO;
 
 /**
  *
@@ -76,21 +77,16 @@ public class EmployerManageApplicantController extends HttpServlet {
 
             ApplicationDAO appDAO = new ApplicationDAO();
             List<ApplicationDTO> listApplicants = appDAO.getApplicationsByJobId(jobId);
-            
-            /* =========================================================
-               BỔ SUNG: LẤY ĐÁNH GIÁ CỦA TỪNG SINH VIÊN ỨNG TUYỂN
-               (Nếu tên hàm getReviewsForStudent hoặc ReviewDTO của nhóm bạn khác, hãy sửa lại cho khớp nhé)
-               ========================================================= */
             dal.StudentReviewDAO studentReviewDao = new dal.StudentReviewDAO();
-            java.util.Map<Integer, java.util.List<viewmodels.ReviewDTO>> studentReviewsMap = new java.util.HashMap<>();
             
             for (ApplicationDTO app : listApplicants) {
                 int sId = app.getStudent().getStudentId();
                 // Lấy danh sách review của sinh viên này
-                java.util.List<viewmodels.ReviewDTO> reviews = studentReviewDao.getReviewsForStudent(sId);
-                studentReviewsMap.put(sId, reviews);
+                List<ReviewDTO> reviews = studentReviewDao.getReviewsForStudent(sId);
+                
+                // Gắn thẳng list review vào đối tượng app
+                app.setReviews(reviews);
             }
-            request.setAttribute("studentReviewsMap", studentReviewsMap);
             // =========================================================
 
             request.setAttribute("listApplicants", listApplicants);

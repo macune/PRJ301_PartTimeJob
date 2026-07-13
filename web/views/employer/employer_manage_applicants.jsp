@@ -166,14 +166,14 @@
 
                                 <h5 class="fw-bold text-dark mb-3"><i class="fas fa-comments text-warning me-2"></i>Nhận xét từ Nhà tuyển dụng cũ</h5>
                                 <c:choose>
-                                    <c:when test="${empty studentReviewsMap[item.student.studentId]}">
+                                    <c:when test="${empty item.reviews}">
                                         <div class="text-center text-muted py-4 bg-white rounded-4 shadow-sm border-0">
                                             <i class="fas fa-comment-slash fa-2x mb-2 opacity-50"></i>
                                             <p class="mb-0 small">Sinh viên này chưa có đánh giá nào.</p>
                                         </div>
                                     </c:when>
                                     <c:otherwise>
-                                        <c:forEach var="r" items="${studentReviewsMap[item.student.studentId]}">
+                                        <c:forEach var="r" items="${item.reviews}">
                                             <div class="card mb-3 p-3 border-0 bg-white shadow-sm rounded-4">
                                                 <div class="d-flex justify-content-between align-items-center mb-2">
                                                     <span class="fw-bold text-dark"><i class="fas fa-store text-secondary me-2"></i>${r.reviewerName}</span>

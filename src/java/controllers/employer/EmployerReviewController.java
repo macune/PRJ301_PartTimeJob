@@ -58,7 +58,7 @@ public class EmployerReviewController extends HttpServlet {
     throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession();
-        models.Account account = (models.Account) session.getAttribute("account");
+        Account account = (Account) session.getAttribute("account");
 
         try {
             int studentId = Integer.parseInt(request.getParameter("studentId"));

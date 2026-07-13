@@ -569,7 +569,7 @@ public class JobDAO extends DBContext {
             st.setInt(1, status);
             ResultSet rs = st.executeQuery();
             while (rs.next()) {
-                models.Job_Post job = new models.Job_Post();
+                Job_Post job = new Job_Post();
                 job.setJobId(rs.getInt("JobID"));
                 job.setTitle(rs.getString("Title"));
                 job.setDescription(rs.getString("Description")); 
@@ -582,10 +582,10 @@ public class JobDAO extends DBContext {
                 job.setCreatedAt(rs.getTimestamp("CreatedAt"));
                 job.setStatus(rs.getInt("Status"));
 
-                models.Category cat = new models.Category();
+                Category cat = new Category();
                 cat.setCategoryName(rs.getString("CategoryName"));
 
-                models.Employer_Profile emp = new models.Employer_Profile();
+                Employer_Profile emp = new Employer_Profile();
                 emp.setBusinessName(rs.getString("BusinessName"));
 
                 list.add(new JobDetailDTO(job, cat, emp));

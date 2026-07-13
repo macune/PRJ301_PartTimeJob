@@ -70,7 +70,7 @@ public class StudentReviewController extends HttpServlet {
     throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession();
-        models.Account account = (models.Account) session.getAttribute("account");
+        Account account = (Account) session.getAttribute("account");
 
         try {
             int employerId = Integer.parseInt(request.getParameter("employerId"));

@@ -60,13 +60,13 @@ public class AdminApproveJobController extends HttpServlet {
     throws ServletException, IOException {
         dal.JobDAO jobDAO = new dal.JobDAO();
         
-        List<viewmodels.JobDetailDTO> pendingJobs = jobDAO.getAdminJobsByStatus(0);
-        List<viewmodels.JobDetailDTO> approvedJobs = jobDAO.getAdminJobsByStatus(1);
-        List<viewmodels.JobDetailDTO> rejectedJobs = jobDAO.getAdminJobsByStatus(2);
-        List<viewmodels.JobDetailDTO> closedJobs = jobDAO.getAdminJobsByStatus(3);
+        List<JobDetailDTO> pendingJobs = jobDAO.getAdminJobsByStatus(0);
+        List<JobDetailDTO> approvedJobs = jobDAO.getAdminJobsByStatus(1);
+        List<JobDetailDTO> rejectedJobs = jobDAO.getAdminJobsByStatus(2);
+        List<JobDetailDTO> closedJobs = jobDAO.getAdminJobsByStatus(3);
         
         // Gộp chung vào 1 list để render Modal chi tiết ở cuối trang (Clean code)
-        List<viewmodels.JobDetailDTO> allAdminJobs = new java.util.ArrayList<>();
+        List<JobDetailDTO> allAdminJobs = new ArrayList<>();
         allAdminJobs.addAll(pendingJobs);
         allAdminJobs.addAll(approvedJobs);
         allAdminJobs.addAll(rejectedJobs);
