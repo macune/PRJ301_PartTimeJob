@@ -36,47 +36,12 @@
             </div><c:remove var="errorMsg" scope="session"/>
         </c:if>
 
-        <div class="row g-3 mb-4">
-            <div class="col-sm-4">
-                <div class="card stat-card p-3 shadow-sm border-0 border-left-warning">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="text-muted small fw-semibold">Đang chờ duyệt</div>
-                            <div class="fs-3 fw-bold text-warning">${countPending}</div>
-                        </div>
-                        <i class="fas fa-hourglass-half fa-2x text-warning opacity-50"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-4">
-                <div class="card stat-card p-3 shadow-sm border-0 border-left-success">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="text-muted small fw-semibold">Đã được nhận</div>
-                            <div class="fs-3 fw-bold text-success">${countAccepted}</div>
-                        </div>
-                        <i class="fas fa-check-circle fa-2x text-success opacity-50"></i>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm-4">
-                <div class="card stat-card p-3 shadow-sm border-0 border-left-danger">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <div class="text-muted small fw-semibold">Bị từ chối</div>
-                            <div class="fs-3 fw-bold text-danger">${countRejected}</div>
-                        </div>
-                        <i class="fas fa-times-circle fa-2x text-danger opacity-50"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div class="d-flex flex-column gap-2 mb-4">
             <a href="${pageContext.request.contextPath}/student/application-history?status=all" class="btn ${currentStatus == 'all' ? 'btn-filter-all' : 'btn-filter-all opacity-75'} fw-semibold w-100 border-0">Tất cả (${countAll})</a>
             <a href="${pageContext.request.contextPath}/student/application-history?status=0" class="btn ${currentStatus == '0' ? 'btn-filter-status' : 'btn-filter-status opacity-75'} fw-semibold w-100 border-0"><i class="fas fa-hourglass-half me-1"></i> Đang chờ (${countPending})</a>
             <a href="${pageContext.request.contextPath}/student/application-history?status=1" class="btn ${currentStatus == '1' ? 'btn-filter-status' : 'btn-filter-status opacity-75'} fw-semibold w-100 border-0"><i class="fas fa-check me-1"></i> Chấp nhận (${countAccepted})</a>
             <a href="${pageContext.request.contextPath}/student/application-history?status=2" class="btn ${currentStatus == '2' ? 'btn-filter-status' : 'btn-filter-status opacity-75'} fw-semibold w-100 border-0"><i class="fas fa-times me-1"></i> Từ chối (${countRejected})</a>
+            <a href="${pageContext.request.contextPath}/student/application-history?status=3" class="btn ${currentStatus == '3' ? 'btn-filter-status' : 'btn-filter-status opacity-75'} fw-semibold w-100 border-0"><i class="fas fa-clipboard-check me-1"></i> Đã hoàn thành (${countFinished})</a>
         </div>
 
         <c:if test="${empty applicationList}">
@@ -114,6 +79,9 @@
                                             </c:when>
                                             <c:when test="${item.application.status == 2}">
                                                 <span class="badge bg-danger px-3 py-2"><i class="fas fa-times-circle me-1"></i>Từ chối</span>
+                                            </c:when>
+                                            <c:when test="${item.application.status == 3}">
+                                                <span class="badge bg-secondary px-3 py-2"><i class="fas fa-clipboard-check me-1"></i>Đã hoàn thành</span>
                                             </c:when>
                                         </c:choose>
                                     </div>

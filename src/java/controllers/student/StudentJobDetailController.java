@@ -74,7 +74,7 @@ public class StudentJobDetailController extends HttpServlet {
             JobDAO dao = new JobDAO();
             JobDetailDTO jobDetail = dao.getJobById(jobId);
             
-            if (jobDetail != null) {
+            if (jobDetail != null && jobDetail.getJob().getStatus() == 1) {
                 HttpSession session = request.getSession();
                 Account account = (Account) session.getAttribute("account");
                 

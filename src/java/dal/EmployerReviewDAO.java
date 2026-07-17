@@ -13,7 +13,7 @@ public class EmployerReviewDAO extends DBContext {
         try {
             String sql = """
                          SELECT r.Rating, r.Comment, r.CreatedAt, ISNULL(s.FullName, a.Username) AS ReviewerName
-                         FROM Employer_Review r
+                         FROM Student_Review r
                          JOIN Account a ON r.StudentID = a.AccountID
                          LEFT JOIN Student_Profile s ON r.StudentID = s.StudentID
                          WHERE r.EmployerID = ?

@@ -104,15 +104,17 @@ public class StudentApplyJobController extends HttpServlet {
         JobDAO jobDao = new JobDAO();
         JobDetailDTO newJobDetail = jobDao.getJobById(jobID);
         
-        if (newJobDetail != null) {
-            Time newStart = newJobDetail.getJob().getStartTime();
-            Time newEnd = newJobDetail.getJob().getEndTime();
+        if (newJobDetail == null || newJobDetail.getJob().getStatus() != 1) {
+            response.sendRedirect(request.getContextPath() + "/student/findJob");
+            return;
+        }
+        Time newStart = newJobDetail.getJob().getStartTime();
+        Time newEnd = newJobDetail.getJob().getEndTime();
             
-            // Nếu có đơn nào trùng lịch -> Chặn lại và báo lỗi Overlap
-            if (dao.hasTimeOverlap(studentID, newStart, newEnd)) {
-                response.sendRedirect(request.getContextPath() + "/student/jobDetail?id=" + jobID + "&result=overlap");
-                return;
-            }
+        // Nếu có đơn nào trùng lịch -> Chặn lại và báo lỗi Overlap
+        if (dao.hasTimeOverlap(studentID, newStart, newEnd)) {
+            response.sendRedirect(request.getContextPath() + "/student/jobDetail?id=" + jobID + "&result=overlap");
+            return;
         }
 
         // 3. Nếu mọi thứ an toàn -> Insert đơn ứng tuyển

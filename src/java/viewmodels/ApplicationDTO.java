@@ -13,6 +13,8 @@ public class ApplicationDTO {
     private Employer_Profile employer; // Bổ sung thêm Employer
     private List<ReviewDTO> reviews;
     private boolean isReviewed;
+    private int reviewRating;
+    private String reviewComment;
 
     public ApplicationDTO() {}
 
@@ -45,4 +47,8 @@ public class ApplicationDTO {
     public void setReviews(List<ReviewDTO> reviews) {this.reviews = reviews;}
     public boolean getIsReviewed() { return isReviewed; }
     public void setIsReviewed(boolean isReviewed) { this.isReviewed = isReviewed; }
+    public int getReviewRating() {return reviewRating;}
+    public void setReviewRating(int reviewRating) {this.reviewRating = reviewRating;}
+    public String getReviewComment() {return reviewComment;}
+    public void setReviewComment(String reviewComment) {this.reviewComment = reviewComment;}
 }

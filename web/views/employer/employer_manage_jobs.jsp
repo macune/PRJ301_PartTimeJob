@@ -23,6 +23,21 @@
             </a>
         </div>
 
+        <c:if test="${not empty sessionScope.successMsg}">
+            <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4">
+                <i class="fas fa-check-circle me-2"></i>${sessionScope.successMsg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <c:remove var="successMsg" scope="session"/>
+        </c:if>
+        <c:if test="${not empty sessionScope.errorMsg}">
+            <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4">
+                <i class="fas fa-exclamation-circle me-2"></i>${sessionScope.errorMsg}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <c:remove var="errorMsg" scope="session"/>
+        </c:if>
+                
         <div class="card shadow-sm border-0 rounded-4">
             <div class="card-body p-0">
                 <div class="table-responsive">

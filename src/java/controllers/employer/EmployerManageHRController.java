@@ -68,10 +68,9 @@ public class EmployerManageHRController extends HttpServlet {
         List<ApplicationDTO> listHistory = appDAO.getHRHistoryByEmployerId(employerId);
         
         dal.ReviewDAO reviewDAO = new dal.ReviewDAO();
-        for (ApplicationDTO app : listHistory) {
-            // Nút đánh giá chỉ kích hoạt ở phần Lịch sử
-            boolean hasReviewed = reviewDAO.hasEmployerReviewedStudent(employerId, app.getStudent().getStudentId());
-            app.setIsReviewed(hasReviewed); 
+        for (ApplicationDTO item : listHistory) {
+            boolean hasReviewed = reviewDAO.hasEmployerReviewedApplication(item.getApplication().getApplicationID());
+            item.setIsReviewed(hasReviewed);
         }
         
         request.setAttribute("listAccepted", listAccepted);

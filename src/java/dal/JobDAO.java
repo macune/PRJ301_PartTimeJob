@@ -540,7 +540,7 @@ public class JobDAO extends DBContext {
 
                 // Lấy danh sách Review đánh giá Doanh nghiệp này
                 List<String> reviews = new ArrayList<>();
-                String sqlRev = "SELECT Rating, Comment FROM Employer_Review WHERE EmployerID = ?";
+                String sqlRev = "SELECT Rating, Comment FROM Student_Review WHERE EmployerID = ?";
                 PreparedStatement psRev = connection.prepareStatement(sqlRev);
                 psRev.setInt(1, dto.getUserId());
                 ResultSet rsRev = psRev.executeQuery();

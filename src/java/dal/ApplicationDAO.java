@@ -263,10 +263,12 @@ public class ApplicationDAO extends DBContext {
         String sql = """
                      SELECT a.ApplicationID, a.StudentID, a.JobID, a.DesiredSalary, a.Message, a.Status, a.EmployerNote, a.AppliedAt,
                             j.Title AS JobTitle, j.City AS JobCity, j.Ward AS JobWard, j.DetailAddress AS JobDetailAddress, j.Salary AS JobSalary, j.StartTime, j.EndTime,
-                            e.EmployerID, e.BusinessName, e.Phone AS EmployerPhone
+                            e.EmployerID, e.BusinessName, e.Phone AS EmployerPhone,
+                            sr.Rating AS ReviewRating, sr.Comment AS ReviewComment
                      FROM Application a
                      JOIN Job_Post j ON a.JobID = j.JobID
                      JOIN Employer_Profile e ON j.EmployerID = e.EmployerID
+                     LEFT JOIN Student_Review sr ON a.ApplicationID = sr.ApplicationID
                      WHERE a.StudentID = ?
                      ORDER BY a.AppliedAt DESC
                      """;
@@ -296,12 +298,23 @@ public class ApplicationDAO extends DBContext {
                 job.setEndTime(rs.getTime("EndTime"));
 
                 Employer_Profile emp = new Employer_Profile();
-                // DÒNG QUAN TRỌNG NHẤT ĐỂ SỬA LỖI ĐÁNH GIÁ: Lấy EmployerID
                 emp.setEmployerId(rs.getInt("EmployerID")); 
                 emp.setBusinessName(rs.getString("BusinessName"));
                 emp.setPhone(rs.getString("EmployerPhone"));
 
-                list.add(new ApplicationDTO(a, job, emp));
+                ApplicationDTO dto = new ApplicationDTO(a, job, emp);
+                
+                // Lấy dữ liệu Review nếu có
+                int rating = rs.getInt("ReviewRating");
+                if (!rs.wasNull()) { // Nếu có đánh giá
+                    dto.setIsReviewed(true);
+                    dto.setReviewRating(rating);
+                    dto.setReviewComment(rs.getString("ReviewComment"));
+                } else {
+                    dto.setIsReviewed(false);
+                }
+                
+                list.add(dto);
             }
         } catch (SQLException e) {
             System.out.println("[ApplicationDAO.getApplicationHistory] Error: " + e.getMessage());
@@ -353,12 +366,15 @@ public class ApplicationDAO extends DBContext {
     
     public List<UserActivityDTO> getStudentActivities() {
         List<UserActivityDTO> list = new ArrayList<>();
-        String sql = "SELECT s.StudentID, s.FullName, s.Phone, COUNT(a.ApplicationID) as Total " +
-                     "FROM Student_Profile s " +
-                     "JOIN Application a ON s.StudentID = a.StudentID " +
-                     "WHERE a.Status IN (1, 3) " + 
-                     "GROUP BY s.StudentID, s.FullName, s.Phone " +
-                     "ORDER BY Total DESC";
+        String sql = """
+                     SELECT s.StudentID, s.FullName, s.Phone, 
+                            COUNT(a.ApplicationID) as Total 
+                     FROM Student_Profile s 
+                     JOIN Application a ON s.StudentID = a.StudentID 
+                     WHERE a.Status IN (1, 3) 
+                     GROUP BY s.StudentID, s.FullName, s.Phone 
+                     ORDER BY Total DESC
+                     """;
         try {
             PreparedStatement ps = connection.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
@@ -382,7 +398,7 @@ public class ApplicationDAO extends DBContext {
 
                 // Lấy danh sách Review đánh giá Sinh viên này
                 List<String> reviews = new ArrayList<>();
-                String sqlRev = "SELECT Rating, Comment FROM Student_Review WHERE StudentID = ?";
+                String sqlRev = "SELECT Rating, Comment FROM Employer_Review WHERE StudentID = ?";
                 PreparedStatement psRev = connection.prepareStatement(sqlRev);
                 psRev.setInt(1, dto.getUserId());
                 ResultSet rsRev = psRev.executeQuery();
@@ -438,10 +454,12 @@ public class ApplicationDAO extends DBContext {
                             s.FullName, s.Phone, s.University, s.Experience, s.AverageRating,
                             s.ContactEmail, s.Address, s.Introduction,
                             j.Title AS JobTitle, j.Salary AS BaseSalary, j.StartTime, j.EndTime,
-                            j.DetailAddress AS JobDetailAddress, j.Ward AS JobWard, j.City AS JobCity
+                            j.DetailAddress AS JobDetailAddress, j.Ward AS JobWard, j.City AS JobCity,
+                            er.Rating AS ReviewRating, er.Comment AS ReviewComment
                      FROM Application a
                      JOIN Student_Profile s ON a.StudentID = s.StudentID
                      JOIN Job_Post j ON a.JobID = j.JobID
+                     LEFT JOIN Employer_Review er ON a.ApplicationID = er.ApplicationID
                      WHERE j.EmployerID = ? AND a.Status = 3
                      ORDER BY a.AppliedAt DESC
                      """;
@@ -460,7 +478,7 @@ public class ApplicationDAO extends DBContext {
                 
                 a.setMessage(rs.getString("Message"));
                 a.setStatus(rs.getInt("Status"));
-                a.setEmployerNote(rs.getString("EmployerNote")); // Chứa lý do nghỉ
+                a.setEmployerNote(rs.getString("EmployerNote")); 
                 a.setAppliedAt(rs.getTimestamp("AppliedAt"));
 
                 Student_Profile sp = new Student_Profile();
@@ -481,9 +499,38 @@ public class ApplicationDAO extends DBContext {
                 job.setWard(rs.getString("JobWard"));
                 job.setCity(rs.getString("JobCity"));
 
-                list.add(new ApplicationDTO(a, sp, job));
+                ApplicationDTO dto = new ApplicationDTO(a, sp, job);
+                
+                // Lấy dữ liệu Review nếu có
+                int rating = rs.getInt("ReviewRating");
+                if (!rs.wasNull()) {
+                    dto.setIsReviewed(true);
+                    dto.setReviewRating(rating);
+                    dto.setReviewComment(rs.getString("ReviewComment"));
+                } else {
+                    dto.setIsReviewed(false);
+                }
+
+                list.add(dto);
             }
         } catch (SQLException e) {}
         return list;
     }
+
+    public boolean hasPendingApplicationsByJob(int jobId) {
+        String sql = "SELECT TOP 1 1 FROM Application WHERE JobID = ? AND Status = 0";
+        try {
+            java.sql.PreparedStatement ps = connection.prepareStatement(sql);
+            ps.setInt(1, jobId);
+            java.sql.ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return true; // Có ít nhất 1 đơn đang chờ
+            }
+        } catch (Exception e) {
+            System.out.println("Error hasPendingApplicationsByJob: " + e.getMessage());
+        }
+        return false; // Không có đơn nào chờ
+    }
+    
+    
 }

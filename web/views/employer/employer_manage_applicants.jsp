@@ -52,6 +52,9 @@
                                 <c:when test="${item.application.status == 2}">
                                     <span class="badge bg-danger"><i class="fas fa-times-circle me-1"></i>Đã từ chối</span>
                                 </c:when>
+                                <c:when test="${item.application.status == 3}">
+                                    <span class="badge bg-secondary"><i class="fas fa-check-circle me-1"></i>Đã hoàn thành</span>
+                                </c:when>
                             </c:choose>
                         </div>
                         <div class="card-body bg-light rounded-bottom-4 mx-2 mb-2 p-3">

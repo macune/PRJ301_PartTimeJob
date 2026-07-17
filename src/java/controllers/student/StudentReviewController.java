@@ -71,29 +71,26 @@ public class StudentReviewController extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         HttpSession session = request.getSession();
         Account account = (Account) session.getAttribute("account");
-
+        
         try {
+            int applicationId = Integer.parseInt(request.getParameter("applicationId"));
             int employerId = Integer.parseInt(request.getParameter("employerId"));
             int rating = Integer.parseInt(request.getParameter("rating"));
             String comment = request.getParameter("comment");
-
-            dal.ReviewDAO reviewDAO = new dal.ReviewDAO();
             
-            if (reviewDAO.hasStudentReviewedEmployer(account.getAccountId(), employerId)) {
-                session.setAttribute("errorMsg", "Bạn đã đánh giá cửa hàng này trước đó rồi!");
+            dal.ReviewDAO reviewDAO = new dal.ReviewDAO();
+            boolean success = reviewDAO.insertStudentReview(applicationId, employerId, account.getAccountId(), rating, comment);
+            
+            if(success) {
+                session.setAttribute("successMsg", "Đánh giá của bạn đã được ghi nhận!");
             } else {
-                if (reviewDAO.insertEmployerReview(account.getAccountId(), employerId, rating, comment)) {
-                    session.setAttribute("successMsg", "Gửi đánh giá thành công! Cảm ơn bạn.");
-                } else {
-                    session.setAttribute("errorMsg", "Đã xảy ra lỗi, vui lòng thử lại sau.");
-                }
+                session.setAttribute("errorMsg", "Có lỗi xảy ra, vui lòng thử lại.");
             }
         } catch (Exception e) {
-            e.printStackTrace(); // In lỗi ra NetBeans Output
-            session.setAttribute("errorMsg", "Dữ liệu không hợp lệ, vui lòng tải lại trang.");
+            session.setAttribute("errorMsg", "Dữ liệu không hợp lệ.");
         }
         
-        response.sendRedirect(request.getContextPath() + "/student/manageJobs");
+        response.sendRedirect(request.getContextPath() + "/student/manageJobs?tab=history");
     }
 
     /** 

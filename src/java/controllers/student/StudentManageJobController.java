@@ -70,15 +70,18 @@ public class StudentManageJobController extends HttpServlet {
         
         List<ApplicationDTO> workingJobs = new ArrayList<>();
         List<ApplicationDTO> historyJobs = new ArrayList<>();
+        List<ApplicationDTO> pendingJobs = new ArrayList<>();
         
         dal.ReviewDAO reviewDAO = new dal.ReviewDAO();
         
         for (ApplicationDTO app : allApps) {
-            if (app.getApplication().getStatus() == 1) { 
+            int status = app.getApplication().getStatus();
+            if (status == 0) {
+                pendingJobs.add(app);
+            } else if (status == 1) { 
                 workingJobs.add(app);
-            } else if (app.getApplication().getStatus() == 3) {
-                // ĐÃ NGHỈ -> Gắn nút Đánh giá vào đây
-                boolean hasReviewed = reviewDAO.hasStudentReviewedEmployer(studentId, app.getEmployer().getEmployerId());
+            } else if (status == 3) {
+                boolean hasReviewed = reviewDAO.hasStudentReviewedApplication(app.getApplication().getApplicationID());
                 app.setIsReviewed(hasReviewed);
                 historyJobs.add(app);
             }

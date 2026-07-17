@@ -61,27 +61,24 @@ public class EmployerReviewController extends HttpServlet {
         Account account = (Account) session.getAttribute("account");
 
         try {
+            int applicationId = Integer.parseInt(request.getParameter("applicationId"));
             int studentId = Integer.parseInt(request.getParameter("studentId"));
             int rating = Integer.parseInt(request.getParameter("rating"));
             String comment = request.getParameter("comment");
 
             dal.ReviewDAO reviewDAO = new dal.ReviewDAO();
-            
-            if (reviewDAO.hasEmployerReviewedStudent(account.getAccountId(), studentId)) {
-                session.setAttribute("errorMsg", "Bạn đã đánh giá ứng viên này trước đó rồi!");
+            boolean success = reviewDAO.insertEmployerReview(applicationId, studentId, account.getAccountId(), rating, comment);
+
+            if (success) {
+                session.setAttribute("successMsg", "Đã gửi đánh giá ứng viên thành công.");
             } else {
-                if (reviewDAO.insertStudentReview(account.getAccountId(), studentId, rating, comment)) {
-                    session.setAttribute("successMsg", "Đã ghi nhận đánh giá về sinh viên.");
-                } else {
-                    session.setAttribute("errorMsg", "Đã xảy ra lỗi, vui lòng thử lại sau.");
-                }
+                session.setAttribute("errorMsg", "Có lỗi xảy ra khi gửi đánh giá.");
             }
         } catch (Exception e) {
-            e.printStackTrace(); // In lỗi ra NetBeans Output
-            session.setAttribute("errorMsg", "Dữ liệu không hợp lệ, vui lòng tải lại trang.");
+            session.setAttribute("errorMsg", "Dữ liệu không hợp lệ.");
         }
         
-        response.sendRedirect(request.getContextPath() + "/employer/manageHR");
+        response.sendRedirect(request.getContextPath() + "/employer/manageHR?tab=history");
     }
 
     /** 

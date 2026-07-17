@@ -67,17 +67,17 @@ public class StudentApplicationHistoryController extends HttpServlet {
         // Lấy TOÀN BỘ lịch sử để đếm số lượng
         List<ApplicationDTO> allApps = appDAO.getApplicationHistoryByStudentId(account.getAccountId());
         
-        long countPending = 0, countAccepted = 0, countRejected = 0;
+        long countPending = 0, countAccepted = 0, countRejected = 0, countFinished = 0; 
         List<ApplicationDTO> filteredList = new ArrayList<>();
         String statusParam = request.getParameter("status");
         
         for (ApplicationDTO dto : allApps) {
             int status = dto.getApplication().getStatus();
             
-            // Đếm số lượng thực tế
             if (status == 0) countPending++;
             else if (status == 1) countAccepted++;
             else if (status == 2) countRejected++;
+            else if (status == 3) countFinished++; 
             
             // Lọc danh sách theo tham số URL
             if (statusParam == null || statusParam.equals("all")) {
@@ -99,6 +99,7 @@ public class StudentApplicationHistoryController extends HttpServlet {
         request.setAttribute("countPending", countPending);
         request.setAttribute("countAccepted", countAccepted);
         request.setAttribute("countRejected", countRejected);
+        request.setAttribute("countFinished", countFinished);
         request.setAttribute("currentStatus", statusParam == null ? "all" : statusParam);
         
         request.getRequestDispatcher("/views/student/student_application_history.jsp").forward(request, response);

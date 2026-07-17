@@ -33,15 +33,15 @@
 
         <ul class="nav nav-pills mb-4 border-bottom pb-2" role="tablist">
             <li class="nav-item" role="presentation">
-                <button class="nav-link active fw-semibold" data-bs-toggle="pill" data-bs-target="#activeHR" type="button"><i class="fas fa-user-check me-1"></i> Nhân sự hiện tại (${listAccepted.size()})</button>
+                <button class="nav-link ${param.tab == 'history' ? '' : 'active'} fw-semibold" data-bs-toggle="pill" data-bs-target="#activeHR" type="button"><i class="fas fa-user-check me-1"></i> Nhân sự hiện tại (${listAccepted.size()})</button>
             </li>
             <li class="nav-item" role="presentation">
-                <button class="nav-link fw-semibold" data-bs-toggle="pill" data-bs-target="#historyHR" type="button"><i class="fas fa-history me-1"></i> Lịch sử nhân sự (${listHistory.size()})</button>
+                <button class="nav-link ${param.tab == 'history' ? 'active' : ''} fw-semibold" data-bs-toggle="pill" data-bs-target="#historyHR" type="button"><i class="fas fa-history me-1"></i> Lịch sử nhân sự (${listHistory.size()})</button>
             </li>
         </ul>
 
         <div class="tab-content">
-            <div class="tab-pane fade show active" id="activeHR">
+            <div class="tab-pane fade ${param.tab == 'history' ? '' : 'show active'}" id="activeHR">
                 <div class="card shadow-sm border-0 rounded-4"><div class="card-body p-0"><div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light">
@@ -65,7 +65,7 @@
                                     <td><span class="badge bg-info text-dark px-2 py-2">${item.job.title}</span></td>
                                     <td>
                                         <div class="text-dark small fw-semibold"><i class="fas fa-map-marker-alt text-danger me-1"></i> ${item.job.detailAddress}</div>
-                                        <div class="text-muted small">${item.job.ward},${item.job.city}</div>
+                                        <div class="text-muted small">${item.job.ward}, ${item.job.city}</div>
                                     </td>
                                     <td>
                                         <div class="text-dark fw-semibold"><i class="fas fa-phone-alt text-secondary me-1"></i> ${item.student.phone}</div>
@@ -82,30 +82,16 @@
                                     </td>
                                     <td class="text-center pe-4">
                                         <button class="btn btn-sm btn-outline-danger fw-semibold rounded-pill" data-bs-toggle="modal" data-bs-target="#fireModal${item.application.applicationID}"><i class="fas fa-user-times me-1"></i> Cho nghỉ</button>
-                                        
-                                        <div class="modal fade text-start" id="fireModal${item.application.applicationID}" tabindex="-1">
-                                            <div class="modal-dialog modal-dialog-centered"><div class="modal-content rounded-4 border-0">
-                                                <div class="modal-header bg-danger text-white border-0"><h5 class="modal-title fw-bold">Xác nhận Cho nghỉ</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
-                                                <form action="${pageContext.request.contextPath}/employer/manageHR" method="POST">
-                                                    <div class="modal-body p-4 text-center">
-                                                        <p>Xác nhận cho <strong>${item.student.fullName}</strong> nghỉ việc?</p>
-                                                        <input type="hidden" name="action" value="fire"><input type="hidden" name="applicationId" value="${item.application.applicationID}">
-                                                        <textarea class="form-control" name="reason" rows="3" placeholder="Nhập lý do..." required></textarea>
-                                                    </div>
-                                                    <div class="modal-footer border-0 p-3 pt-0"><button type="submit" class="btn btn-danger w-100 fw-bold">Xác nhận</button></div>
-                                                </form>
-                                            </div></div>
-                                        </div>
                                     </td>
                                 </tr>
                             </c:forEach>
-                            <c:if test="${empty listAccepted}"><tr><td colspan=\"7\" class=\"text-center py-5 text-muted\">Chưa có nhân sự nào đang làm việc.</td></tr></c:if>
+                            <c:if test="${empty listAccepted}"><tr><td colspan="7" class="text-center py-5 text-muted">Chưa có nhân sự nào đang làm việc.</td></tr></c:if>
                         </tbody>
                     </table>
                 </div></div></div>
             </div>
 
-            <div class="tab-pane fade" id="historyHR">
+            <div class="tab-pane fade ${param.tab == 'history' ? 'show active' : ''}" id="historyHR">
                 <div class="card shadow-sm border-0 rounded-4"><div class="card-body p-0"><div class="table-responsive">
                     <table class="table table-hover align-middle mb-0">
                         <thead class="table-light"><tr><th class="ps-4">Họ và tên</th><th>Vị trí</th><th>Lý do kết thúc</th><th class="text-center pe-4">Đánh giá</th></tr></thead>
@@ -117,29 +103,14 @@
                                     <td><div class="text-danger small fw-semibold"><i class="fas fa-info-circle me-1"></i> ${item.application.employerNote}</div></td>
                                     <td class="text-center pe-4">
                                         <c:choose>
-                                            <c:when test="${item.isReviewed}"><button class="btn btn-sm btn-secondary fw-semibold rounded-pill" disabled>Đã đánh giá</button></c:when>
+                                            <c:when test="${item.isReviewed}">
+                                                <!-- Đã sửa thành nút Xem đánh giá -->
+                                                <button class="btn btn-sm text-secondary border bg-light shadow-none rounded-pill" data-bs-toggle="modal" data-bs-target="#viewEmployerReviewModal${item.application.applicationID}">
+                                                    <i class="fas fa-eye me-1"></i> Xem đánh giá
+                                                </button>
+                                            </c:when>
                                             <c:otherwise>
-                                                <button class="btn btn-sm btn-warning fw-semibold rounded-pill text-dark" data-bs-toggle="modal" data-bs-target="#reviewStudentModal${item.student.studentId}"><i class="fas fa-star me-1"></i> Đánh giá</button>
-
-                                                <div class="modal fade text-start" id="reviewStudentModal${item.student.studentId}" tabindex="-1">
-                                                    <div class="modal-dialog modal-dialog-centered"><div class="modal-content rounded-4 border-0">
-                                                        <div class="modal-header border-0 bg-warning"><h5 class="modal-title fw-bold text-dark">Đánh giá Ứng viên</h5><button type="button" class="btn-close" data-bs-dismiss="modal"></button></div>
-                                                        <form action="${pageContext.request.contextPath}/employer/review" method="POST">
-                                                            <div class="modal-body p-4 text-center">
-                                                                <input type="hidden" name="studentId" value="${item.student.studentId}">
-                                                                <div class="star-rating mb-2">
-                                                                    <input type="radio" id="r5_${item.student.studentId}" name="rating" value="5" required/><label for="r5_${item.student.studentId}"><i class="fas fa-star"></i></label>
-                                                                    <input type="radio" id="r4_${item.student.studentId}" name="rating" value="4"/><label for="r4_${item.student.studentId}"><i class="fas fa-star"></i></label>
-                                                                    <input type="radio" id="r3_${item.student.studentId}" name="rating" value="3"/><label for="r3_${item.student.studentId}"><i class="fas fa-star"></i></label>
-                                                                    <input type="radio" id="r2_${item.student.studentId}" name="rating" value="2"/><label for="r2_${item.student.studentId}"><i class="fas fa-star"></i></label>
-                                                                    <input type="radio" id="r1_${item.student.studentId}" name="rating" value="1"/><label for="r1_${item.student.studentId}"><i class="fas fa-star"></i></label>
-                                                                </div>
-                                                                <textarea class="form-control" name="comment" rows="3" placeholder="Nhận xét của bạn..." required></textarea>
-                                                            </div>
-                                                            <div class="modal-footer"><button type="submit" class="btn btn-warning w-100 fw-bold">Gửi đánh giá</button></div>
-                                                        </form>
-                                                    </div></div>
-                                                </div>
+                                                <button class="btn btn-sm btn-warning fw-semibold rounded-pill text-dark" data-bs-toggle="modal" data-bs-target="#reviewStudentModal${item.application.applicationID}"><i class="fas fa-star me-1"></i> Đánh giá</button>
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
@@ -152,6 +123,91 @@
             </div>
         </div>
     </div>
+
+    <c:forEach items="${listAccepted}" var="item">
+        <div class="modal fade text-start" id="fireModal${item.application.applicationID}" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content rounded-4 border-0">
+                    <div class="modal-header bg-danger text-white border-0"><h5 class="modal-title fw-bold">Xác nhận Cho nghỉ</h5><button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div>
+                    <form action="${pageContext.request.contextPath}/employer/manageHR" method="POST">
+                        <div class="modal-body p-4 text-center">
+                            <p>Xác nhận cho <strong>${item.student.fullName}</strong> nghỉ việc?</p>
+                            <input type="hidden" name="action" value="fire">
+                            <input type="hidden" name="applicationId" value="${item.application.applicationID}">
+                            <textarea class="form-control" name="reason" rows="3" placeholder="Nhập lý do..." required></textarea>
+                        </div>
+                        <div class="modal-footer border-0 p-3 pt-0"><button type="submit" class="btn btn-danger w-100 fw-bold">Xác nhận</button></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </c:forEach>
+
+    <!-- Modal XEM LẠI Đánh giá của Nhà tuyển dụng -->
+    <c:forEach items="${listHistory}" var="item">
+        <c:if test="${item.isReviewed}">
+            <div class="modal fade text-start" id="viewEmployerReviewModal${item.application.applicationID}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content rounded-4 border-0">
+                        <div class="modal-header bg-warning text-white border-0">
+                            <h5 class="modal-title fw-bold">Chi tiết đánh giá của bạn</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body p-4 text-center">
+                            <h6 class="fw-bold mb-3 text-secondary">Ứng viên: <span class="text-dark">${item.student.fullName}</span></h6>
+                            
+                            <!-- Hiển thị số sao -->
+                            <div class="text-warning fs-3 mb-3">
+                                <c:forEach begin="1" end="5" var="i">
+                                    <i class="fas fa-star ${i <= item.reviewRating ? '' : 'text-muted opacity-25'}"></i>
+                                </c:forEach>
+                            </div>
+                            
+                            <!-- Hiển thị nội dung -->
+                            <div class="p-3 bg-light rounded-3 border border-success border-opacity-25 text-start">
+                                <p class="mb-0 text-dark fst-italic">"${item.reviewComment}"</p>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0">
+                            <button type="button" class="btn btn-secondary rounded-pill px-4 w-100 fw-bold" data-bs-dismiss="modal">Đóng</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </c:if>
+    </c:forEach>
+                
+    <c:forEach items="${listHistory}" var="item">
+        <c:if test="${!item.isReviewed}">
+            <div class="modal fade text-start" id="reviewStudentModal${item.application.applicationID}" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content rounded-4 border-0">
+                        <div class="modal-header border-0 bg-warning">
+                            <h5 class="modal-title fw-bold text-dark">Đánh giá Ứng viên</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <form action="${pageContext.request.contextPath}/employer/review" method="POST">
+                            <div class="modal-body p-4 text-center">
+                                <input type="hidden" name="applicationId" value="${item.application.applicationID}">
+                                <input type="hidden" name="studentId" value="${item.student.studentId}">
+                                <div class="star-rating mb-2">
+                                    <input type="radio" id="r5_${item.application.applicationID}" name="rating" value="5" required/><label for="r5_${item.application.applicationID}"><i class="fas fa-star"></i></label>
+                                    <input type="radio" id="r4_${item.application.applicationID}" name="rating" value="4"/><label for="r4_${item.application.applicationID}"><i class="fas fa-star"></i></label>
+                                    <input type="radio" id="r3_${item.application.applicationID}" name="rating" value="3"/><label for="r3_${item.application.applicationID}"><i class="fas fa-star"></i></label>
+                                    <input type="radio" id="r2_${item.application.applicationID}" name="rating" value="2"/><label for="r2_${item.application.applicationID}"><i class="fas fa-star"></i></label>
+                                    <input type="radio" id="r1_${item.application.applicationID}" name="rating" value="1"/><label for="r1_${item.application.applicationID}"><i class="fas fa-star"></i></label>
+                                </div>
+                                <textarea class="form-control" name="comment" rows="3" placeholder="Nhận xét của bạn..." required></textarea>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-warning w-100 fw-bold">Gửi đánh giá</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </c:if>
+    </c:forEach>
 
     <jsp:include page="/views/common/footer.jsp" />
     <script src="${pageContext.request.contextPath}/assets/js/bootstrap.bundle.min.js"></script>

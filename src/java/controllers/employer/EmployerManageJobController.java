@@ -5,6 +5,7 @@
 
 package controllers.employer;
 
+import dal.ApplicationDAO;
 import dal.JobDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -87,11 +88,22 @@ public class EmployerManageJobController extends HttpServlet {
         if ("close".equals(action) && jobIdStr != null) {
             try {
                 int jobId = Integer.parseInt(jobIdStr);
+                ApplicationDAO appDao = new ApplicationDAO();
+                if (appDao.hasPendingApplicationsByJob(jobId)) {
+                    session.setAttribute("errorMsg", "Không thể đóng bài đăng! Vẫn còn đơn ứng tuyển đang chờ duyệt. Vui lòng xử lý (chấp nhận/từ chối) các đơn này trước.");
+                    response.sendRedirect(request.getContextPath() + "/employer/manageJobs");
+                    return; 
+                }
                 JobDAO jobDAO = new JobDAO();
                 jobDAO.updateJobStatus(jobId, account.getAccountId(), 3); 
-            } catch (Exception e) {}
+                session.setAttribute("successMsg", "Đã đóng bài đăng thành công.");
+                
+            } catch (Exception e) {
+                session.setAttribute("errorMsg", "Đã xảy ra lỗi hệ thống, vui lòng thử lại.");
+            }
+            response.sendRedirect(request.getContextPath() + "/employer/manageJobs");
+            return;
         }
-        response.sendRedirect(request.getContextPath() + "/employer/manageJobs");
     }
 
     /** 
